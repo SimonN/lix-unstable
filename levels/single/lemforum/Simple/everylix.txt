@@ -28,77 +28,77 @@ $ENGLISH Every Lix for Herself!
 #NOTHING 0
 #NOTHING 0
 
-:matt/oriental/Hatch.H: 280 36
-:matt/oriental/Hatch.H: 128 10 r
-:matt/oriental/Hatch.H: 518 34
+:simon/oriental/hatch.H: 280 36
+:simon/oriental/hatch.H: 128 10 r
+:simon/oriental/hatch.H: 518 34
 
-:matt/oriental/Goal.G: 16 216
-:matt/oriental/Goal.G: 560 216
+:simon/oriental/goal.G: 16 216
+:simon/oriental/goal.G: 560 216
 
-:matt/oriental/bamboo_pole: 264 96 rrr
-:matt/oriental/bamboo_pole: 216 144 rrr
-:matt/oriental/bamboo_pole: 264 192 rrr
-:matt/oriental/bamboo_pole: 216 240 rrr
-:matt/oriental/01: 216 220
-:matt/oriental/01: 216 124
-:matt/oriental/01: 394 172
-:matt/oriental/01: 394 76
-:matt/oriental/branch4: 358 320 frr
+:simon/oriental/culm_long: 264 96 rrr
+:simon/oriental/culm_long: 216 144 rrr
+:simon/oriental/culm_long: 264 192 rrr
+:simon/oriental/culm_long: 216 240 rrr
+:simon/oriental/01: 216 220
+:simon/oriental/01: 216 124
+:simon/oriental/01: 394 172
+:simon/oriental/01: 394 76
+:simon/oriental/branch4: 358 320 frr
 :geoo/construction/concrete/128: 416 296
-:matt/oriental/leaves1: 376 314
-:matt/oriental/branch3: 294 320 frr
-:matt/oriental/trunk2: 310 340 rr
-:matt/oriental/leaves2: 358 374
-:matt/oriental/leaves3: 310 330
+:simon/oriental/bush1: 376 314
+:simon/oriental/branch3: 294 320 frr
+:simon/oriental/branch6: 310 340 rr
+:simon/oriental/bush2: 358 374
+:simon/oriental/bush3: 310 330
 :geoo/construction/concrete/128: 96 296
-:matt/oriental/branch4: 230 332
-:matt/oriental/leaves4: 206 314
-:matt/oriental/leaves5: 278 374
-:matt/oriental/trunk3: 244 366
-:matt/oriental/leaves6: 236 352
-:matt/oriental/branch4: 216 386
-:matt/oriental/leaves7: 206 380
-:matt/oriental/branch4: 266 382 rrr
-:matt/oriental/bamboo_leaf2: 416 112 frrr
+:simon/oriental/branch4: 230 332
+:simon/oriental/bush4: 206 314
+:simon/oriental/bush5: 278 374
+:simon/oriental/branch7: 244 366
+:simon/oriental/bush6: 236 352
+:simon/oriental/branch4: 216 386
+:simon/oriental/bush7: 206 380
+:simon/oriental/branch4: 266 382 rrr
+:simon/oriental/leaf2: 416 112 frrr
 :matt/earth/25: 442 164
-:matt/oriental/bamboo_leaf1: 464 124 frr
+:simon/oriental/leaf1: 464 124 frr
 :matt/earth/12: 440 128 rrr
-:matt/oriental/bamboo_leaf2: 190 144 rrr
-:matt/oriental/bamboo_leaf3: 168 160 rr
-:matt/oriental/bamboo_leaf1: 450 220 r
-:matt/oriental/bamboo_leaf3: 124 174 f
-:matt/oriental/branch4: 118 196 frr
+:simon/oriental/leaf2: 190 144 rrr
+:simon/oriental/leaf3: 168 160 rr
+:simon/oriental/leaf1: 450 220 r
+:simon/oriental/leaf3: 124 174 f
+:simon/oriental/branch4: 118 196 frr
 :matt/earth/24: 142 196
-:matt/oriental/bamboo_leaf1: 134 160
+:simon/oriental/leaf1: 134 160
 :matt/earth/12: 140 174
-:matt/oriental/bamboo_leaf3: 418 208 f
-:matt/oriental/bamboo_leaf3: 466 218 rr
+:simon/oriental/leaf3: 418 208 f
+:simon/oriental/leaf3: 466 218 rr
 :matt/earth/26: 442 230 n
 :matt/earth/23: 462 246 n
 :matt/earth/15: 426 230 frr
 :matt/earth/13: 494 200 rrrd
 :matt/earth/12: 502 234 d
-:matt/oriental/bamboo_leaf2: 487 223 fn
+:simon/oriental/leaf2: 487 223 fn
 :geoo/construction/concrete/128: 544 296
 :geoo/construction/concrete/128: -32 296
-:matt/oriental/bamboo_pole: -6 138 rr
-:matt/oriental/bamboo_leaf3: 18 -6 frr
-:matt/oriental/bamboo_segment1: -5 31
-:matt/oriental/bamboo_leaf2: 0 -2
-:matt/oriental/bamboo_segment1: -5 38
-:matt/oriental/bamboo_pole: -6 -18 rr
-:matt/oriental/bamboo_pole: 634 138 rr
-:matt/oriental/bamboo_leaf1: 620 28
-:matt/oriental/bamboo_pole: 634 -18 rr
-:matt/oriental/bamboo_pole: -2 -4 rrr
-:matt/oriental/bamboo_pole: 154 -4 rrr
-:matt/oriental/bamboo_pole: 310 -4 rrr
-:matt/oriental/bamboo_leaf2: 586 0 frr
-:matt/oriental/bamboo_pole: 466 -4 rrr
-:matt/oriental/bamboo_pole: 622 -4 rrr
-:matt/oriental/bamboo_leaf2: 584 18 frr
-:matt/oriental/bamboo_leaf3: 604 2 rrr
-:matt/oriental/bamboo_pole: 28 70 rrr
-:matt/oriental/bamboo_segment1: 499 74
-:matt/oriental/bamboo_pole: 482 94 rrr
-:matt/oriental/01: 478 74
+:simon/oriental/culm_long: -6 138 rr
+:simon/oriental/leaf3: 18 -6 frr
+:simon/oriental/culm_half1: -5 31
+:simon/oriental/leaf2: 0 -2
+:simon/oriental/culm_half1: -5 38
+:simon/oriental/culm_long: -6 -18 rr
+:simon/oriental/culm_long: 634 138 rr
+:simon/oriental/leaf1: 620 28
+:simon/oriental/culm_long: 634 -18 rr
+:simon/oriental/culm_long: -2 -4 rrr
+:simon/oriental/culm_long: 154 -4 rrr
+:simon/oriental/culm_long: 310 -4 rrr
+:simon/oriental/leaf2: 586 0 frr
+:simon/oriental/culm_long: 466 -4 rrr
+:simon/oriental/culm_long: 622 -4 rrr
+:simon/oriental/leaf2: 584 18 frr
+:simon/oriental/leaf3: 604 2 rrr
+:simon/oriental/culm_long: 28 70 rrr
+:simon/oriental/culm_half1: 499 74
+:simon/oriental/culm_long: 482 94 rrr
+:simon/oriental/01: 478 74
