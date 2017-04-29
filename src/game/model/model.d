@@ -174,9 +174,9 @@ private:
             // lookupmap inside the current state. Everything else will be
             // passed anew when the lix are updated.
             auto ow = makeGypsyWagon(tribe, tribe.lixvec.len);
-            Lixxie newLix = new Lixxie(_cs.lookup, &ow,
+            Lixxie newLix = new Lixxie(_cs.lookup, &ow, Point(
                 hatch.x + hatch.tile.triggerX - 2 * walkLeftInsteadOfRight,
-                hatch.y + hatch.tile.triggerY);
+                hatch.y + hatch.tile.triggerY));
             if (walkLeftInsteadOfRight)
                 newLix.turn();
             tribe.lixvec ~= newLix;
