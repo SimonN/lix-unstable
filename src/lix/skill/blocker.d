@@ -7,7 +7,7 @@ import game.tribe;
 
 class Blocker : Job {
 
-    enum forceFieldXlEachSide = 14;
+    enum forceFieldXlEachSide = 12;
     enum forceFieldYlAbove    = 16;
     enum forceFieldYlBelow    =  8;
 
