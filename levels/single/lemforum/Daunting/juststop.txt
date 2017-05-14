@@ -508,7 +508,7 @@ $ENGLISH Just Stop the Bleeding
 :matt/bricks/01b: 1879 277
 :matt/carnival/17: 2052 153
 :proxima/tile/pink5: 325 40
-:amanda/occult/occult_scrawl_pentagram: 330 45
+:amanda/occult/scrawl_pentagram: 330 45
 :matt/bricks/01a: 1426 110 rrr
 :matt/earth/27: 1406 234 rrrd
 :matt/goldmine/crate32: 1522 362
