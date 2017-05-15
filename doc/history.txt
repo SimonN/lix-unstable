@@ -1,6 +1,13 @@
 Version history
 ===============
 
+0.7.1
+-----
+
+Blocker fields by geoo's suggestion, LLLLLL0RRRRRR against nonbuilders and LLLLL000RRRRR against builders.
+
+
+
 0.6.38
 ------
 

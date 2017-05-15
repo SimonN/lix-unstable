@@ -7,9 +7,11 @@ import game.tribe;
 
 class Blocker : Job {
 
-    enum forceFieldXlEachSide = 12;
-    enum forceFieldYlAbove    = 16;
-    enum forceFieldYlBelow    =  8;
+    enum forceFieldXlEachSide = 14;
+    enum deadZoneForBuildersXl = 2; // dx >= this means no effect
+    enum deadZoneForOthers = 0;
+    enum forceFieldYlAbove = 16;
+    enum forceFieldYlBelow = 8;
 
     mixin(CloneByCopyFrom!"Blocker");
 
@@ -56,18 +58,16 @@ class Blocker : Job {
             && dy > - forceFieldYlBelow
             && dy <   forceFieldYlAbove
         ) {
-            if (   (li.facingRight && dx > 0)
-                || (li.facingLeft  && dx < 0)
-            ) {
-                if (! li.turnedByBlocker) {
-                    li.turn();
-                    li.turnedByBlocker = true;
-                }
+            immutable deadZoneXl = li.ac == Ac.builder
+                ? deadZoneForBuildersXl : deadZoneForOthers;
+            immutable blockedByR = li.facingLeft  && dx < -deadZoneXl;
+            immutable blockedByL = li.facingRight && dx > deadZoneXl;
+            if ((blockedByR || blockedByL) && ! li.turnedByBlocker) {
+                li.turn();
+                li.turnedByBlocker = true;
             }
-            if (dx < 0)
-                li.inBlockerFieldLeft = true;
-            else if (dx > 0)
-                li.inBlockerFieldRight = true;
+            li.inBlockerFieldLeft = li.inBlockerFieldLeft || blockedByL;
+            li.inBlockerFieldRight = li.inBlockerFieldRight || blockedByR;
         }
     }
 }
