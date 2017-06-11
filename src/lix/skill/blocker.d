@@ -6,17 +6,17 @@ import lix;
 import game.tribe;
 
 class Blocker : Job {
-
+    // blockers have a 1-lo-res pixel (= 2 hi-res pixel) dead zone in their
+    // center, then turn lems if (blocker's x - other lem's x).abs is strictly
+    // less than forceFieldXlEachSide.
     enum forceFieldXlEachSide = 14;
-    enum deadZoneForBuildersXl = 2; // dx >= this means no effect
-    enum deadZoneForOthers = 0;
     enum forceFieldYlAbove = 16;
     enum forceFieldYlBelow = 8;
 
     mixin(CloneByCopyFrom!"Blocker");
 
-    override @property bool blockable()   const { return false; }
-    override PhyuOrder    updateOrder() const { return PhyuOrder.blocker; }
+    override @property bool blockable() const { return false; }
+    override PhyuOrder updateOrder() const { return PhyuOrder.blocker; }
 
     override void perform()
     {
@@ -58,15 +58,13 @@ class Blocker : Job {
             && dy > - forceFieldYlBelow
             && dy <   forceFieldYlAbove
         ) {
-            immutable deadZoneXl = li.ac == Ac.builder
-                ? deadZoneForBuildersXl : deadZoneForOthers;
-            immutable blockedByR = li.facingLeft  && dx < -deadZoneXl;
-            immutable blockedByL = li.facingRight && dx > deadZoneXl;
+            immutable blockedByR = li.facingLeft  && dx < 0;
+            immutable blockedByL = li.facingRight && dx > 0;
             if ((blockedByR || blockedByL) && ! li.turnedByBlocker) {
                 li.turn();
                 li.turnedByBlocker = true;
             }
-            li.inBlockerFieldLeft = li.inBlockerFieldLeft || blockedByL;
+            li.inBlockerFieldLeft  = li.inBlockerFieldLeft  || blockedByL;
             li.inBlockerFieldRight = li.inBlockerFieldRight || blockedByR;
         }
     }

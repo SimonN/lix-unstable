@@ -1,12 +1,21 @@
 Version history
 ===============
 
+0.7.2
+-----
+
+2017-06-11
+
+Blocker field is back like in 0.6: LLLLLL-RRRRRR against everything.
+This is simplest and allows crowd-follows-builder in at least 70 % of the
+cases.
+
 0.7.1
 -----
 
-Blocker fields by geoo's suggestion, LLLLLL0RRRRRR against nonbuilders and LLLLL000RRRRR against builders.
+2017-05
 
-
+Blocker fields by geoo's suggestion, LLLLLL-RRRRRR against nonbuilders and LLLLL---RRRRR against builders.
 
 0.6.38
 ------
