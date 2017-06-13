@@ -28,8 +28,9 @@ class Digger : Job {
         // pixels of the 18 hi-res pixel width.
         immutable bool enoughSteel = countSteel(-6, 2, 7, 2) > 0;
         if (enoughSteel) {
-            outsideWorld.effect.addDigHammer(outsideWorld.state.update, style,
-                                             outsideWorld.lixID, ex, ey, dir);
+            if (outsideWorld.effect)
+                outsideWorld.effect.addDigHammer(outsideWorld.state.update,
+                    style, outsideWorld.lixID, ex, ey, dir);
             become(Ac.walker);
         }
         return enoughSteel;
