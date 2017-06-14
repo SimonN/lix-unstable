@@ -109,6 +109,7 @@ protected:
             }
         }
         else if (_buttonVerify.execute) {
+            basics.user.replayLastLevel = currentDir;
             auto win = new VerifyMenu(currentDir);
             addFocus(win);
         }
