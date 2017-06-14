@@ -1,4 +1,4 @@
-$BUILT 2017-05-10 21:20:18
+$BUILT 2017-06-14 19:00:29
 $AUTHOR Rubix
 $ENGLISH 7up
 
@@ -73,6 +73,17 @@ $ENGLISH 7up
 :matt/water.W: 352 480
 :matt/water.W: 384 480
 
+:simon/oriental/culm_d_long: 1182 283 frr
+:simon/oriental/culm_d_long: 1178 275 frr
+:simon/oriental/culm_long: 1090 281 r
+:simon/oriental/culm_d_long: 1178 269 frr
+:simon/oriental/culm_d_long: 1180 265 frr
+:simon/oriental/culm_half1: 734 270 fr
+:simon/oriental/culm_long: 740 271 r
+:simon/oriental/culm_long: 732 277 r
+:simon/oriental/culm_long: 750 282 r
+:simon/oriental/culm_long: 1088 276 r
+:simon/oriental/culm_long: 994 281 r
 :simon/oriental/bush3: 1396 376
 :simon/oriental/bush3: 1366 363
 :simon/oriental/10: 64 176
@@ -103,17 +114,12 @@ $ENGLISH 7up
 :simon/oriental/07: 1312 464
 :simon/oriental/07: 1392 464
 :simon/oriental/culm_long: 898 281 r
-:simon/oriental/culm_long: 1053 264 r
-:simon/oriental/culm_long: 1053 270 r
-:simon/oriental/culm_long: 1055 276 r
-:simon/oriental/culm_long: 1055 281 r
-:simon/oriental/culm_long: 1103 266 r
-:simon/oriental/culm_long: 1108 271 r
-:simon/oriental/culm_long: 1110 276 r
-:simon/oriental/culm_long: 1115 282 r
-:simon/oriental/culm_long: 684 265 r
-:simon/oriental/culm_long: 676 271 r
-:simon/oriental/culm_long: 668 277 r
+:simon/oriental/culm_long: 992 264 r
+:simon/oriental/culm_long: 992 270 r
+:simon/oriental/culm_long: 994 276 r
+:simon/oriental/culm_long: 1088 264 r
+:simon/oriental/culm_long: 1088 270 r
+:simon/oriental/culm_long: 748 265 r
 :simon/oriental/culm_long: 800 265 r
 :simon/oriental/culm_long: 800 271 r
 :simon/oriental/culm_long: 802 277 r
@@ -136,3 +142,5 @@ $ENGLISH 7up
 :simon/oriental/bridge1: 896 400
 :simon/oriental/bridge3: 1024 400
 :simon/oriental/bridge3: 1088 432
+:simon/oriental/culm_long: 802 282 r
+:simon/oriental/culm_half1: 742 265 fr

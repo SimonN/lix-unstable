@@ -1,4 +1,4 @@
-$BUILT 2017-05-10 21:16:04
+$BUILT 2017-06-14 19:28:53
 $AUTHOR Rubix
 $ENGLISH Bridge over troubled water
 
@@ -23,7 +23,7 @@ $ENGLISH Bridge over troubled water
 #CUBER 1
 #EXPLODER2 0
 
-:simon/oriental/hatch.H: 618 274
+:simon/oriental/hatch.H: 626 272
 
 :simon/oriental/goal.G: 1232 258
 
@@ -62,6 +62,25 @@ $ENGLISH Bridge over troubled water
 :matt/water.W: 288 384
 :matt/water.W: 320 384
 
+:simon/oriental/bush2: 170 346
+:simon/oriental/leaf5: 1478 216 rr
+:simon/oriental/leaf2: 1490 200
+:simon/oriental/leaf4: 1482 126 rrr
+:simon/oriental/leaf2: 1474 186
+:simon/oriental/leaf3: 1452 216 rrr
+:simon/oriental/leaf1: 1443 200 frrr
+:simon/oriental/leaf6: 460 182 rr
+:simon/oriental/leaf5: 1462 185 rr
+:simon/oriental/leaf2: 1473 171
+:simon/oriental/leaf5: 1492 150 r
+:simon/oriental/leaf3: 1442 137 r
+:simon/oriental/leaf2: 420 233 r
+:simon/oriental/leaf4: 403 163 rr
+:simon/oriental/leaf5: 424 149
+:simon/oriental/leaf3: 409 193
+:simon/oriental/leaf3: 437 217 frrr
+:simon/oriental/fat_d_long: 393 142 frr
+:simon/oriental/fat_d_long: 1418 120
 :matt/goldmine/plank: 1024 64 r
 :simon/oriental/04: 1216 48
 :matt/goldmine/plank: 1120 64 r
