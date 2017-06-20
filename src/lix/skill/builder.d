@@ -58,11 +58,12 @@ abstract class BrickCounter : Job {
     final override void perform()
     {
         if (turnedByBlocker)
-            buildBrick();
+            buildBrickForFree();
         onPerform();
     }
 
-    abstract void onBuildingBrick(); // override this to draw on terrain
+    private final void buildBrickForFree() { onBuildingBrick(); }
+    protected abstract void onBuildingBrick();
     final void buildBrick()
     {
         assert (bricksLeft > 0);

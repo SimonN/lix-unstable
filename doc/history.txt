@@ -1,6 +1,14 @@
 Version history
 ===============
 
+0.7.6
+-----
+
+2017-06-20
+
+Fix: Builders and platformers duplicate bricks for free when turning at
+blockers. Before, number bricks left decreased for these extra bricks.
+
 0.7.5
 -----
 
