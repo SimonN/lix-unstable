@@ -1,6 +1,8 @@
 module lix.job;
 
 /* The Job hierarchy. What does a Lixxie do?
+ * We'll let the D compiler check our object-orientation with D classes.
+ * But we'll use them by emplacing JobUnions into Lixxie structs.
  *
  * Usage:
  * Mix (CloneByCopyFrom!"SubclassName") into every subclass.
@@ -94,6 +96,14 @@ unittest {
     assert (job.asClass.ac == Ac.floater,
         "JobUnion.init should be Ac.nothing");
 }
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+
 
 struct JobUnion {
     ubyte[32] data; // make as small as you can! fit into one cache line

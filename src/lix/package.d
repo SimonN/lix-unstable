@@ -10,6 +10,7 @@ public import lix.lixxie;
 public import lix.perform;
 
 public import lix.skill.ascender;
+public import lix.skill.ballifly;
 public import lix.skill.basher;
 public import lix.skill.batter;
 public import lix.skill.blocker;
@@ -21,6 +22,7 @@ public import lix.skill.exiter;
 public import lix.skill.exploder;
 public import lix.skill.faller;
 public import lix.skill.floater;
+public import lix.skill.jumper;
 public import lix.skill.lander;
 public import lix.skill.leaver;
 public import lix.skill.miner;
