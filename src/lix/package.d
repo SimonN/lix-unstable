@@ -11,6 +11,7 @@ public import lix.perform;
 
 public import lix.skill.ascender;
 public import lix.skill.ballifly;
+public import lix.skill.balliran;
 public import lix.skill.basher;
 public import lix.skill.batter;
 public import lix.skill.blocker;

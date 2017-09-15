@@ -2,6 +2,7 @@ module lix.skill.tumbler;
 
 import std.algorithm;
 import std.math;
+import std.range;
 
 import basics.help;
 import lix;
@@ -24,10 +25,11 @@ class Tumbler : BallisticFlyer {
         if (lix.ac == Ac.tumbler) {
             Tumbler tumbling = cast (Tumbler) lix.job;
             assert (tumbling);
-            tumbling.speedX = wantFlingX.abs;
+            tumbling.speedX = wantFlingX.abs + (wantFlingX.abs & 1) ; // even
             tumbling.speedY = wantFlingY;
             tumbling.initPixelsFallen();
             tumbling.selectFrame();
+            assert (tumbling.speedX % 2 == 0);
         }
         else
             assert (lix.ac == Ac.stunner, "should be the only possibility");
@@ -37,6 +39,10 @@ class Tumbler : BallisticFlyer {
     {
         if (isSolid(0, 1) && old.ac == Ac.ascender)
             // unglitch out of wall, but only back and up
+            // This is dumb, ideally the ascender shouldn't be inside the
+            // terrain most of the time. And if it is still inside terrain
+            // even after such an ascender rewrite, it's okay to stun inside
+            // the terrain.
             for (int dist = 1; dist <= Walker.highestStepUp; ++dist) {
                 if (! isSolid(0, 1 - dist)) {
                     moveUp(dist);
@@ -60,8 +66,13 @@ class Tumbler : BallisticFlyer {
     }
 
 protected:
-
     override bool splatUpsideDown() const { return this.frame >= 9; }
+
+    override bool wouldCollideAt(in Point foot) const
+    {
+        return iota(-2, 2).any!(
+            y => lixxie.env.getSolidEven(foot + Point(0, y)));
+    }
 
     override Collision onLandingWithoutSplatting()
     {
@@ -69,14 +80,10 @@ protected:
         return Collision.pathBlockedAndBecomeCalled;
     }
 
-    override Collision scanWall()
+    override Collision reactToWall()
     {
-        static immutable arr = [1, 0, -1, -2];
-        if (arr[].any!(y => lixxie.isSolid(2, y))) {
-            turn();
-            return Collision.pathBlocked;
-        }
-        return Collision.pathClear;
+        turn();
+        return Collision.pathBlocked;
     }
 
     override void selectFrame()

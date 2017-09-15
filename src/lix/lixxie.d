@@ -54,17 +54,11 @@ private:
             _outsideWorld = null;
     };
 
-    @property inout(Phymap) lookup() inout
-    {
-        assert (_outsideWorld, "need outsideWorld for ex/ey movement");
-        return outsideWorld.state.lookup;
-    }
-
 package:
     enum jobOffset = _job.offsetof;
     static assert (_job.offsetof % size_t.sizeof == 0); // emplace alignment
 
-    @property const(Topology) env() const
+    @property inout(Phymap) env() inout
     {
         assert (_outsideWorld, "need outsideWorld for ex/ey movement");
         return outsideWorld.state.lookup;
@@ -197,7 +191,7 @@ LixxieImpl clone() const
 
 void addEncountersFromHere()
 {
-    _encFoot |= lookup.get(Point(_ex, _ey));
+    _encFoot |= env.get(Point(_ex, _ey));
 }
 
 @property int ex(in int n)
@@ -270,22 +264,22 @@ void resetFlingNew()
 
 bool getSteel(in int px, in int py) const
 {
-    return lookup.getSteel(Point(_ex + px * dir, _ey + py));
+    return env.getSteel(Point(_ex + px * dir, _ey + py));
 }
 
 bool isSolid(in int px = 0, in int py = 2) const
 {
-    return lookup.getSolidEven(Point(_ex + px * dir, _ey + py));
+    return env.getSolidEven(Point(_ex + px * dir, _ey + py));
 }
 
 bool wouldHitSteel(in Mask mask) const
 {
-    return lookup.getSteelUnlessMaskIgnores(Point(_ex, _ey), mask);
+    return env.getSteelUnlessMaskIgnores(Point(_ex, _ey), mask);
 }
 
 bool isSolidSingle(in int px = 0, in int py = 2) const
 {
-    return lookup.getSolid(Point(_ex + px * dir, _ey + py));
+    return env.getSolid(Point(_ex + px * dir, _ey + py));
 }
 
 int solidWallHeight(in int px = 0, in int py = 0) const

@@ -27,6 +27,14 @@ class Jumper : BallisticFlyer {
     }
 
 protected:
+    override bool wouldCollideAt(in Point foot) const
+    {
+        // by experiment with D Lix 0.8's convoluted tumbler code,
+        // checking at -10 and not any higher lets us stickyclimb the same
+        return iota(-10, 2).any!(
+            y => lixxie.env.getSolidEven(foot + Point(0, y)));
+    }
+
     override Collision onLandingWithoutSplatting()
     {
         immutable soft = speedY < 12;
@@ -36,20 +44,17 @@ protected:
         return Collision.pathBlockedAndBecomeCalled;
     }
 
-    override Collision scanWall()
+    override Collision reactToWall()
     {
-        if (iota(-11, 2).all!(y => ! lixxie.isSolid(2, y))) {
-            return Collision.pathClear;
-        }
-        else if (abilityToClimb) {
-            become(Ac.climber);
-            return Collision.pathBlockedAndBecomeCalled;
-        }
-        else if (iota(-8, 2).any!(y => lixxie.isSolid(2, y)
-                                  && ! lixxie.isSolid(2, y-1))
+        if (iota(-8, 2).any!(y => lixxie.isSolid(2, y)
+                             && ! lixxie.isSolid(2, y-1))
         ) {
             moveAhead(2);
             become(Ac.ascender); // Ascender is smart enough to find the pixel
+            return Collision.pathBlockedAndBecomeCalled;
+        }
+        else if (abilityToClimb) {
+            become(Ac.climber);
             return Collision.pathBlockedAndBecomeCalled;
         }
         else {

@@ -28,14 +28,15 @@ abstract class BallisticFlyer : Job {
         pixelsFallen = rhs.pixelsFallen;
     }
 
-    final override void perform()
+    override void perform()
     {
         assert (speedX >= 0, "Lix should only fly forwards. Turn first.");
-        if (speedX % 2 != 0)
-            ++speedX;
-        if (moveSeveralTimes() == Collision.pathBlockedAndBecomeCalled) {
+        assert (speedX % 2 == 0, "Lix need even speed. Fix fling-assigner.");
+
+        immutable target = planMovement();
+        if (moveToAndReact(target) == Collision.pathBlockedAndBecomeCalled)
             return;
-        }
+
         speedY += accel(speedY);
         selectFrame();
         if (speedY >= speedYToFloat) {
@@ -52,100 +53,81 @@ protected:
     }
 
     enum int biggestLargeAccelSpeedY = 12;
-    final static int accel(int ysp) pure
+    static int accel(int ysp) pure
     {
         return (ysp <= biggestLargeAccelSpeedY) ? 2 : (ysp < 32) ? 1 : 0;
     }
 
+    // bool collideWithUpperBody() const { return false; } // dtodo
     bool splatUpsideDown() const { return false; }
     bool collideAfterMoving() const { return true; } // floater should not
 
-    abstract Collision scanWall();
+    abstract Collision reactToWall();
     abstract Collision onLandingWithoutSplatting();
     abstract void selectFrame();
 
-private:
-    /* General rules of ballistic flight:
-     * We move during a frame until we hit something.
-     * We move only in orthogonal steps, never diagonally. This makes the
-     * collision code far easier because we can differentiate by direction.
-     */
-    final Collision moveSeveralTimes()
-    {
-        immutable int ySgn = speedY >= 0 ? 1 : -1;
-        immutable int yAbs = speedY.abs;
-
-        // Advance diagonally, examine collisions at each step.
-        foreach (int step; 0 .. max(yAbs, speedX)) {
-            Collision col = yAbs >= speedX
-                ? // move ahead occasionally only, move down always
-                kingXY((step + 1) * speedX / yAbs / 2 * 2
-                     - (step)     * speedX / yAbs / 2 * 2, true)
-                : // always move ahead 2-quantized, move down occasionally only
-                kingXY(2 * (step % 2), ( (step + 1) * yAbs / speedX
-                                       - (step)     * yAbs / speedX));
-            if (col != Collision.pathClear)
-                return col;
-        }
-
-        // In C++ Lix, tumblers and jumpers scanned terrain once more after
-        // their final move. Floaters did not do that. That's inconsistent.
-        // At least for jumpers & tumblers, checking the floor is good.
-        // This mimicks closest the C++ Lix and D 0.8.x behavior.
-        return collideAfterMoving() ? landOnFloor() : Collision.pathClear;
-    }
-
-    // We take ints instead of bools to allow a looser calling expression.
-    final Collision kingXY(int wantMoveX, int wantMoveY)
-    in {
-        assert (wantMoveX == 0 || wantMoveX == 2, format("%d", wantMoveX));
-        assert (wantMoveY == 0 || wantMoveY == 1, format("%d", wantMoveY));
+    // Step (1) relies on this virtual method.
+    // E.g. the Jumper can latch onto terrain high up, that should definitely
+    // report a collision in override wouldCollideAt. Default only at foot.
+    bool wouldCollideAt(in Point foot) const
+    out (ret) {
+        if (ret == false)
+            // Cannot collide with less than our base class collides with
+            assert (! lixxie.env.getSolidEven(foot + Point(0, 1)));
     }
     body {
-        Collision ret = Collision.pathClear;
-        if (wantMoveY) {
-            assert (speedY != 0);
-            ret = speedY > 0 ? maybeMoveDown() : maybeMoveUp();
-        }
-        if (wantMoveX && ret == Collision.pathClear)
-            ret = maybeMoveAhead();
-        return ret;
+        // Must be exact negative of the assert in the out contract
+        return lixxie.env.getSolidEven(foot + Point(0, 1));
     }
 
-    final Collision maybeMoveDown()
+private:
+    BallisticRange rangeBySpeed() const
     {
-        immutable ret = landOnFloor();
-        if (ret == Collision.pathClear) {
-            moveDown(1);
-            ++pixelsFallen;
-        }
-        return ret;
+        return BallisticRange(Point(ex, ey), speedX * lixxie.dir, speedY);
     }
 
-    final Collision maybeMoveUp()
+    // Step (1) in geoo's proposal: Plan trajectory
+    Point planMovement() const
     {
-        immutable ret = bumpCeiling();
-        if (ret == Collision.pathClear) {
-            moveUp(1);
-            pixelsFallen = 0;
+        BallisticRange ran = rangeBySpeed();
+        Point lastGood = ran.front;
+        while (! ran.empty && ! wouldCollideAt(ran.front)) {
+            lastGood = ran.front;
+            ran.popFront;
         }
-        return ret;
+        return lastGood;
     }
 
-    final Collision maybeMoveAhead()
+    // Step (2) in geoo's proposal: Determine type of collision by surrounding
+    bool foundFloor()   const { return isSolid(0, 2); }
+    bool foundWall()    const { return wouldCollideAt(Point(ex + 2*dir, ey)); }
+    bool foundCeiling() const { return speedY < 0
+                                && wouldCollideAt(Point(ex, ey - 1)); }
+
+    // Step (3) of geoo's proposal: Execute the movement found by step (1)
+    // and react to the results of step (2).
+    Collision moveToAndReact(in Point target)
     {
-        immutable ret = scanWall();
-        if (ret == Collision.pathClear)
-            moveAhead(2);
-        return ret;
+        // Move along the trajectory. Very good: Point target is not yet
+        // wrapped around a torus. Move by single pixels to track encounters.
+        pixelsFallen = speedY < 0 ? 0 : pixelsFallen - ey + target.y;
+        foreach (ref const point; rangeBySpeed) {
+            ex = point.x;
+            ey = point.y;
+            if (point == target)
+                break;
+        }
+        // Step (2) is determine surroundings, step (3) is react to them:
+        return foundFloor   ? reactToFloor()
+            :  foundCeiling ? reactToCeiling()
+            :  foundWall    ? reactToWall()
+            : Collision.pathClear;
     }
 
-    final Collision landOnFloor()
+    Collision reactToFloor()
     {
-        if (! isSolid(0, 2)) {
-            return Collision.pathClear;
-        }
-        else if (pixelsFallen > pixelsSafeToFall && ! abilityToFloat) {
+        assert (isSolid, "see foundFloor() for why this should be");
+        if (pixelsFallen > pixelsSafeToFall && ! abilityToFloat) {
             immutable sud = this.splatUpsideDown();
             become(Ac.splatter);
             if (sud)
@@ -157,11 +139,8 @@ private:
         }
     }
 
-    final Collision bumpCeiling()
+    Collision reactToCeiling()
     {
-        if (solidWallHeight(0, 0) == 0) {
-            return Collision.pathClear;
-        }
         auto ret = Collision.pathBlocked;
         immutable newSpeedX = speedX / 2;
         if (ac != Ac.tumbler) {
@@ -180,7 +159,7 @@ private:
             // fall faster afterwards than jumpers bumping ceilings. I'm unsure
             // whether this difference is good, but I'll keep it for now.
             tumbling.speedY = 4;
-            tumbling.speedX = newSpeedX;
+            tumbling.speedX = newSpeedX + (newSpeedX & 1);
         }
         return ret;
     }
