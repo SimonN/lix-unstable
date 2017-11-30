@@ -152,7 +152,7 @@ class Builder : BrickCounter {
         //               WW  WW
         //
         //           XX
-        //           TT  WT  WT
+        //       TT  TT  WT  WW
         //           ()()()()()()()()()()()()
         //           ()()()()()()()()()()()()
         //   [][][][][][][][][][][][]
@@ -167,12 +167,18 @@ class Builder : BrickCounter {
         immutable bool wallNearFoot
             =  (isSolid(4, 1) && isSolid(4, -2))
             || (isSolid(2, 1) && isSolid(2, -2));
+
         // Height +1 is the coordinate above the brick, not height 0, because:
         // In rare cases, e.g. lix inside thin horizontal beam, the lix
         // wouldn't build up high enough to make the staircase
         // connect with the beam.
+        // One of the and'ed checks is behind the lix. Reason: We shouldn't
+        // be able to execute github.com/SimonN/LixD bug #268 == Ramond's
+        // 2-builder cancelling. This happened when a second builder quickly
+        // placed her brick on top of ours, before we made our collision check.
         immutable bool insideThinHorizontalBeam
-            = isSolid(4, 1) && isSolid(2, 1) && isSolid(0, 1);
+            = isSolid(2, 1) && isSolid(0, 1) && isSolid(-2, 1);
+
         // The check for hitHead is not shown in the ASCII art comment above.
         immutable bool hitHead = isSolid(4, -16);
         if (wallNearFoot || insideThinHorizontalBeam || hitHead) {
