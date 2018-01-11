@@ -3,6 +3,7 @@ module lix.skill.batter;
 import std.math;
 import std.range;
 
+import basics.rect;
 import hardware.sound;
 import lix;
 import physics.tribe;
@@ -11,9 +12,6 @@ class Batter : Job {
     mixin JobChild;
 
     enum flingAfterFrame = 2;
-    enum rectHalfXl = 12;
-    enum rectHalfYl = 12;
-    enum extraXRangeForBlockers = 4;
     enum flingSpeedX =  10;
     enum flingSpeedY = -12;
 
@@ -27,61 +25,72 @@ class Batter : Job {
 
     override void perform()
     {
-        // be consistent with the update order in game.core.physlix
-        immutable bool batNow = (updateOrder == PhyuOrder.flinger);
-
-        if      (! isSolid)   become(Ac.faller);
-        else if (isLastFrame) become(Ac.walker);
-        else                  advanceFrame();
-
-        if (batNow) {
-            bool hit = false;
-            foreach (Tribe battedTribe; outsideWorld.state.tribes)
-                foreach (id, Lixxie batted; battedTribe.lixvec.enumerate!int)
-                    if (flingIfCloseTo(batted, lixxie.ex + 6 * lixxie.dir,
-                                               lixxie.ey - 4)) {
-                        hit = true;
-                        lixxie.outsideWorld.effect.addSound(
-                            lixxie.outsideWorld.state.update,
-                            Passport(batted.style, id), Sound.BATTER_HIT);
-                    }
-            // Both the hitter and the target will play the hit sound.
-            // This hitting sound isn't played even quietly if an enemy lix
-            // hits an enemy lix, but we want the sound if we're involved.
-            lixxie.playSound(hit ? Sound.BATTER_HIT : Sound.BATTER_MISS);
+        if (! isSolid) {
+            become(Ac.faller);
+            return;
         }
+        else if (isLastFrame) {
+            become(Ac.walker);
+            return;
+        }
+        if (updateOrder == PhyuOrder.flinger)
+            flingEverybody();
+        advanceFrame();
     }
 
 private:
-    // cx, cy: Specify the center of a rectangle
-    // Returns whether the target lix has been flung by us.
-    bool flingIfCloseTo(Lixxie target, in int cx, in int cy)
+    void flingEverybody()
+    {
+        bool hit = false;
+        foreach (Tribe battedTribe; outsideWorld.state.tribes)
+            foreach (id, Lixxie target; battedTribe.lixvec.enumerate!int) {
+                if (! shouldWeFling(target))
+                    continue;
+                hit = true;
+                fling(target, id);
+            }
+        // Both the hitter and the target will play the hit sound.
+        // This hitting sound isn't played even quietly if an enemy lix
+        // hits an enemy lix, but we want the sound if we're involved.
+        lixxie.playSound(hit ? Sound.BATTER_HIT : Sound.BATTER_MISS);
+    }
+
+    bool shouldWeFling(in Lixxie target)
     {
         if (! target.healthy)
             return false;
-        // Do not allow the same player's batters to bat each other.
-        // This is important for singleplayer: two lixes shall not be able
-        // to travel together without any help, one shall always be left
-        // behind.
-        // Solution: If we already have a fling assignment, probably
-        // from other batters, we cannot bat batters from our own tribe.
 
-        immutable bool sameTribe = (target.style == this.style);
-        if (this.flingNew && sameTribe
-                          && target.ac == Ac.batter && target.frame == frame)
-            return false;
+        Rect sweetZone = Rect(ex - 12 + 6 * dir, ey - 16, 26, 25);
+        if (target.ac == Ac.blocker) {
+            // The -6 is because we already start with +6*dir.
+            // The -2 is because the blocker field excludes its boundary
+            // but our sweetZone is inclusive on the left. While sweetZone is
+            // exclusive on the right, sweetZone was already enlarged by 2
+            // over C++ Lix's flingbox that was inclusive on both sides.
+            // (We have width 26, C++ Lix had 24.)
+            enum extraBackward = Blocker.forceFieldXlEachSide - 6 - 2;
+            enum extraForward = 4; // was 6 in C++. That didn't touch blocker.
+            static assert (extraBackward > 0);
+            sweetZone.x -= facingRight ? extraBackward : extraForward;
+            sweetZone.xl += extraBackward + extraForward;
+        }
+        return env.isPointInRectangle(Point(target.ex, target.ey), sweetZone)
+            && lixxie !is target
+            // Do not allow the same player's batters to bat each other.
+            // This is important for singleplayer: two lixes shall not be able
+            // to travel together without any help, one shall stay behind.
+            // Solution: If we already have a fling assignment, probably
+            // from other batters, we cannot bat batters from our own tribe.
+            && ! (this.flingNew && target.style == this.style
+                    && target.ac == Ac.batter && target.frame == frame);
+    }
 
-        immutable bool blo = (target.ac == Ac.blocker);
-        immutable int ch = (blo ? cx + extraXRangeForBlockers * dir : cx);
-        immutable int dx = env.distanceX(ch, target.ex).abs;
-        immutable int dy = env.distanceY(cy, target.ey).abs;
-        immutable bool fling
-            = (dx <= rectHalfXl + (blo ? extraXRangeForBlockers : 0)
-            && dy <= rectHalfYl
-            && target !is this);
-        if (fling)
-            target.addFling(flingSpeedX * dir, flingSpeedY, sameTribe);
-        return fling;
+    void fling(Lixxie target, in int targetId)
+    {
+        target.addFling(flingSpeedX * dir, flingSpeedY, style == target.style);
+        assert (outsideWorld);
+        if (outsideWorld.effect)
+            outsideWorld.effect.addSound(lixxie.outsideWorld.state.update,
+                Passport(target.style, targetId), Sound.BATTER_HIT);
     }
 }
-// end class Batter
