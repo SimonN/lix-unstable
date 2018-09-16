@@ -1,0 +1,73 @@
+$BUILT 2016-01-19 22:27:05
+$AUTHOR Wuzzy
+$GERMAN Tödliche Fallen
+$ENGLISH Deadly traps
+
+$TUTORIAL_GERMAN Pass auf, da draußen lauern einige tödliche Fallen, wie z.B. diese fiesen Rotorblätter. Sie töten jeden Lix auf der Stelle und können nicht entschärft werden, also musst du die Lix um sie herum führen.
+$HINT_GERMAN Grabe dich durch die roten Steine. Alle anderen Wege werden in den sicheren Tod führen.
+$TUTORIAL_ENGLISH Attention! There are some deadly traps, like those nasty sawblades. They kill every Lix instantly and cannot be defused, so you have to guide the Lix around them.
+$HINT_ENGLISH Use a basher to dig through the red stones. All other ways would lead to certain death.
+
+#SIZE_X 640
+#SIZE_Y 400
+#TORUS_X 0
+#TORUS_Y 0
+#BACKGROUND_RED 50
+#BACKGROUND_GREEN 50
+#BACKGROUND_BLUE 0
+
+#SECONDS 0
+#INITIAL 10
+#REQUIRED 10
+#SPAWN_INTERVAL 12
+#SPAWN_INTERVAL_FAST 4
+
+#BASHER 5
+
+:matt/bricks/Hatch.H: 72 288
+
+:matt/bricks/Goal.G: 496 288
+
+:geoo/construction/sawblade.F: 44 187
+:geoo/construction/sawblade_small.F: 368 216
+:geoo/construction/sawblade_small.F: 560 192
+:geoo/construction/sawblade_small.F: 400 200
+:geoo/construction/sawblade_small.F: 560 256
+:geoo/construction/sawblade.F: 380 90
+:geoo/construction/sawblade_small.F: 350 318
+:geoo/construction/sawblade.F: 380 285
+:geoo/construction/sawblade_small.F: 352 160
+:geoo/construction/sawblade.F: 6 144
+:geoo/construction/sawblade.F: 588 100
+:geoo/construction/sawblade.F: 588 148
+:geoo/construction/sawblade.F: 6 92
+
+:matt/bricks/02a: 352 272
+:matt/bricks/03a: 0 336
+:matt/bricks/03a: 64 336
+:matt/bricks/03a: 128 336
+:matt/bricks/03a: 192 336
+:matt/bricks/03a: 256 336
+:matt/bricks/03a: 320 336
+:matt/bricks/03a: 384 336
+:matt/bricks/03a: 448 336
+:matt/bricks/12a: 352 144
+:matt/bricks/03a: 0 272
+:matt/bricks/03a: 0 208
+:matt/bricks/07a: 160 272
+:matt/bricks/07a: 288 144
+:matt/bricks/03a: 224 272
+:matt/bricks/03a: 288 272
+:matt/bricks/03a: 288 208
+:matt/bricks/12a: 384 144
+:matt/bricks/07a: 224 208
+:matt/bricks/02a: 352 200
+:matt/bricks/03a: 512 336
+:matt/bricks/03a: 576 336
+:matt/bricks/03a: 576 272
+:matt/bricks/03a: 576 208
+:matt/bricks/12a: 384 112
+:matt/bricks/10: 224 240
+:matt/bricks/02: 256 240
+:matt/bricks/12: 320 240
+:matt/bricks/12a: 416 272

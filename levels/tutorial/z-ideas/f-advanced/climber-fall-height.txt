@@ -1,0 +1,38 @@
+$BUILT 2018-07-29 12:00:36
+$AUTHOR F
+$ENGLISH Fallheight
+
+#INTENDED_NUMBER_OF_PLAYERS 1
+#SIZE_X 350
+#SIZE_Y 256
+
+#INITIAL 2
+#REQUIRED 2
+#SPAWN_INTERVAL 32
+
+#CLIMBER 1
+#FLOATER 1
+#MINER 1
+#EXPLODER2 0
+
+:matt/winter/Hatch.H: 177 42
+:matt/winter/Hatch.H: 38 139
+
+:raymanni/toys/goal.G: -8 160
+
+:matt/marble/06a: 319 160
+:matt/marble/06a: 191 160
+:matt/marble/06a: 191 224 r
+:matt/marble/06a: 255 224 r
+:matt/marble/06a: 63 224 r
+:matt/marble/06a: 127 224 r
+:matt/marble/06a: 159 160
+:matt/marble/06a: -1 224 r
+:matt/marble/06a: 287 64 r
+:geoo/steel/dark_32x64o.S: 191 96
+:geoo/steel/dark_32x64o.S: 319 96
+:matt/marble/06a: 127 160
+:matt/marble/06a: 95 160
+:matt/marble/05a: 319 224
+:geoo/steel/dark_32x32o.S: 170 64
+:geoo/steel/dark_32x32o.S: 188 32

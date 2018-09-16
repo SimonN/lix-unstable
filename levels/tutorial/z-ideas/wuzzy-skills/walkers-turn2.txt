@@ -1,0 +1,116 @@
+$AUTHOR Wuzzy/Forestidia
+$GERMAN Benutze Geher zum Umdrehen
+$ENGLISH Walkers walk and turn
+
+#INTENDED_NUMBER_OF_PLAYERS 1
+#SIZE_X 640
+#SIZE_Y 400
+#BACKGROUND_RED 0
+#BACKGROUND_GREEN 0
+#BACKGROUND_BLUE 50
+
+#INITIAL 20
+#REQUIRED 20
+#SPAWN_INTERVAL 4
+
+#WALKER 2
+#BLOCKER 1
+#EXPLODER2 0
+
+:geoo/abstract/hatch.H: 160 64
+
+:geoo/abstract/goal.G: 71 168
+
+:geoo/shadow/wall/center: 151 216
+:geoo/shadow/wall/center: 183 216
+:geoo/shadow/wall/center: 215 216
+:geoo/shadow/wall/center: 160 128
+:geoo/shadow/wall/center: 320 128
+:geoo/shadow/wall/center: 224 128
+:geoo/shadow/wall/center: 352 128
+:geoo/shadow/wall/center: 192 128
+:geoo/shadow/wall/center: 256 128
+:geoo/shadow/wall/center: 288 128
+:geoo/shadow/wall/center: 87 216
+:geoo/shadow/wall/center: 119 216
+:geoo/shadow/wall/center: 384 128
+:geoo/shadow/wall/center: 416 128
+:geoo/shadow/wall/center: 448 128
+:geoo/shadow/wall/center: 480 128
+:geoo/shadow/wall/center: 512 128
+:geoo/shadow/wall/center: 544 128
+:geoo/shadow/wall/center: 416 160
+:geoo/shadow/wall/center: 448 192
+:geoo/shadow/wall/center: 480 192
+:geoo/shadow/wall/center: 416 224
+:geoo/shadow/wall/center: 448 224
+:geoo/shadow/wall/center: 480 224
+:geoo/shadow/wall/center: 512 224
+:geoo/shadow/wall/center: 416 288
+:geoo/shadow/wall/center: 448 256
+:geoo/shadow/wall/center: 480 256
+:geoo/shadow/wall/center: 544 288
+:geoo/shadow/wall/center: 448 288
+:geoo/shadow/wall/center: 480 288
+:geoo/shadow/wall/center: 512 256
+:geoo/shadow/wall/center: 416 320
+:geoo/shadow/wall/center: 448 320
+:geoo/shadow/wall/center: 480 320
+:geoo/shadow/wall/center: 512 320
+:geoo/shadow/wall/center: 448 352
+:geoo/shadow/wall/center: 480 352
+:geoo/shadow/wall/center: 448 384
+:geoo/shadow/wall/center: 512 384
+:geoo/shadow/wall/center: 448 160
+:geoo/shadow/wall/center: 480 160
+:geoo/shadow/wall/center: 512 160
+:geoo/shadow/wall/deco_crags2: 128 128
+:geoo/shadow/wall/deco_light: 576 128
+:geoo/shadow/wall/deco_light: 480 240
+:geoo/shadow/wall/deco_dark: 448 192
+:geoo/shadow/door: 416 352
+:geoo/shadow/window: 416 272
+:geoo/shadow/window_broken: 512 352
+:geoo/shadow/wall/deco_crags: 480 384
+:geoo/shadow/wall/deco_light: 272 128
+:geoo/shadow/wall/deco_light: 199 216
+:geoo/shadow/wall/deco_dark: 416 256
+:geoo/shadow/wall/deco_dark: 247 216
+:geoo/shadow/wall/deco_dark: 176 144
+:geoo/shadow/wall/left: 384 192
+:geoo/shadow/wall/left: 384 160
+:geoo/shadow/wall/left: 384 224
+:geoo/shadow/wall/left: 384 288
+:geoo/shadow/wall/left: 384 256
+:geoo/shadow/wall/left: 384 320
+:geoo/shadow/wall/left: 384 384
+:geoo/shadow/wall/left: 384 352
+:geoo/shadow/wall/right: 544 192
+:geoo/shadow/wall/right: 544 160
+:geoo/shadow/wall/deco_crags: 464 128
+:geoo/shadow/wall/right: 544 224
+:geoo/shadow/wall/right: 512 288
+:geoo/shadow/wall/right: 544 256
+:geoo/shadow/wall/right: 544 320
+:geoo/shadow/wall/right: 544 384
+:geoo/shadow/wall/right: 544 352
+:geoo/shadow/window: 416 192
+:geoo/shadow/window: 512 192
+:geoo/shadow/window_broken: 512 272 rrr
+:geoo/shadow/wall/deco_light: 23 216
+:geoo/shadow/rope1: 320 160
+:geoo/shadow/sock: 352 172
+:geoo/shadow/sock: 328 170 frr
+:geoo/shadow/pillar_verti_32: 71 248
+:geoo/shadow/pillar_verti_32: 71 280
+:geoo/shadow/pillar_verti: 71 312
+:geoo/shadow/pillar_verti_32: 215 248
+:geoo/shadow/pillar_verti_32: 215 280
+:geoo/shadow/pillar_verti: 215 312
+:geoo/shadow/wall/center: 55 216
+:geoo/shadow/pillar_verti_32: 71 328
+:geoo/shadow/pillar_verti_32: 71 360
+:geoo/shadow/pillar_verti: 71 392
+:geoo/shadow/pillar_verti_32: 215 328
+:geoo/shadow/pillar_verti_32: 215 360
+:geoo/shadow/pillar_verti: 215 392

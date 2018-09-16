@@ -1,0 +1,103 @@
+$BUILT 2018-09-16 19:54:57
+$AUTHOR Wuzzy
+$GERMAN Brückenbauer
+$ENGLISH Platformers
+
+#INTENDED_NUMBER_OF_PLAYERS 1
+#SIZE_X 640
+#SIZE_Y 400
+
+#INITIAL 1
+#REQUIRED 1
+#SPAWN_INTERVAL 32
+
+#PLATFORMER 5
+#EXPLODER2 0
+
+:geoo/sandstone/Hatch.H: 96 72
+
+:geoo/sandstone/Goal.G: 496 144
+
+:matt/water.W: 272 176
+:matt/water.W: 304 176
+:matt/water.W: 384 368
+:matt/water.W: 368 176
+:matt/water.W: 96 368
+:matt/water.W: 128 368
+:matt/water.W: 160 368
+:matt/water.W: 192 368
+:matt/water.W: 224 368
+:matt/water.W: 256 368
+:matt/water.W: 288 368
+:matt/water.W: 320 368
+:matt/water.W: 352 368
+:matt/water.W: 336 176
+:matt/water.W: 448 368
+:matt/water.W: 480 368
+:matt/water.W: 512 368
+:matt/water.W: 544 368
+:matt/water.W: 416 368
+:matt/water.W: 0 368
+:matt/water.W: 32 368
+:matt/water.W: 64 368
+:matt/water.W: 576 368
+:matt/water.W: 608 368
+
+:geoo/sandstone/ebony/h16b: 443 338
+:geoo/sandstone/ebony/h16a: 411 338
+:geoo/sandstone/arc_big: 80 184
+:geoo/steel/32x32o.S: 240 176
+:geoo/steel/32x32o.S: 400 176
+:geoo/steel/64x32o.S: 240 208
+:geoo/steel/64x32o.S: 304 208
+:geoo/steel/64x32o.S: 368 208
+:geoo/sandstone/pillar_32: 176 320
+:geoo/sandstone/pillar_32: 176 352
+:geoo/sandstone/pillar_32: 176 384
+:geoo/sandstone/pillar_32: 80 320
+:geoo/sandstone/pillar_32: 80 352
+:geoo/sandstone/pillar_top_ext: 64 248
+:geoo/sandstone/pillar_top_ext: 544 272
+:geoo/sandstone/pillar_32: 560 320
+:geoo/sandstone/pillar_32: 464 320
+:geoo/sandstone/pillar_top_ext: 448 272
+:geoo/sandstone/pillar_top_shaded: 256 240
+:geoo/sandstone/pillar_top_shaded: 384 240
+:geoo/sandstone/pillar_32: 384 304
+:geoo/sandstone/pillar_32: 384 336
+:geoo/sandstone/pillar_32: 256 304
+:geoo/sandstone/pillar_32: 256 336
+:geoo/sandstone/pillar_top_shaded: 80 264
+:geoo/sandstone/pillar_top_shaded: 176 264
+:geoo/sandstone/pillar_top_shaded: 464 288
+:geoo/sandstone/pillar_top_shaded: 560 288
+:geoo/sandstone/pillar_top_ext: 160 248
+:geoo/sandstone/pillar_32: 80 384
+:geoo/sandstone/pillar_32: 256 368
+:geoo/sandstone/pillar_32: 384 368
+:geoo/sandstone/pillar_32: 464 352
+:geoo/sandstone/pillar_32: 560 352
+:geoo/sandstone/pillar_32: 560 384
+:geoo/sandstone/pillar_32: 464 384
+:geoo/sandstone/pillar_32: 176 288
+:geoo/sandstone/pillar_32: 80 288
+:geoo/sandstone/pillar_32: 384 272
+:geoo/sandstone/pillar_32: 256 272
+:geoo/sandstone/smaragd: 184 192
+:geoo/sandstone/smaragd: 88 192
+:geoo/sandstone/smaragd: 88 208
+:geoo/sandstone/smaragd: 104 192
+:geoo/sandstone/smaragd: 168 192
+:geoo/sandstone/smaragd: 184 208
+:geoo/sandstone/ribbon_main: 320 240
+:geoo/sandstone/ribbon_main: 320 272
+:geoo/sandstone/ribbon_end: 320 304
+:geoo/sandstone/arc_big: 464 208
+:geoo/sandstone/smaragd: 568 216
+:geoo/sandstone/smaragd: 472 216
+:geoo/sandstone/smaragd: 472 232
+:geoo/sandstone/smaragd: 488 216
+:geoo/sandstone/smaragd: 552 216
+:geoo/sandstone/smaragd: 568 232
+:geoo/sandstone/16x32: 576 144
+:geoo/sandstone/16x32: 576 176

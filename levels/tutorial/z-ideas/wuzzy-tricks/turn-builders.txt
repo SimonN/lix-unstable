@@ -1,0 +1,53 @@
+$BUILT 2016-01-20 01:48:24
+$AUTHOR Wuzzy
+$GERMAN Brückenbauer umdrehen
+$ENGLISH Turning around builders
+
+$TUTORIAL_GERMAN Brückenbauer drehen sich um, wenn sie beim Bauen ein Hindernis oder die Decke treffen. Dies trifft jedoch nicht auf Plattformer zu.
+$TUTORIAL_ENGLISH Builders turn around when they hit an obstacle or the ceiling while building. However, this does not apply to platformers.
+
+#SIZE_X 640
+#SIZE_Y 400
+#TORUS_X 0
+#TORUS_Y 0
+#BACKGROUND_RED 0
+#BACKGROUND_GREEN 0
+#BACKGROUND_BLUE 0
+
+#SECONDS 0
+#INITIAL 5
+#REQUIRED 5
+#SPAWN_INTERVAL 32
+#SPAWN_INTERVAL_FAST 4
+
+#BUILDER 5
+#PLATFORMER 5
+
+:geoo/sandstone/Hatch.H: 160 224
+
+:geoo/sandstone/Goal.G: 48 256
+
+:geoo/sandstone/64x64: 144 320
+:geoo/sandstone/64x32_blank: 208 320
+:geoo/sandstone/64x32_blank: 272 320
+:geoo/sandstone/64x32_blank: 336 320
+:geoo/sandstone/64x64: 80 320
+:geoo/sandstone/64x64: 16 320
+:geoo/sandstone/64x32_blank: 400 320
+:geoo/sandstone/64x32_blank: 464 320
+:geoo/sandstone/64x64: 400 224
+:geoo/sandstone/64x64: 464 224
+:geoo/sandstone/pillar_top: 288 352
+:geoo/sandstone/pillar_32: 288 384
+:geoo/sandstone/pillar_top: 416 352
+:geoo/sandstone/pillar_32: 416 384
+:geoo/sandstone/32x16: 416 208
+:geoo/sandstone/32x16: 448 208
+:geoo/sandstone/32x16: 480 208
+:geoo/sandstone/32x16: 432 192
+:geoo/sandstone/32x16: 464 192
+:geoo/sandstone/32x16: 448 176
+:geoo/sandstone/smaragd: 432 240
+:geoo/sandstone/smaragd: 480 240
+:geoo/sandstone/8x8: 272 312
+:geoo/sandstone/8x8: 336 312

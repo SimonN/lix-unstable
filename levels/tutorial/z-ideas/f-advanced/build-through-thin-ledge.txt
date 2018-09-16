@@ -1,0 +1,67 @@
+$BUILT 2019-01-12 21:27:54
+$AUTHOR F
+$ENGLISH Builder Advanced
+
+#INTENDED_NUMBER_OF_PLAYERS 1
+#SIZE_X 384
+#SIZE_Y 256
+
+#INITIAL 1
+#REQUIRED 1
+#SPAWN_INTERVAL 32
+
+#BUILDER 10
+#EXPLODER2 0
+
+:geoo/abstract/hatch.H: 64 128
+
+:geoo/abstract/goal.G: 352 80
+
+:simon/water.W: 128 208
+:simon/water.W: 176 208
+:simon/water.W: 224 208
+:simon/water.W: 272 208
+:simon/water.W: 320 208
+:simon/water.W: 368 208
+
+:geoo/sandstone/64x64: 0 192
+:geoo/sandstone/64x64: 64 192
+:geoo/construction/platformbrick: 128 128
+:geoo/construction/platformbrick: 160 128
+:geoo/construction/platformbrick: 192 128
+:geoo/construction/platformbrick: 320 128
+:geoo/construction/platformbrick: 352 128
+:geoo/construction/platformbrick: 96 128
+:geoo/construction/platformbrick: 64 128
+:geoo/construction/platformbrick: 32 128
+:geoo/construction/platformbrick: 16 128
+:geoo/construction/platformbrick: 0 128
+:geoo/sandstone/64x64: 0 128
+:geoo/construction/platformbrick: 224 128
+:geoo/construction/platformbrick: 256 128
+:geoo/construction/platformbrick: 288 128
+:geoo/sandstone/pillar_32: 16 96
+:geoo/sandstone/pillar_32: 16 64
+:geoo/sandstone/pillar_32: 16 32
+:geoo/sandstone/pillar_top_ext: 0 16
+:geoo/sandstone/ribbon_main: 16 32
+:geoo/sandstone/ribbon_end: 16 64
+:geoo/sandstone/ebony/h16a: 0 0
+:geoo/sandstone/ebony/h16a: 32 0
+:geoo/sandstone/ebony/h16a: 64 0
+:geoo/sandstone/ebony/h16a: 96 0
+:geoo/sandstone/ebony/h16a: 128 0
+:geoo/sandstone/ebony/h16a: 160 0
+:geoo/sandstone/ebony/h16a: 176 0
+:geoo/sandstone/ebony/h16a: 208 0
+:geoo/sandstone/ebony/h16a: 240 0
+:geoo/sandstone/ebony/h16a: 272 0
+:geoo/sandstone/ebony/h16a: 304 0
+:geoo/sandstone/ebony/h16a: 336 0
+:geoo/sandstone/ebony/h16a: 368 0
+:geoo/sandstone/ribbon_start_sq: 128 0
+:geoo/sandstone/ribbon_end: 128 32
+:geoo/sandstone/ribbon_start_sq: 352 0
+:geoo/sandstone/ribbon_end: 352 32
+:geoo/sandstone/ribbon_start_sq: 240 0
+:geoo/sandstone/ribbon_end: 240 32

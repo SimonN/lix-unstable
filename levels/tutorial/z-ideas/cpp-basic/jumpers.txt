@@ -1,0 +1,180 @@
+$BUILT 2018-09-16 20:17:10
+$AUTHOR geoo
+$GERMAN Springer
+$ENGLISH Jumpers
+
+#INTENDED_NUMBER_OF_PLAYERS 1
+#SIZE_X 640
+#SIZE_Y 400
+#BACKGROUND_RED 8
+#BACKGROUND_GREEN 12
+#BACKGROUND_BLUE 2
+
+#INITIAL 3
+#REQUIRED 2
+#SPAWN_INTERVAL 32
+
+#JUMPER -1
+#EXPLODER2 0
+
+:simon/oriental/hatch.H: 64 208
+
+:simon/oriental/goal.G: 470 300
+
+:simon/oriental/leaf2: 10 212 r
+:simon/oriental/leaf3: 4 290
+:simon/oriental/culm_d_half: 70 324
+:simon/oriental/culm_half1: 20 276
+:simon/oriental/culm_long: 20 298
+:simon/oriental/culm_long: 30 264
+:simon/oriental/leaf4: 36 244 r
+:simon/oriental/fat_long: 44 212
+:simon/oriental/leaf2: 528 294 fr
+:simon/oriental/culm_half1: 514 272
+:simon/oriental/culm_long: 450 290 r
+:simon/oriental/leaf4: 510 290 r
+:simon/oriental/culm_long: 536 378 fr
+:simon/oriental/gate: 32 272
+:simon/oriental/leaf1: 453 277
+:simon/oriental/leaf2: 466 290 r
+:simon/oriental/leaf2: 450 380 r
+:simon/oriental/leaf2: 562 178
+:simon/oriental/leaf2: 618 178 frr
+:simon/oriental/branch2: 624 122 rrr
+:simon/oriental/leaf1: 614 120 frrr
+:simon/oriental/leaf2: 632 152
+:simon/oriental/leaf3: 546 124
+:simon/oriental/leaf3: 544 160 frr
+:simon/oriental/leaf3: 612 148
+:simon/oriental/leaf2: 580 116 frr
+:simon/oriental/leaf2: 584 142
+:simon/oriental/branch3: 568 120 r
+:simon/oriental/leaf2: 553 128 frr
+:simon/oriental/leaf1: 568 142 rrr
+:simon/oriental/leaf2: 635 137 fr
+:simon/oriental/branch1: 540 -2 rrr
+:simon/oriental/branch3: 554 34 frr
+:simon/oriental/branch7: 576 32 f
+:simon/oriental/branch5: 582 82
+:simon/oriental/leaf3: 620 130 frr
+:simon/oriental/leaf1: 600 120 rr
+:simon/oriental/leaf1: 576 110 r
+:simon/oriental/branch6: 570 42 rr
+:simon/oriental/branch2: 590 18
+:simon/oriental/branch2: 622 18 r
+:simon/oriental/branch1: 620 46 rrr
+:simon/oriental/07: 564 80
+:simon/oriental/leaf2: 506 178 frr
+:simon/oriental/leaf1: 525 167 rrr
+:simon/oriental/leaf1: 534 156 f
+:simon/oriental/bush5: 550 68 frr
+:simon/oriental/bush2: 592 36
+:simon/oriental/bush1: 550 16
+:simon/oriental/bush5: 612 16
+:simon/oriental/branch5: 564 -28 rr
+:simon/oriental/bush3: 532 18 frr
+:simon/oriental/bush4: 496 -12
+:simon/oriental/bush2: 604 -4 f
+:simon/oriental/leaf2: 520 198
+:simon/oriental/leaf2: 536 180
+:simon/oriental/leaf1: 456 272 fr
+:simon/oriental/leaf2: 422 288 r
+:simon/oriental/leaf3: 432 266 r
+:matt/earth/14: 50 336 rrr
+:simon/oriental/leaf1: 4 354
+:simon/oriental/culm_end: 34 318
+:matt/earth/14: 8 336
+:simon/oriental/leaf1: 90 330 r
+:matt/earth/11: 26 336
+:matt/earth/29: 82 348
+:simon/oriental/culm_d_long: 66 320 frr
+:matt/earth/14: 92 336
+:matt/earth/11: 110 336
+:matt/earth/14: 136 336 frr
+:simon/oriental/leaf2: 160 356 f
+:matt/earth/11: 122 356
+:matt/earth/29: 36 360
+:matt/earth/14: 0 356
+:matt/earth/29: 24 374 f
+:matt/earth/12: 30 378
+:matt/earth/28: 126 354
+:matt/earth/08: 116 384 rrr
+:matt/earth/11: 84 336
+:matt/earth/28: 98 370
+:matt/earth/09: 114 356 rrr
+:matt/earth/14: 90 364
+:matt/earth/08: 68 378
+:matt/earth/08: 84 388 rrr
+:simon/oriental/leaf1: 84 374 r
+:matt/earth/12: 70 380
+:simon/oriental/leaf1: 164 392 r
+:simon/oriental/branch1: 200 292 rrr
+:simon/oriental/branch3: 214 328 frr
+:simon/oriental/branch7: 236 326 f
+:simon/oriental/branch6: 230 336 rr
+:simon/oriental/branch2: 250 312
+:simon/oriental/branch2: 282 312 r
+:simon/oriental/branch1: 280 340 rrr
+:simon/oriental/bush2: 252 330
+:simon/oriental/bush1: 210 310
+:simon/oriental/bush5: 272 310
+:simon/oriental/bush5: 258 264 frr
+:simon/oriental/branch5: 224 266 rr
+:simon/oriental/bush3: 192 312 frr
+:simon/oriental/bush4: 154 282
+:simon/oriental/branch2: 294 294 f
+:simon/oriental/branch1: 336 260 rrr
+:simon/oriental/branch4: 354 236
+:simon/oriental/branch1: 400 228 rrr
+:simon/oriental/branch7: 380 266 f
+:simon/oriental/bush4: 318 256
+:simon/oriental/branch7: 374 334
+:simon/oriental/bush2: 356 386
+:simon/oriental/leaf2: 394 380 r
+:simon/oriental/branch4: 358 310
+:simon/oriental/bush3: 312 292
+:simon/oriental/bush6: 264 286
+:simon/oriental/bush7: 218 360
+:simon/oriental/branch3: 404 316
+:simon/oriental/bush2: 370 324
+:simon/oriental/bush7: 420 312
+:simon/oriental/bush7: 341 227
+:simon/oriental/branch4: 384 202
+:simon/oriental/bush2: 388 218
+:simon/oriental/leaf2: 288 182
+:simon/oriental/leaf3: 252 156
+:simon/oriental/branch1: 268 154 r
+:simon/oriental/leaf2: 278 154
+:simon/oriental/branch4: 270 118 rrr
+:simon/oriental/branch3: 254 110 rrr
+:simon/oriental/01: 260 132
+:simon/oriental/bush5: 244 106
+:simon/oriental/branch3: 272 96 frr
+:simon/oriental/bush2: 280 108
+:simon/oriental/bush7: 266 90
+:simon/oriental/leaf2: 424 374 r
+:simon/oriental/culm_long: 441 377 fr
+:simon/oriental/leaf3: 434 360 f
+:simon/oriental/branch4: 610 296 rrr
+:simon/oriental/branch7: 600 272 f
+:simon/oriental/branch1: 608 336 rrr
+:simon/oriental/bush3: 584 328
+:simon/oriental/branch4: 604 382 rrr
+:simon/oriental/culm_long: 586 378 rrr
+:simon/oriental/bush6: 600 372
+:simon/oriental/bush5: 620 292
+:simon/oriental/branch3: 600 228 rrr
+:simon/oriental/bush1: 584 254
+:simon/oriental/bush7: 596 224
+:simon/oriental/leaf1: 298 162 frr
+:simon/oriental/bush2: 364 198
+:simon/oriental/leaf1: 308 206 rr
+:simon/oriental/culm_half2: 300 163 frrrd
+:simon/oriental/culm_half2: 305 157 frrrd
+:simon/oriental/culm_half2: 318 205 rrrd
+:simon/oriental/culm_half2: 353 137 rrrd
+:simon/oriental/leaf1: 424 366
+:simon/oriental/leaf3: 580 380 frr
+:simon/oriental/culm_half2: 309 196 rrrd
+:simon/oriental/leaf5: 58 194 frrr
+:simon/oriental/01: 292 132 d

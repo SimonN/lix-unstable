@@ -1,0 +1,27 @@
+Remarks on the Tutorial pack:
+I respected Rubix' differentiation between advanced and basic although it may be not always fitting.
+For some of the tutorial levels it could be good to cut lix.
+Enforcing use of directional force is harder now, since the selected lix are highlit and you can see which direction they face.
+
+Some remarks to single levels:
+
+basic:
+- Bashing (Tutorial 01): Could be good to cut lix. 
+- Climbing and Floating (Tutorial 02): Is similiar to Climbers and Floaters. Could be good to cut lix (same applies to Climbers and Floaters).
+- Turning around (Tutorial 04): Diggers don't turn anymore. But nevertheless still solvable.
+- The Batter (Tutorial 05): This level is really hard and stressful. Should be in advanced or made significantly easier.
+- Blocking and Bombing (Tutorial 07): There are no timed bombers anymore, so the blockers seem redundant. Moved the exit to make it solvable again.
+- Cubers (the Rubix level, Tutorial 08): Can be completed without containing the crowd and use of bashers. Level can be messed up by placing cubers so that the climbers can't go up anymore. Could be good to cut lix.
+- Batters and Directional Force: Can be completed optimally without directional force.
+- Blockers against hazards (old version): Can be completed 100% without using a blocker. 
+- Blockers against hazards (new version): Needs terrain refinement. Level can be messed up by placing blockers wrongly.
+- Jumpers: Changed terrain a bit so that lix don't fall through leaves if jumped unfavorably.
+- Runners: Level is quite complex, since it combines three skills in a parcours.
+
+advanced:
+- Direction Force (Tricks01): You don't need to use directional force at all with framestepping.
+- Speed Mining (Tricks02): Main trick isn't enforced anymore due to lack of time limit.
+- Free the blockers (Tricks03): Terrain is a bit nasty.
+- Upward Digging (Tricks04): Still solvable, but how I did it, it was really peculiar, tight on builders and nerving.
+- Distance Leap (Tricks05): It could be maybe could to take out the climbers of the level and adjust the amount of jumpers accordingly, since the climbers don't add anything to the level I think.
+- Flinging! (Tricks06): Moved the exit to make it solvable again.

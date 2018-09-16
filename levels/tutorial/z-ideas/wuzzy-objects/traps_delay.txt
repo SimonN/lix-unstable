@@ -1,0 +1,62 @@
+$BUILT 2018-06-27 16:43:09
+$AUTHOR Wuzzy
+$GERMAN Nicht ganz so tödliche Fallen
+$ENGLISH Busy traps
+
+#INTENDED_NUMBER_OF_PLAYERS 1
+#SIZE_X 640
+#SIZE_Y 400
+#BACKGROUND_RED 32
+#BACKGROUND_GREEN 0
+#BACKGROUND_BLUE 0
+
+#INITIAL 30
+#REQUIRED 25
+#SPAWN_INTERVAL 35
+
+#WALKER 5
+#BLOCKER 5
+#EXPLODER2 0
+
+:matt/bricks/Hatch.H: 184 288
+
+:matt/bricks/Goal.G: 544 288
+
+:geoo/construction/factory.T: 408 272
+
+:matt/bricks/03: 64 336
+:matt/bricks/03: 128 336
+:matt/bricks/03: 192 336
+:matt/bricks/03: 256 336
+:matt/bricks/03: 0 336
+:matt/bricks/03: 320 336
+:matt/bricks/03: 384 336
+:matt/bricks/03: 448 336
+:matt/bricks/03: 512 336
+:matt/bricks/03: 576 336
+:matt/bricks/03: 384 192
+:matt/bricks/03: 448 192
+:matt/bricks/03: 512 192
+:matt/bricks/03: 576 192
+:matt/bricks/07: 320 192
+:matt/bricks/17: 56 224
+:matt/bricks/03: 120 272
+:matt/bricks/03: 120 208
+:matt/bricks/17: 0 280
+:matt/bricks/18: 124 160
+:matt/bricks/20: 116 144
+:matt/bricks/08: 152 112
+:matt/bricks/10: 120 112
+:matt/bricks/20: 156 144
+:matt/bricks/18: 164 160
+:matt/bricks/01: 32 320
+:matt/bricks/01: 64 320
+:matt/bricks/01: 48 304
+:matt/bricks/01: 576 176
+:matt/bricks/01: 608 176
+:matt/bricks/01: 592 160
+:matt/bricks/01: 624 160
+:matt/bricks/01: 608 144
+:matt/bricks/01: 152 192
+:matt/bricks/01: 120 192
+:matt/bricks/08: 184 208

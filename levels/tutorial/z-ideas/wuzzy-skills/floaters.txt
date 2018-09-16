@@ -1,0 +1,68 @@
+$BUILT 2018-06-27 18:28:13
+$AUTHOR Wuzzy
+$ENGLISH Floaters
+
+#INTENDED_NUMBER_OF_PLAYERS 1
+#SIZE_X 640
+#SIZE_Y 400
+
+#INITIAL 4
+#REQUIRED 3
+#SPAWN_INTERVAL 64
+
+#FLOATER 4
+#EXPLODER2 0
+
+:matt/carnival/Hatch.H: 493 -22 r
+
+:matt/carnival/Goal.G: -1 288
+
+:matt/carnival/58: 62 384
+:matt/carnival/58: 318 384
+:matt/carnival/55: 446 128
+:matt/carnival/55: 414 96
+:matt/carnival/58: -34 352
+:matt/carnival/58: 222 352
+:matt/carnival/58: 478 352
+:matt/carnival/27: 574 288
+:matt/carnival/27: 638 288
+:matt/carnival/55: 382 64
+:matt/carnival/26: 574 224
+:matt/carnival/26: 574 96
+:matt/carnival/51: 296 114
+:matt/carnival/27: -2 353
+:matt/carnival/08: 350 64
+:matt/carnival/06: 542 160
+:matt/carnival/26: 574 160
+:matt/carnival/26: 510 96
+:matt/carnival/26: 638 224
+:matt/carnival/26: 638 96
+:matt/carnival/26: 638 160
+:matt/carnival/27: 696 86
+:matt/carnival/26: 574 32
+:matt/carnival/26: 640 32
+:matt/carnival/26: 638 32
+:matt/carnival/26: 704 34
+:matt/carnival/55: 606 0
+:matt/carnival/00: 176 165
+:matt/carnival/03: 208 165
+:matt/carnival/03: 240 165
+:matt/carnival/03: 272 165
+:matt/carnival/32: 350 320
+:matt/carnival/24: 286 288
+:matt/carnival/32: 254 288 rrr
+:matt/carnival/07: 477 288
+:matt/carnival/13: 522 320
+:matt/carnival/13: 515 336
+:matt/carnival/13: 531 336
+:matt/carnival/45: 318 256
+:matt/carnival/13: 552 336
+:matt/carnival/15: 480 272
+:matt/carnival/15: 461 320
+:matt/carnival/15: 454 336
+:matt/carnival/15: 434 336
+:matt/carnival/13: 543 320
+:matt/carnival/39: 514 288
+:matt/carnival/13: 160 165
+:matt/carnival/58: 46 400
+:matt/carnival/58: 574 384

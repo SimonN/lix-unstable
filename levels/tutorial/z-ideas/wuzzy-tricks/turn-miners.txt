@@ -1,0 +1,70 @@
+$BUILT 2016-01-20 01:42:47
+$AUTHOR Wuzzy
+$GERMAN Berggräber umdrehen
+$ENGLISH Turning around miners
+
+$TUTORIAL_GERMAN Berggräber und Horizontalgräber hören mit dem Graben auf und drehen sich um, wenn sie Stahl treffen.
+$TUTORIAL_ENGLISH Miners and bashers stop mining and turn around when they hit steel.
+
+#SIZE_X 640
+#SIZE_Y 400
+#TORUS_X 0
+#TORUS_Y 0
+#BACKGROUND_RED 160
+#BACKGROUND_GREEN 67
+#BACKGROUND_BLUE 0
+
+#SECONDS 0
+#INITIAL 5
+#REQUIRED 5
+#SPAWN_INTERVAL 32
+#SPAWN_INTERVAL_FAST 4
+
+#BASHER 10
+#MINER 10
+
+:simon/hatch001.H: 160 192
+
+:geoo/abstract/goal.G: 32 224
+
+:proxima/tile/64.S: 288 304
+:proxima/tile/orange1: 0 368
+:proxima/tile/orange1: 224 304
+:proxima/tile/orange1: 64 368
+:proxima/tile/orange1: 352 304
+:proxima/tile/orange1: 128 368
+:proxima/tile/orange1: 416 304
+:proxima/tile/orange1: 32 304
+:proxima/tile/orange1: 96 304
+:proxima/tile/orange2s: 352 272
+:proxima/tile/orange2s: 384 272
+:proxima/tile/orange2s: 416 272
+:proxima/tile/orange2s: 320 272
+:proxima/tile/orange2s: 224 272
+:proxima/tile/orange2s: 256 272
+:proxima/tile/orange2s: 288 272
+:proxima/tile/orange2s: 192 272
+:proxima/tile/orange2s: 96 272
+:proxima/tile/orange2s: 128 272
+:proxima/tile/orange2s: 160 272
+:proxima/tile/orange2s: 64 272
+:proxima/tile/orange2s: 32 272
+:proxima/tile/orange2s: 480 272
+:proxima/tile/orange2s: 448 272
+:proxima/tile/orange2s: 0 272
+:proxima/tile/orange1: 192 368
+:proxima/tile/orange1: 256 368
+:proxima/tile/orange1: 320 368
+:proxima/tile/orange1: 384 368
+:proxima/tile/orange1: 448 368
+:proxima/tile/orange1: 512 368
+:proxima/tile/orange1: 608 304
+:proxima/tile/orange1: 576 368
+:proxima/tile/orange1: 480 304
+:proxima/tile/orange2s: 512 272
+:proxima/tile/orange2s: 544 272
+:proxima/tile/orange2s: 608 272
+:proxima/tile/orange2s: 576 272
+:proxima/tile/orange1: -32 304
+:proxima/tile/orange1: 160 304
+:proxima/tile/64.S: 544 304

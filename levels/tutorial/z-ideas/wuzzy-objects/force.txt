@@ -1,0 +1,122 @@
+$BUILT 2016-01-19 23:32:15
+$AUTHOR Wuzzy
+$GERMAN Kraftfelder
+$ENGLISH Force fields
+
+$TUTORIAL_GERMAN Diese seltsamen blauen Punktwolken sind Kraftfelder. Die Gesetze der Schwerkraft gelten in ihnen nicht und lassen jeden Lix unter ihrem Einfluss in Punktrichtung schweben.
+$HINT_GERMAN Baue ein paar Brücken zu den Kraftfeldern, um den Ausgang zu erreichen. Es ist dir überlassen, wo du baust, aber wir schlagen vor, auf den türkisen Blöcken anzufangen.
+$TUTORIAL_ENGLISH Those strange blue dot clouds are force fields. There is no gravity inside them, instead they make Lix float in dot direction.
+$HINT_ENGLISH Build some bridges towards the force fields to reach the exit. It's up to you where to build but we suggest building on the cyan blocks.
+
+#SIZE_X 640
+#SIZE_Y 400
+#TORUS_X 0
+#TORUS_Y 0
+#BACKGROUND_RED 0
+#BACKGROUND_GREEN 0
+#BACKGROUND_BLUE 0
+
+#SECONDS 0
+#INITIAL 10
+#REQUIRED 10
+#SPAWN_INTERVAL 15
+#SPAWN_INTERVAL_FAST 4
+
+#BUILDER 10
+
+:matt/marble/Hatch.H: 112 236
+
+:matt/marble/Goal.G: 112 168
+
+:geoo/abstract/tbeam_left.T: 240 176
+:geoo/abstract/tbeam_left.T: 272 176
+:geoo/abstract/tbeam_right.T: 240 336
+:geoo/abstract/tbeam_right.T: 240 304
+:geoo/abstract/tbeam_right.T: 272 336
+:geoo/abstract/tbeam_right.T: 272 304
+:geoo/abstract/tbeam_right.T: 240 368
+:geoo/abstract/tbeam_right.T: 272 368
+:geoo/abstract/tbeam_up.T: 496 304
+:geoo/abstract/tbeam_up.T: 496 272
+:geoo/abstract/tbeam_up.T: 496 240
+:geoo/abstract/tbeam_up.T: 496 208
+:geoo/abstract/tbeam_up.T: 496 176
+:geoo/abstract/tbeam_left.T: 496 80
+:geoo/abstract/tbeam_left.T: 464 80
+:geoo/abstract/tbeam_left.T: 432 80
+:geoo/abstract/tbeam_up.T: 496 144
+:geoo/abstract/tbeam_up.T: 496 112
+:geoo/abstract/tbeam_left.T: 528 304
+:geoo/abstract/tbeam_left.T: 528 240
+:geoo/abstract/tbeam_left.T: 528 176
+:geoo/abstract/tbeam_left.T: 528 112
+:geoo/abstract/tbeam_left.T: 304 176
+:geoo/abstract/tbeam_down.T: 416 192
+
+:matt/marble/25d: 16 152
+:matt/marble/25d: 16 280
+:matt/marble/23e: 112 336
+:matt/marble/23e: 144 336
+:matt/marble/23e: 208 336
+:matt/marble/23e: 176 336
+:matt/marble/23e: 112 216
+:matt/marble/23e: 144 216
+:matt/marble/23e: 208 216
+:matt/marble/23e: 176 216
+:matt/marble/23e: 288 240
+:matt/marble/23e: 384 240
+:matt/marble/23e: 352 240
+:matt/marble/05e: 464 360
+:matt/marble/05e: 496 360
+:matt/marble/05e: 528 368
+:matt/marble/05e: 528 336
+:matt/marble/05e: 600 112
+:matt/marble/22e: 56 216
+:matt/marble/22e: 8 264
+:matt/marble/22e: -40 312
+:matt/marble/23e: 80 328
+:matt/marble/23e: 48 320
+:matt/marble/23e: 16 312
+:matt/marble/23e: 80 336
+:matt/marble/23e: 48 336
+:matt/marble/23e: 16 336
+:matt/marble/23e: -16 336
+:matt/marble/23e: 112 368
+:matt/marble/23e: 144 368
+:matt/marble/23e: 208 368
+:matt/marble/23e: 176 368
+:matt/marble/23e: 80 368
+:matt/marble/23e: 48 368
+:matt/marble/23e: 16 368
+:matt/marble/23e: -16 368
+:matt/marble/05e: 528 272
+:matt/marble/05e: 528 208
+:matt/marble/05e: 528 144
+:matt/marble/05e: 496 48
+:matt/marble/05e: 384 80
+:matt/marble/23e: 416 240
+:matt/marble/23e: 304 368
+:matt/marble/23e: 336 368
+:matt/marble/23e: 400 368
+:matt/marble/23e: 368 368
+:matt/marble/05e: 16 120
+:matt/marble/02e_2: 80 312
+:matt/marble/02e_2: 24 104
+:matt/marble/02e: 608 96
+:matt/marble/05e: 432 48
+:matt/marble/05e: 528 80
+:matt/marble/05e: 384 144
+:matt/marble/05e: 384 112
+:matt/marble/05e: 448 208
+:matt/marble/05e: 448 176
+:matt/marble/05e: 448 144
+:matt/marble/05e: 72 280
+:matt/marble/05e: 432 392
+:matt/marble/05e: 464 392
+:matt/marble/05e: 496 392
+:matt/marble/05e: 384 176
+:matt/marble/05e: 288 96
+:matt/marble/05a: 432 360
+:matt/marble/23a: 320 240
+:matt/marble/25d: 600 144
+:matt/marble/25d: 600 272

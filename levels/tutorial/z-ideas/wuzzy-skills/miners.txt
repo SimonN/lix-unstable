@@ -1,0 +1,122 @@
+$BUILT 2018-06-27 20:08:52
+$AUTHOR Simon
+$GERMAN Hacker und Platformer
+$ENGLISH Miners
+
+#INTENDED_NUMBER_OF_PLAYERS 1
+#SIZE_X 640
+#SIZE_Y 378
+
+#INITIAL 5
+#REQUIRED 4
+#SPAWN_INTERVAL 32
+
+#MINER 20
+#EXPLODER2 0
+
+:matt/goldmine/Hatch.H: 18 2
+
+:matt/goldmine/Goal.G: 134 286
+
+:matt/goldmine/03: 412 118
+:matt/goldmine/09: 382 101 fr
+:matt/goldmine/09: 393 109 rrr
+:matt/goldmine/plankdiag: 394 82
+:matt/goldmine/plankdiag: 362 114
+:matt/goldmine/plankdiag2: 444 259 rr
+:matt/goldmine/plank: 425 282 rr
+:matt/goldmine/plankdiag2: 462 263 rr
+:matt/goldmine/10: 474 236
+:matt/goldmine/planksupport: 496 20
+:matt/goldmine/tracks: 496 12
+:matt/goldmine/07: 576 -6 r
+:matt/goldmine/plank: 432 290 rr
+:matt/goldmine/plankdiag2: 400 266
+:geoo/construction/concrete/032c: 537 267 rrd
+:matt/goldmine/plankdiag2: 480 266
+:matt/goldmine/07: 496 158
+:matt/goldmine/07: 482 124
+:geoo/steel/dark_32x64o.S: 608 138
+:matt/goldmine/planksupport: 364 22
+:matt/goldmine/plank: 300 80 rr
+:matt/goldmine/05: 458 134
+:matt/goldmine/08: 458 138
+:matt/goldmine/02: 496 190 rrr
+:matt/goldmine/03: 462 226
+:geoo/steel/dark_32x64o.S: 608 266
+:geoo/steel/dark_32x64o.S: 608 330
+:matt/goldmine/plankdiag2: 512 298
+:matt/goldmine/plank: 344 338 rr
+:matt/goldmine/02: 416 336 frr
+:matt/goldmine/03: 420 322
+:matt/goldmine/10: 264 330 f
+:matt/goldmine/plankdiag2: 288 324
+:matt/goldmine/plank: 368 350 rrr
+:matt/goldmine/07: 160 330
+:matt/goldmine/05: 152 330
+:matt/goldmine/crate16: 98 324
+:matt/goldmine/crate16: 104 308
+:matt/goldmine/crate16: 110 318
+:matt/goldmine/planksupport: -8 338
+:matt/goldmine/tracks: 0 330
+:matt/goldmine/07: 64 330
+:matt/goldmine/planksupport2: 226 170
+:matt/goldmine/planksupport2: 238 170
+:matt/goldmine/plank: 256 164 rrr
+:matt/goldmine/07: 240 330 fr
+:matt/goldmine/01: 416 338
+:matt/goldmine/07: 542 278
+:matt/goldmine/04: 482 330 r
+:matt/goldmine/00: 456 334
+:geoo/steel/dark_32x64o.S: 448 202
+:matt/goldmine/05: 550 210
+:geoo/steel/dark_32x64o.S: 608 202
+:matt/goldmine/10: 568 340
+:geoo/steel/dark_32x64o.S: 416 202
+:geoo/steel/dark_32x64o.S: 416 138
+:matt/goldmine/09: 556 -38 rrr
+:matt/goldmine/03: 576 22
+:matt/goldmine/00: 408 346 fr
+:matt/goldmine/02: 298 334
+:geoo/steel/dark_32x64o.S: 384 138
+:geoo/steel/dark_32x64o.S: 384 202
+:matt/goldmine/03: -24 90
+:matt/goldmine/03: -64 98
+:matt/goldmine/05: 56 90
+:matt/goldmine/02: 80 58
+:matt/goldmine/plank: -87 50
+:geoo/steel/dark_32x64o.S: 0 10
+:matt/goldmine/03: 0 -38
+:matt/goldmine/09: -32 -62 rrr
+:matt/goldmine/plank: 59 50
+:matt/goldmine/08: 64 -14 rr
+:matt/goldmine/plank: 240 20
+:matt/goldmine/tracks: 256 12
+:matt/goldmine/09: 224 86 frrr
+:matt/goldmine/07: 89 -45
+:matt/goldmine/03: -24 122
+:geoo/steel/dark_64x32o.S: 0 138
+:matt/goldmine/03: 100 116
+:geoo/steel/dark_64x32o.S: 64 138
+:matt/goldmine/00: 200 -46
+:matt/goldmine/09: 242 -48 frrr
+:matt/goldmine/03: 324 -34
+:matt/goldmine/tracks: 376 12
+:matt/goldmine/03: 272 -22
+:matt/goldmine/01: 64 10
+:geoo/steel/dark_32x64o.S: 0 74
+:matt/goldmine/10: 64 370 rrr
+:matt/goldmine/plank: 264 166 rrr
+:matt/goldmine/09: 184 84 fr
+:matt/goldmine/08: 230 18
+:geoo/steel/dark_64x32o.S: 288 138
+:matt/goldmine/plankdiag2: 256 292
+:geoo/steel/dark_64x32o.S: 128 138
+:geoo/steel/dark_32x32o.S: 256 138
+:matt/goldmine/plank: 380 366 rrr
+:matt/goldmine/plank: 394 358 rrr
+:geoo/steel/dark_32x64o.S: 448 138
+:matt/goldmine/plank: 368 20
+:geoo/construction/concrete/032c: 507 278 d
+:geoo/steel/dark_64x32o.S: 192 138
+:geoo/steel/dark_32x32o.S: 352 138
