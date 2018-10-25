@@ -13,7 +13,7 @@ import gui.root;
 import hardware.display;
 import hardware.mouse;
 import hardware.mousecur;
-import physics.physdraw;
+import physics.physdraw.base;
 import tile.tilelib;
 
 private bool _cmdargsForcedResolutionThusNeverChangeThat = false;
@@ -23,7 +23,7 @@ void changeResolutionBasedOnCmdargsThenUserFile(const(Cmdargs) cmdargs)
     hardware.mousecur.deinitialize();
     hardware.mouse.deinitialize();
     tile.tilelib.deinitialize();
-    physics.physdraw.deinitialize();
+    physics.physdraw.base.deinitialize();
     graphic.internal.deinitialize();
     gui.root.deinitialize();
     gui.context.deinitialize();
@@ -36,7 +36,7 @@ void changeResolutionBasedOnCmdargsThenUserFile(const(Cmdargs) cmdargs)
     gui.root.initialize(displayXl, displayYl);
     graphic.internal.initialize(cmdargs.mode);
     graphic.internal.initializeScale(gui.stretchFactor);
-    physics.physdraw.initialize();
+    physics.physdraw.base.initialize();
     hardware.mouse.initialize();
     hardware.mousecur.initialize();
 }

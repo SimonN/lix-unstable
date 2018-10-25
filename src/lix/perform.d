@@ -5,6 +5,8 @@ import std.conv;
 import std.math; // sqrt
 import std.range;
 
+import optional;
+
 import tile.phymap;
 import graphic.gadget;
 import hardware.sound;
@@ -55,23 +57,23 @@ void useNonconstantTraps(Lixxie lixxie) { with (lixxie)
 
 
 
-void useFlingers(Lixxie lixxie) { with (lixxie) with (outsideWorld.state)
+void useFlingers(Lixxie l) { with (l.outsideWorld.state)
 {
-    if (! (bodyEncounters & Phybit.fling) || ! healthy)
+    if (! (l.bodyEncounters & Phybit.fling) || ! l.healthy)
         return;
     auto encounteredOpenFlingers = chain(flingTrigs
-            .filter!(fl => inTriggerArea(fl) && fl.isOpenFor(update, style))
-            .tee!(fl => fl.feed(update, style)),
-        outsideWorld.state.flingPerms.filter!(fl => inTriggerArea(fl)));
+        .filter!(fl => l.inTriggerArea(fl) && fl.isOpenFor(update, l.style))
+        .tee!(fl => fl.feed(update, l.style)),
+        flingPerms.filter!(fl => l.inTriggerArea(fl)));
     foreach (Gadget fl; encounteredOpenFlingers) {
         assert (fl.tile);
-        addFling(fl.tile.subtype & 1 ? fl.tile.specialX // force direction
-                                     : fl.tile.specialX * lixxie.dir,
+        l.addFling(fl.tile.subtype & 1 ? fl.tile.specialX // force direction
+                                     : fl.tile.specialX * l.dir,
             fl.tile.specialY, false); // false == not from same tribe
     }
     // call this function once more; it may have been called by the game's
     // update-all-lixes function, but we don't want to wait until next turn
-    Tumbler.applyFlingXY(lixxie);
+    Tumbler.applyFlingXY(l);
 }}
 
 
@@ -101,23 +103,23 @@ void useGoal(Lixxie li, in Goal goal, ref const(Tribe)[] alreadyScoredFor) {
     exiter.determineSidewaysMotion(goal);
     exiter.playSound(goal);
 
-    void scoreForTribe(Tribe tribe)
+    void scoreFor(Tribe tribe)
     {
         if (alreadyScoredFor.find(tribe) != null)
             return;
         alreadyScoredFor ~= tribe;
-        exiter.scoreForTribe(tribe);
+        exiter.scoreFor(tribe);
     }
 
-    if (goal.hasTribe(style))
-        scoreForTribe(outsideWorld.tribe);
-    else
+    if (goal.hasTribe(style)) {
+        scoreFor(outsideWorld.tribe);
+    }
+    else {
         foreach (enemyTribe; outsideWorld.state.tribes)
             if (goal.hasTribe(enemyTribe.style))
-                scoreForTribe(enemyTribe);
+                scoreFor(enemyTribe);
+    }
 }}
-
-
 
 void killOutOfBounds(Lixxie lixxie) {
     with (lixxie)

@@ -5,6 +5,7 @@ module game.core.active;
  */
 
 import std.range;
+import optional;
 
 import net.repdata;
 import basics.rect;
@@ -32,7 +33,7 @@ void calcActive(Game game)
             game.assignToPotentialAssignee(potAss);
     }
     else {
-        game._drawHerHighlit = null;
+        game._drawHerHighlit = none;
         game.pan.describeTarget(null, 0);
     }
 }
@@ -96,7 +97,6 @@ void handleNukeButton(Game game) { with (game)
     auto data = game.newReplayDataForNextPhyu();
     data.action = RepAc.NUKE;
     game.includeOurNew(data);
-    assert (_effect);
     _effect.addSound(
         Phyu(nurse.upd + 1), Passport(localStyle, 0), Sound.NUKE);
 }}
@@ -115,7 +115,7 @@ PotentialAssignee findPotentialAssignee(Game game) { with (game)
     bool leftFound  = false; // if both left/right true,
     bool rightFound = false; // make a tooltip
 
-    const(SkillButton) currentSkill = game.pan.currentSkill;
+    const currentSkill = game.pan.currentSkill;
     assert (map.zoom > 0);
 
     immutable float cursorThicknessOnLand = 12 / map.zoom;
@@ -154,13 +154,14 @@ PotentialAssignee findPotentialAssignee(Game game) { with (game)
     mouseCursor.yf = best.lixxie !is null;
     pan.describeTarget(described.lixxie, lixesUnderCursor);
 
-    if (best.lixxie !is null && currentSkill !is null) {
+    game._drawHerHighlit = none;
+    if (best.lixxie !is null) {
         if (best.lixxie.ac == Ac.builder)
             pan.suggestTooltip(Tooltip.ID.queueBuilder);
         else if (best.lixxie.ac == Ac.platformer)
             pan.suggestTooltip(Tooltip.ID.queuePlatformer);
+        game._drawHerHighlit = Passport(best.lixxie.style, best.id);
     }
-    game._drawHerHighlit = best.lixxie;
     return best;
 }}
 // end void findPotentialAssignee()
@@ -171,7 +172,7 @@ PotentialAssignee generatePotentialAssignee(
     in int id,
     in Point mouseOnLand,
     in float dMinusU,
-    in SkillButton currentSkill
+    in Optional!(const(SkillButton)) currentSkill
 ) {
     import basics.help;
     PotentialAssignee potAss;
@@ -180,8 +181,10 @@ PotentialAssignee generatePotentialAssignee(
     potAss.distanceToCursor = game.map.hypotSquared(
         mouseOnLand.x, mouseOnLand.y, lixxie.ex,
                                       lixxie.ey + roundInt(dMinusU/2));
-    potAss.priority = currentSkill !is null
-        ? lixxie.priorityForNewAc(currentSkill.skill) : 1;
+    import std.algorithm;
+    import std.range;
+    potAss.priority = currentSkill.empty ? 1
+        : lixxie.priorityForNewAc(currentSkill.unwrap.skill);
 
     return potAss;
 }
@@ -212,22 +215,15 @@ void assignToPotentialAssignee(
     Game game,
     in ref PotentialAssignee potAss) { with (game)
 {
-    SkillButton currentSkill = pan.currentSkill;
     if (potAss.lixxie is null)
         return;
-    if (! currentSkill) {
+    if (pan.currentSkill.empty) {
         hardware.sound.playLoud(Sound.PANEL_EMPTY);
         return;
     }
+    const currentSkill = pan.currentSkill.unwrap;
     if (potAss.priority <= 1)
         return;
-
-    assert (currentSkill.number != 0);
-    if (currentSkill.number != skillInfinity)
-        // Decrease the visible number on the panel. This is mostly eye candy.
-        // It doesn't affect physics, including judging what's coming in over
-        // the network, but it affects the assignment user interface.
-        currentSkill.number = currentSkill.number - 1;
 
     ReplayData data = game.newReplayDataForNextPhyu();
     data.action     = forcingLeft  ? RepAc.ASSIGN_LEFT
@@ -239,7 +235,6 @@ void assignToPotentialAssignee(
 
     // React faster to the new assignment than during its evaluation next
     // update. The evaluation could be several ticks ticks later.
-    assert (_effect);
     immutable pa = Passport(localStyle, potAss.id);
     _effect.addArrowDontShow(data.update, pa);
     _effect.addSound(data.update, pa, Sound.ASSIGN);

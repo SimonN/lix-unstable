@@ -53,7 +53,8 @@ public:
     @property final spriteOffsetX() const pure { return _spriteOffsetX; }
 
     @property PhyuOrder updateOrder() const { return PhyuOrder.peaceful; }
-    @property bool      blockable()   const { return true; }
+    @property bool blockable() const { return true; }
+    @property bool allowBlueprint() const { return true; }
 
     AfterAssignment onManualAssignment(Job)
     {

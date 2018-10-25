@@ -14,6 +14,7 @@ import std.algorithm;
 import std.array;
 import std.conv;
 import std.range;
+import optional;
 
 import basics.help; // len
 import net.repdata;
@@ -26,7 +27,8 @@ import level.level;
 import lix;
 import net.permu;
 import physics.effect;
-import physics.physdraw;
+import physics.physdraw.bluepri;
+import physics.physdraw.commit;
 import physics.state;
 import physics.statinit;
 import physics.tribe;
@@ -34,8 +36,8 @@ import tile.phymap;
 
 class GameModel {
 private:
-    GameState     _cs;            // owned (current state)
-    PhysicsDrawer _physicsDrawer; // owned
+    GameState _cs; // owned (current state)
+    PhysicsCommitter _physicsCommitter; // owned
     EffectSink _effect; // not owned, never null. May be the NullEffectSink.
 
 public:
@@ -59,7 +61,7 @@ public:
     body {
         _effect = ef;
         _cs = newZeroState(level, tribesToMake, permu);
-        _physicsDrawer = new PhysicsDrawer(_cs.land, _cs.lookup);
+        _physicsCommitter = new PhysicsCommitter(_cs.land, _cs.lookup);
         finalizePhyuAnimateGadgets();
     }
 
@@ -70,12 +72,12 @@ public:
     void takeOwnershipOf(GameState s)
     {
         _cs = s;
-        _physicsDrawer.rebind(_cs.land, _cs.lookup);
+        _physicsCommitter.rebind(_cs.land, _cs.lookup);
         finalizePhyuAnimateGadgets();
     }
 
     void applyChangesToLand() {
-        _physicsDrawer.applyChangesToLand(_cs.update);
+        _physicsCommitter.applyChangesToLand(_cs.update);
     }
 
     void advance(R)(R range)
@@ -96,16 +98,27 @@ public:
 
     void dispose()
     {
-        if (_physicsDrawer)
-            _physicsDrawer.dispose();
-        _physicsDrawer = null;
+        if (_physicsCommitter)
+            _physicsCommitter.dispose();
+        _physicsCommitter = null;
+    }
+
+    void drawBlueprint(in Passport passport, in Ac forSkill)
+    {
+        if (_cs.constLix(passport).priorityForNewAc(forSkill) <= 1)
+            return;
+
+        GameState simul = _cs.clone();
+        OutsideWorld ow = OutsideWorld(
+            simul, new Blueprinter(_cs.lookup), new NullEffectSink, passport);
+        simul.lixxie(passport).assignManually(&ow, forSkill);
+        simul.lixxie(passport).computeAndDrawBlueprint(&ow);
     }
 
 private:
-
     lix.OutsideWorld makeGypsyWagon(in Passport pa) pure nothrow @nogc
     {
-        return OutsideWorld(_cs, _physicsDrawer, _effect, pa);
+        return OutsideWorld(_cs, _physicsCommitter, _effect, pa);
     }
 
     void applyReplayData(in ColoredData i)
@@ -247,14 +260,14 @@ private:
 
         performFlingersUnmarkOthers();
         applyFlinging();
-        _physicsDrawer.applyChangesToPhymap();
+        _physicsCommitter.applyChangesToPhymap();
 
         performUnmarked(PhyuOrder.blocker);
         performUnmarked(PhyuOrder.remover);
-        _physicsDrawer.applyChangesToPhymap();
+        _physicsCommitter.applyChangesToPhymap();
 
         performUnmarked(PhyuOrder.adder);
-        _physicsDrawer.applyChangesToPhymap();
+        _physicsCommitter.applyChangesToPhymap();
 
         performUnmarked(PhyuOrder.peaceful);
     }

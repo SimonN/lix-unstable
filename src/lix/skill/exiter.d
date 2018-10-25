@@ -14,7 +14,7 @@ private:
 public:
     mixin JobChild;
 
-    void scoreForTribe(Tribe tribe)
+    void scoreFor(Tribe tribe)
     {
         tribe.addSaved(this.style, outsideWorld.state.update);
     }

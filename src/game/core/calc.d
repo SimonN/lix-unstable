@@ -1,6 +1,8 @@
 module game.core.calc;
 
-import std.algorithm; // all
+import std.algorithm;
+
+import optional;
 
 import file.option;
 import basics.cmdargs;
@@ -78,12 +80,15 @@ void atEndOfGame(Game game) { with (game)
         else
             pan.suggestTooltip(Tooltip.ID.framestepOrQuit);
     }
-
-    if (! _effect.nothingGoingOn)
-        return;
-    // Physics and animations are finished, there is nothing else to see
-    if (multiplayer || singleplayerHasWon || singleplayerHasNuked)
-        _gotoMainMenu = true;
-    if (view.printResultToConsole)
-        _chatArea.printScores(nurse.scores, nurse.constReplay, localStyle);
+    assert (_effect,
+        "Game should only run with an instantiated EffectManager,"
+        ~ " not with a NullEffectManager or a null reference");
+    // Don't immediately exit. Wait for the user to exit manually.
+    if (_effect.nothingGoingOn) {
+        // Physics and animations are finished, nothing else to see
+        if (multiplayer || singleplayerHasWon || singleplayerHasNuked)
+            _gotoMainMenu = true;
+        if (view.printResultToConsole)
+            _chatArea.printScores(nurse.scores, nurse.constReplay, localStyle);
+    }
 }}

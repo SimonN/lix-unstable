@@ -1,18 +1,15 @@
 module lix.fields;
 
-import optional;
-
-public import net.style;
-
 import physics;
+public import net.style;
 
 // Some tight coupling between lix and tribes are unavoidable, e.g., when
 // blocking or batting other lixes, or returning extra builder assignments.
 // Each lix has a pointer to a struct. Game must keep the struct up-to-date.
 struct OutsideWorld {
     GameState state;
-    PhysicsDrawer physicsDrawer;
-    EffectSink effect;
+    LandDrawer physicsDrawer;
+    EffectSink effect; // never null. But can be a non-null NullEffectSink.
     Passport passport;
 
     inout(Tribe) tribe() inout { return state.tribes[passport.style]; }

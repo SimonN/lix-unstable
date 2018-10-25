@@ -4,6 +4,8 @@ import std.algorithm; // swap
 import std.conv;
 import std.string; // format, for codegen
 
+import optional;
+
 import basics.alleg5; // BlenderMinus
 import basics.globals; // fuse image
 import basics.help;
@@ -172,7 +174,7 @@ public:
 this(OutsideWorld* ow, in Point aLoc)
 {
     mixin (tmpOutsideWorld);
-    _style = outsideWorld.tribe.style;
+    _style = outsideWorld.passport.style;
     _ex = env.wrap(aLoc).x.even.to!(typeof(_ex));
     _ey = env.wrap(aLoc).y.to!(typeof(_ey));
     _job = JobUnion(Ac.faller);
@@ -350,6 +352,30 @@ void advanceFrame() { frame = (isLastFrame() ? 0 : frame + 1); }
 package Point locCutbit() const // top left of sprite
 {
     return foot - footOffsetFromCutbit + Point(job.spriteOffsetX, 0);
+}
+
+/*
+ * This is probably wrong and the blueprints should work much differently
+ * than this comment describes. Think very hard, this is an old comment
+ * from when I started designing the blueprints, it's probably outdated:
+ *
+ * Don't call this to normal lixes of players. Clone a lix, run the physics
+ * on her, then discard her. Call with ow.lixID < 0 to make it clear.
+ */
+void computeAndDrawBlueprint(OutsideWorld* ow)
+in {
+    assert (ow.passport.id >= 0,
+        "Call this on normal lixes. Don't give dummy IDs.");
+}
+body {
+    if (! job.allowBlueprint)
+        return;
+    mixin(tmpOutsideWorld);
+    immutable blueprintingAc = ac;
+    for (int phyuCap = 0; phyuCap < 1000 && ac == blueprintingAc; ++phyuCap) {
+        performUseGadgets(&this);
+        draw();
+    }
 }
 
 void draw() const

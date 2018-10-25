@@ -2,6 +2,7 @@ module game.nurse.interact;
 
 import game.nurse.cache;
 import hardware.sound;
+import lix.fields;
 
 public import game.nurse.savestat;
 
@@ -32,6 +33,11 @@ class InteractiveNurse : SaveStatingNurse {
     }
 
     void applyChangesToLand() { model.applyChangesToLand(); }
+
+    void drawBlueprint(in Passport forWho, in Ac forSkill)
+    {
+        model.drawBlueprint(forWho, forSkill);
+    }
 
 protected:
     override void onAutoSave()

@@ -16,6 +16,7 @@ import basics.topology;
 import graphic.torbit;
 import graphic.gadget;
 import hardware.tharsis;
+import lix;
 import net.repdata;
 import net.style;
 import physics.tribe;
@@ -124,6 +125,18 @@ public:
     @property bool nuking() const
     {
         return overtimeRunning() && overtimeRemainingInPhyus == 0;
+    }
+
+    // To highlight single lix or to draw blueprints, it can
+    // be helpful to query individually known lix from the game.
+    // But should remain rare: Leave physics updating to the GameModel.
+    Lixxie lixxie(in Passport pa)
+    {
+        return tribes[pa.style].lixvec[pa.id];
+    }
+    ConstLix constLix(in Passport pa) const
+    {
+        return tribes[pa.style].lixvec[pa.id];
     }
 
 private:

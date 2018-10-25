@@ -132,12 +132,34 @@ public:
 
     void highlightFirstSkill()
     {
-        assert (currentSkill is null);
         _skills.filter!(sk => sk.number != 0).takeOne.each!(
                                                 (sk) { makeCurrent(sk); });
     }
 
-    @property inout(SkillButton) currentSkill() inout
+    @property Optional!(const(SkillButton)) currentSkill() const
+    {
+        // Should really be inout, not const.
+        // Work around https://github.com/aliak00/optional/issues/12
+        auto ret = currentSkillMaybeNull();
+        if (ret !is null)
+            return Optional!(const(SkillButton))(ret);
+        else
+            return Optional!(const(SkillButton))();
+    }
+
+    @property Optional!SkillButton currentSkillMut()
+    {
+        // Should really be inout, not const.
+        // Work around https://github.com/aliak00/optional/issues/12
+        auto ret = currentSkillMaybeNull();
+        if (ret !is null)
+            return Optional!SkillButton(ret);
+        else
+            return Optional!SkillButton();
+    }
+
+    // Work around https://github.com/aliak00/optional/issues/12
+    private @property inout(SkillButton) currentSkillMaybeNull() inout
     {
         foreach (b; _skills)
             if (b.on && b.skill != Ac.nothing && b.number != 0)
@@ -191,7 +213,7 @@ public:
 protected:
     override void calcSelf()
     {
-        SkillButton oldSkill = currentSkill();
+        const oldSkill = currentSkill();
         _skills.filter!(sk => sk.execute && sk != oldSkill)
                .filter!(sk => sk.number != 0 || sk.hotkey.keyTapped).each!((sk)
         {
@@ -221,8 +243,7 @@ private:
 
     void makeCurrent(SkillButton skill)
     {
-        if (currentSkill !is null)
-            currentSkill.on = false;
+        currentSkillMut.dispatch.on = false;
         if (skill && skill.number != 0)
             skill.on = true;
         lastOnForRestoringAfterStateLoad = skill; // even if currently 0

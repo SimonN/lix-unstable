@@ -1,6 +1,7 @@
 module graphic.gadget.hatch;
 
-import std.algorithm; // min
+import std.algorithm;
+import optional;
 
 import basics.help;
 import basics.globals; // hatch arrow graphic

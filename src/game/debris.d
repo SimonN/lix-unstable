@@ -167,7 +167,7 @@ private:
     {
         auto cb = getInternal(fn);
         cb.draw(foot - Point(cb.xl/2, cb.yl/2 + explodeMaskOffsetY),
-                clamp(cb.xfs - timeToLive, 0, cb.xfs - 1));
+            clamp(cb.xfs - timeToLive, 0, cb.xfs - 1));
     }
 
     void drawParticle() { }

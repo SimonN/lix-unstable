@@ -12,6 +12,8 @@ import std.uni;
 enum int skillInfinity  = -1;
 enum int skillNumberMax = 999;
 
+// 2018-03: I (Simon) have no idea why these constants are defined here
+// and not in src/lix/skill/somewhere. Networking shouldn't depend on these.
 enum int builderBrickXl  = 12;
 enum int platformLongXl  = 8; // first brick
 enum int platformShortXl = 6; // all bricks laid down while kneeling

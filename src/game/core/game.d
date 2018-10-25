@@ -75,7 +75,7 @@ package:
     // Should always be zero in singleplayer.
     long _alticksToAdjust;
 
-    ConstLix _drawHerHighlit;
+    Optional!Passport _drawHerHighlit;
 
     // Assignments for the next update go in here, and are only written into
     // the replay right before the update happens. If the replay is cut off

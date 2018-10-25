@@ -6,6 +6,8 @@ import std.math; // sin, for replay sign
 import std.range : retro;
 import std.string; // format
 
+import optional;
+
 import basics.alleg5;
 import basics.globals; // replay sign
 import file.option : showFPS;
@@ -52,9 +54,8 @@ implGameDraw(Game game) { with (game)
             game.pingOwnGadgets();
             _splatRuler.drawAboveLand(map);
         }
-        assert (_effect);
         _effect.draw(_chatArea.console);
-        _effect.calc(); // --timeToLive, moves. No physics, so OK to calc here.
+        _effect.calc(); // No physics, so OK to calc here.
         game.drawAllLixes();
     }
     pan.showInfo(localTribe);
@@ -144,8 +145,14 @@ void drawAllLixes(Game game)
         import lix.fuse : drawAbilities; // onto opponents, behind our own
         localTribe.lixvec.retro.each!(l => drawAbilities(l));
         drawTribe(localTribe);
-        if (_drawHerHighlit)
-            _drawHerHighlit.drawAgainHighlit();
+
+        _drawHerHighlit.match!(() {}, (passport) {
+            pan.currentSkill.match!(() {}, (curSk) {
+                nurse.drawBlueprint(passport, curSk.skill);
+            });
+            nurse.constStateForDrawingOnly.tribes[passport.style]
+                .lixvec[passport.id].drawAgainHighlit();
+        });
     }
 }
 
