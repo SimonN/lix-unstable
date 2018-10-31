@@ -172,7 +172,7 @@ body {
  * Assumes that the land is target torbit and A5's drawing target.
  * The land, therefore, is not passed explicitly into this function anymore.
  */
-void deletionToLand(in Phymap phymap, in FlaggedDeletion tc)
+void drawToLand(in FlaggedDeletion tc, in Phymap phymap)
 {
     assert (al_is_bitmap_drawing_held());
     version (tharsisprofiling)

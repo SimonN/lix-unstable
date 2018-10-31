@@ -374,8 +374,8 @@ body {
     immutable blueprintingAc = ac;
     for (int phyuCap = 0; phyuCap < 1000 && ac == blueprintingAc; ++phyuCap) {
         performUseGadgets(&this);
-        draw();
     }
+    draw();
 }
 
 void draw() const

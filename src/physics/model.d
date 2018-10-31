@@ -116,7 +116,8 @@ public:
             simul, blueprinter, new NullEffectSink, passport);
         simul.lixxie(passport).assignManually(&ow, forSkill);
         simul.lixxie(passport).computeAndDrawBlueprint(&ow);
-        // blueprinter.drawTo(ontoHere);
+        blueprinter.drawAllChangesToTorbitClobberingThePhymap(
+            simul.lookup, ontoHere);
     }
 
 private:

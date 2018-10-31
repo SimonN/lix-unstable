@@ -107,8 +107,9 @@ in {
     assert (game.map.isTargetTorbit);
 }
 body {
-    al_draw_tinted_bitmap(
-        game._blueprints.albit, Alcol(1, 1, 1, 0.5f), 0, 0, 0);
+    enum opaq = 0.4f;
+    al_draw_tinted_bitmap(game._blueprints.albit,
+        Alcol(opaq, opaq, opaq, opaq), 0, 0, 0);
 }
 
 void drawGadgets(Game game) { with (game)

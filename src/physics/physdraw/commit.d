@@ -127,9 +127,15 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////////
 
+    /*
+     * The source array has many changes. Stamp them onto the physics map.
+     * Flag the changes according to how steel or existing terrain was met,
+     * and append these flagged changes to the changes to be drawn to land.
+     * We don't draw to land here yet.
+     */
     void changesToPhymap(TC, FC)(
-        ref TC[] source,
-        ref FC[] dest,
+        ref TC[] source, // Changes to be stamped onto the Phymap
+        ref FC[] dest, // Append flagged changes here. This needn't be empty.
         Phymap phymap
     )
         if ((is (TC == TerrainDeletion) && is (FC == FlaggedDeletion))
@@ -161,7 +167,7 @@ public:
             scope (exit)
                 al_hold_bitmap_drawing(false);
             foreach (const tc; processThese)
-                deletionToLand(phymap, tc);
+                tc.drawToLand(phymap);
         }
     }
 
