@@ -61,7 +61,7 @@ public:
     body {
         _effect = ef;
         _cs = newZeroState(level, tribesToMake, permu);
-        _physicsCommitter = new PhysicsCommitter(_cs.land, _cs.lookup);
+        _physicsCommitter = new PhysicsCommitter();
         finalizePhyuAnimateGadgets();
     }
 
@@ -72,12 +72,15 @@ public:
     void takeOwnershipOf(GameState s)
     {
         _cs = s;
-        _physicsCommitter.rebind(_cs.land, _cs.lookup);
         finalizePhyuAnimateGadgets();
     }
 
     void applyChangesToLand() {
-        _physicsCommitter.applyChangesToLand(_cs.update);
+        if (_cs.land)
+            _physicsCommitter.applyChangesToLand(
+                _cs.lookup, _cs.land, _cs.update);
+        else
+            _physicsCommitter.discardChangesToLand();
     }
 
     void advance(R)(R range)
@@ -98,9 +101,8 @@ public:
 
     void dispose()
     {
-        if (_physicsCommitter)
-            _physicsCommitter.dispose();
-        _physicsCommitter = null;
+        destroy(_cs);
+        assert (! _cs.refCountedStore.isInitialized);
     }
 
     void drawBlueprint(in Passport passport, in Ac forSkill)
@@ -260,14 +262,14 @@ private:
 
         performFlingersUnmarkOthers();
         applyFlinging();
-        _physicsCommitter.applyChangesToPhymap();
+        _physicsCommitter.applyChangesToPhymap(_cs.lookup);
 
         performUnmarked(PhyuOrder.blocker);
         performUnmarked(PhyuOrder.remover);
-        _physicsCommitter.applyChangesToPhymap();
+        _physicsCommitter.applyChangesToPhymap(_cs.lookup);
 
         performUnmarked(PhyuOrder.adder);
-        _physicsCommitter.applyChangesToPhymap();
+        _physicsCommitter.applyChangesToPhymap(_cs.lookup);
 
         performUnmarked(PhyuOrder.peaceful);
     }
