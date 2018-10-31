@@ -105,16 +105,18 @@ public:
         assert (! _cs.refCountedStore.isInitialized);
     }
 
-    void drawBlueprint(in Passport passport, in Ac forSkill)
+    void drawBlueprint(Torbit ontoHere, in Passport passport, in Ac forSkill)
     {
         if (_cs.constLix(passport).priorityForNewAc(forSkill) <= 1)
             return;
 
+        Blueprinter blueprinter = new Blueprinter();
         GameState simul = _cs.clone();
         OutsideWorld ow = OutsideWorld(
-            simul, new Blueprinter(_cs.lookup), new NullEffectSink, passport);
+            simul, blueprinter, new NullEffectSink, passport);
         simul.lixxie(passport).assignManually(&ow, forSkill);
         simul.lixxie(passport).computeAndDrawBlueprint(&ow);
+        // blueprinter.drawTo(ontoHere);
     }
 
 private:

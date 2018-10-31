@@ -30,6 +30,7 @@ implGameDraw(Game game) { with (game)
     version (tharsisprofiling)
         auto zo = Zone(profiler, "game entire implGameDraw()");
     nurse.applyChangesToLand();
+    game.prepareBlueprints();
     {
         version (tharsisprofiling)
             auto zo2 = Zone(profiler, "game entire drawing to map");
@@ -41,17 +42,18 @@ implGameDraw(Game game) { with (game)
         map.clearScreenRect(levBg);
         game.drawGadgets();
 
-        if (modalWindow || ! pan.coolShadesAreOn || pan.isMouseHere) {
-            game.drawLand();
-            game.pingOwnGadgets();
-        }
-        else {
+        immutable yesRuler
+            = ! modalWindow && pan.coolShadesAreOn && ! pan.isMouseHere;
+        if (yesRuler) {
             _splatRuler.considerBackgroundColor(levBg);
             _splatRuler.determineSnap(nurse.constStateForDrawingOnly.lookup,
                 map.mouseOnLand);
             _splatRuler.drawBelowLand(map);
-            game.drawLand();
-            game.pingOwnGadgets();
+        }
+        game.drawLand();
+        game.drawAlreadyRenderedBlueprints();
+        game.pingOwnGadgets();
+        if (yesRuler) {
             _splatRuler.drawAboveLand(map);
         }
         _effect.draw(_chatArea.console);
@@ -78,6 +80,36 @@ implGameDraw(Game game) { with (game)
 // end with(game), end implGameDraw()
 
 private:
+
+void prepareBlueprints(Game game)
+in {
+    assert (game._blueprints);
+    assert (game._blueprints.albit);
+}
+body { with (game) {
+    version (tharsisprofiling)
+        auto zone = Zone(profiler, "game any blueprint");
+    auto drata = TargetTorbit(_blueprints);
+    _blueprints.clearToTransp();
+    _drawHerHighlit.match!(() {}, (passport) {
+        pan.currentSkill.match!(() {}, (curSk) {
+            version (tharsisprofiling)
+                auto zone = Zone(profiler, "game nontrivial bluepr");
+            nurse.drawBlueprint(_blueprints, passport, curSk.skill);
+        });
+    });
+}}
+
+void drawAlreadyRenderedBlueprints(Game game)
+in {
+    assert (game._blueprints);
+    assert (game._blueprints.albit);
+    assert (game.map.isTargetTorbit);
+}
+body {
+    al_draw_tinted_bitmap(
+        game._blueprints.albit, Alcol(1, 1, 1, 0.5f), 0, 0, 0);
+}
 
 void drawGadgets(Game game) { with (game)
 {
@@ -147,9 +179,6 @@ void drawAllLixes(Game game)
         drawTribe(localTribe);
 
         _drawHerHighlit.match!(() {}, (passport) {
-            pan.currentSkill.match!(() {}, (curSk) {
-                nurse.drawBlueprint(passport, curSk.skill);
-            });
             nurse.constStateForDrawingOnly.tribes[passport.style]
                 .lixvec[passport.id].drawAgainHighlit();
         });

@@ -43,6 +43,7 @@ import game.panel.base;
 import game.window.base;
 
 import graphic.map;
+import graphic.torbit; // for the blueprints torbit
 import gui;
 import hardware.display; // fps for framestepping speed
 import hardware.music;
@@ -65,6 +66,13 @@ package:
     InteractiveNurse nurse;
     EffectManager _effect; // never null, never the NullEffectSink
     RichClient _netClient; // null unless playing/observing multiplayer
+
+    // This is here merely to be persistent. We create, own, and destroy it.
+    // Let the nurse/model clear it and draw blueprints on it.
+    // It should be the same size as the level (very large, but fine for now).
+    // It should be mostly transparent and hold fully-colored blueprints.
+    // It should then be blit onto the map.
+    Torbit _blueprints;
 
     long altickLastPhyu;
     long _altickPingGoalsUntil; // starts at 0, which means don't ping goals
@@ -170,6 +178,10 @@ public:
         if (modalWindow) {
             gui.rmFocus(modalWindow);
             modalWindow = null;
+        }
+        if (_blueprints) {
+            _blueprints.dispose();
+            _blueprints = null;
         }
         if (nurse) {
             nurse.dispose();
@@ -307,6 +319,11 @@ private:
         _effect = new EffectManager(determineLocalStyle(rp));
         nurse = new InteractiveNurse(level, rp, _effect);
 
+        map = new Map(cs.land, gui.screenXls.to!int,
+                              (gui.screenYls - gui.panelYls).to!int);
+        this.centerCameraOnHatchAverage();
+        _blueprints = new Torbit(Torbit.Cfg(cs.land));
+
         initializePanel();
         initializeConsole();
         stopMusic();
@@ -357,9 +374,6 @@ private:
         assert (pan is null);
     }
     body {
-        map = new Map(cs.land, gui.screenXls.to!int,
-                              (gui.screenYls - gui.panelYls).to!int);
-        this.centerCameraOnHatchAverage();
         pan = new Panel(view, level.required);
         foreach (player; nurse.constReplay.players) {
             pan.add(player.style, player.name);

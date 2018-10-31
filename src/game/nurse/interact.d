@@ -3,6 +3,7 @@ module game.nurse.interact;
 import game.nurse.cache;
 import hardware.sound;
 import lix.fields;
+import graphic.torbit;
 
 public import game.nurse.savestat;
 
@@ -34,9 +35,9 @@ class InteractiveNurse : SaveStatingNurse {
 
     void applyChangesToLand() { model.applyChangesToLand(); }
 
-    void drawBlueprint(in Passport forWho, in Ac forSkill)
+    void drawBlueprint(Torbit ontoHere, in Passport forWho, in Ac forSkill)
     {
-        model.drawBlueprint(forWho, forSkill);
+        model.drawBlueprint(ontoHere, forWho, forSkill);
     }
 
 protected:
