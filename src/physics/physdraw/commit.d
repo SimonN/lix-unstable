@@ -8,54 +8,50 @@ module physics.physdraw.commit;
  *
  * Has capabilities to cache drawing instructions and then perform then all
  * at once. Drawing to torbit can be disabled, to get only drawing onto the
- * lookup map, for automatic replay verification.
- *
- * All lix styles share one large source VRAM bitmap with the masks and bricks
- * in their many colors.
- *
- * Convention in storing coordinates: Lix activities are expected to pass
- * the coordinates of the terrain changes' top-left corners. They do not pass
- * their own ex/ey. This is different from what Lix do for effects stored
- * in the EffectManager.
+ * lookup map, for automatic replay verification. The caller is required
+ * to call us as follows:
+ *  1. Call add() for a single phyu, maybe several times
+ *  2. Call applyChangesToPhymap() once to stamp input for all phyus from (1.)
+ *  3. Call add() for the same or a higher phyu, maybe several times
+ *  4. Call applyChangesToPhymap() once to stamp
+ *  5. Call add() for the same or a higher phyu, maybe several times
+ *  6. Call applyChangesToPhymap() once to stamp
+ *  ...
+ *  9. Call applyChangesToLand() once you're ready to draw to the (VRAM) land.
+ *      Pass the current phyu for debugging; it will make sure that you haven't
+ *      computed further with the Phymap than you are now wanting to draw.
  */
 
-import std.array;
 import std.algorithm;
-import std.conv;
-import std.functional;
 import std.range;
-import std.string;
-
-import enumap;
 
 import basics.alleg5;
-import basics.cmdargs;
-import basics.globals;
-import basics.help;
-import net.repdata;
-import tile.phymap;
-import graphic.color;
 import graphic.cutbit;
 import graphic.torbit;
-import graphic.internal; // must be initialized first
 import hardware.tharsis;
-import lix.skill.cuber; // Cuber.cubeSize
-import lix.skill.digger; // diggerTunnelWidth
-import net.ac;
-import net.style;
-import physics.mask;
+import net.repdata;
+import physics.physdraw.algo;
 import physics.physdraw.base;
 import physics.terchang;
+import tile.phymap;
 
 class PhysicsCommitter : LandDrawer {
+private:
+    TerrainDeletion[] _delsForPhymap;
+    TerrainAddition[] _addsForPhymap;
+
+    FlaggedDeletion[] _delsForLand;
+    FlaggedAddition[] _addsForLand;
+
+public:
     // Stage a physics change for the next call to apply*().
     void add(in TerrainAddition tc) { _addsForPhymap ~= tc; }
     void add(in TerrainDeletion tc) { _delsForPhymap ~= tc; }
 
     void applyChangesToPhymap(Phymap pm)
     {
-        deletionsToPhymap(pm);
-        additionsToPhymap(pm);
+        changesToPhymap(_delsForPhymap, _delsForLand, pm);
+        changesToPhymap(_addsForPhymap, _addsForLand, pm);
     }
 
     @property bool anyChangesToLand() const pure @nogc
@@ -129,118 +125,22 @@ class PhysicsCommitter : LandDrawer {
         _addsForLand = [];
     }
 
+///////////////////////////////////////////////////////////////////////////////
 
-
-// ############################################################################
-// ############################################################################
-// ############################################################################
-
-
-
-private:
-    TerrainDeletion[] _delsForPhymap;
-    TerrainAddition[] _addsForPhymap;
-
-    FlaggedDeletion[] _delsForLand;
-    FlaggedAddition[] _addsForLand;
-
-    void assertChangesForLand(T)(T[] arr, in Phyu upd)
-    {
-        // Functions calling assertChangesForLand need not be called on each
-        // update, but only if the land must be drawn like it should appear
-        // now. In noninteractive mode, this shouldn't be called at all.
-        assert (_mask);
-        assert (isSorted!"a.update < b.update"(arr));
-        assert (arr == null || arr[0].update >= upd, format("There are "
-            ~ "additions to the land that should be drawn in the earlier "
-            ~ "update %d. Right now we have update %d. If this happens after "
-            ~ "loading a savestate, empty all queued additions/deletions.",
-            arr[0].update, upd));
-    }
-
-    T[] splitOffFromArray(T)(ref T[] arr, in Phyu upd)
-    {
-        // Split the queue into what needs to be processed during this call,
-        // remove these from the caller's queue (arr).
-        int cut = 0;
-        while (cut < arr.length && arr[cut].update == upd)
-            ++cut;
-        auto ret = arr[0 .. cut];
-        arr      = arr[cut .. $];
-        return ret;
-    }
-
-
-
-// ############################################################################
-// ############################################################################
-// ############################################################################
-
-
-
-    void deletionsToPhymap(Phymap phymap)
-    in { assert (_delsForPhymap.all!(tc =>
-        tc.update == _delsForPhymap[0].update));
-    }
-    out { assert (_delsForPhymap == null); }
-    body {
-        version (tharsisprofiling)
-            auto zone = Zone(profiler, format("PhysDraw del lookup %dx",
-                _delsForPhymap.len));
-        scope (exit)
-            _delsForPhymap = null;
-
-        foreach (const tc; _delsForPhymap) {
-            version (tharsisprofiling)
-                auto zone2 = Zone(profiler, format("PhysDraw lookup %s",
-                    tc.type.to!string));
-            int steelHit = 0;
-            if (tc.type == TerrainDeletion.Type.dig)
-                steelHit = diggerAntiRazorsEdge!true(phymap, tc);
-            else
-                steelHit += phymap.setAirCountSteelEvenWhereMaskIgnores(
-                                tc.loc, masks[tc.type]);
-            _delsForLand ~= FlaggedDeletion(tc, steelHit > 0);
-        }
-    }
-
-    // The digger can't call the regular setAirCountSteel in a rectangle.
-    // Reason: Steel in pixel p affects whether the digger tries to remove
-    // earth in a pixel p' left or right of p.
-    // As usualy, any steel in the mask requires the land-drawing later to
-    // draw pixel-by-pixel. But for the digger, even the land-drawing must
-    // go through diggerAntiRazorsEdge again if it's pixel-by-pixel!
-    bool diggerAntiRazorsEdge(bool toPhymap, P, T)(
-        P phymap, // check this for steel, and change it where no steel is
-        in T tc // the queued change
+    void changesToPhymap(TC, FC)(
+        ref TC[] source,
+        ref FC[] dest,
+        Phymap phymap
     )
-        if (toPhymap && is (T == TerrainDeletion) && is (P == Phymap)
-        || !toPhymap && is (T == FlaggedDeletion) && is (P == const(Phymap)))
-    in { assert (tc.type == TerrainDeletion.Type.dig); }
+        if ((is (TC == TerrainDeletion) && is (FC == FlaggedDeletion))
+         || (is (TC == TerrainAddition) && is (FC == FlaggedAddition)))
+    in { assert(source.all!(tc => tc.update == source[0].update)); }
+    out { assert (source.empty); }
     body {
-        bool ret = false;
-        Point p;
-        for (p.y = 0; p.y < tc.digYl; ++p.y) {
-            enum string digCheck = toPhymap ? q{
-                if (phymap.setAirCountSteel(tc.loc + p)) {
-                    ret = true;
-                    break;
-                }
-            } : q{
-                if (phymap.getSteel(tc.loc + p))
-                    break;
-                // Assume we're in subtractive drawing mode: white erases.
-                // Assume that the land (which isn't arg-passed into here)
-                // is the current target bitmap, and that it has the same
-                // torus properties as the Phymap (Topology.matches == true).
-                auto wrapped = phymap.wrap(tc.loc + p);
-                al_draw_pixel(wrapped.x + 0.5f, wrapped.y + 0.5f, color.white);
-            };
-            enum int half = Digger.tunnelWidth / 2;
-            for (p.x = half - 1; p.x >= 0; --p.x) { mixin(digCheck); }
-            for (p.x = half; p.x < 2*half; ++p.x) { mixin(digCheck); }
+        foreach (const tc; source) {
+            dest ~= tc.stampTo(phymap);
         }
-        return ret;
+        source = null;
     }
 
     void deletionsToLandForPhyu(in Phymap phymap, in Phyu upd)
@@ -248,10 +148,7 @@ private:
         assertChangesForLand(_delsForLand, upd);
         // And assume that land (that isn't passed into here) is draw-target.
     }
-    out {
-        assert (_delsForLand == null
-            ||  _delsForLand[0].update > upd);
-    }
+    out { assert (_delsForLand == null ||  _delsForLand[0].update > upd); }
     body {
         auto processThese = splitOffFromArray(_delsForLand, upd);
         if (processThese == null)
@@ -268,121 +165,12 @@ private:
         }
     }
 
-    void deletionToLand(in Phymap phymap, in FlaggedDeletion tc)
-    {
-        assert (al_is_bitmap_drawing_held());
-        version (tharsisprofiling)
-            auto zone = Zone(profiler, format("PhysDraw land %s",
-                tc.type.to!string));
-        if (tc.type != TerrainDeletion.Type.dig)
-            spriteToLand(phymap, tc, _subAlbits[tc.type]);
-        else if (tc.drawPerPixelDueToSteel)
-            diggerAntiRazorsEdge!false(phymap, tc);
-        else {
-            // digging height is variable length. Generate correct bitmap.
-            assert (tc.type == TerrainDeletion.Type.dig);
-            assert (tc.digYl > 0);
-            Albit sprite = al_create_sub_bitmap(_mask,
-                0, remY, Digger.tunnelWidth, tc.digYl);
-            spriteToLand(phymap, tc, sprite);
-            albitDestroy(sprite);
-        }
-    }
-
-    void spriteToLand(T)(
-        in Phymap phymap, // Required to determine which pixels to draw.
-        in T tc, // The change that is to be drawn to the land
-        Albit sprite // The sprite of that change, likely sub-bitmap of _mask
-    )
-        if (is (T == FlaggedDeletion) || is (T == FlaggedAddition))
-    in {
-        assert (al_is_bitmap_drawing_held());
-        assert (sprite);
-        assert (phymap);
-        // Assert that Torbit land (that isn't passed into here)
-        // is the target Torbit and also A5's target bitmap.
-    }
-    body {
-        static if (is (T == FlaggedDeletion))
-            immutable bool allAtOnce = ! tc.drawPerPixelDueToSteel;
-        else
-            immutable bool allAtOnce = ! tc.drawPerPixelDueToExistingTerrain;
-        if (allAtOnce) {
-            version (tharsisprofiling)
-                auto zone = Zone(profiler, format("PhysDraw pix-all %s",
-                                                  tc.type.to!string));
-            sprite.drawToTargetTorbit(tc.loc);
-            return;
-        }
-        // We continue here only if we must draw per pixel, not all at once.
-        // We aren't a digger: Per-pixel-diggers don't even enter
-        // spriteToLand, instead they're dispatched by deletionToLand
-        // directly to the digger-anti-razor-edging.
-        version (tharsisprofiling)
-            auto zone = Zone(profiler, format("PhysDraw pix-one %s",
-                                              tc.type.to!string));
-        foreach (y; 0 .. sprite.yl)
-            foreach (x; 0 .. sprite.xl) {
-                immutable fromPoint = Point(x, y);
-                immutable toPoint   = tc.loc + fromPoint;
-                static if (is (T == FlaggedDeletion)) {
-                    if (! phymap.getSteel(toPoint))
-                        sprite.singlePixelToTargetTorbit(fromPoint, toPoint);
-                }
-                else {
-                    if (tc.needsColoring[y][x])
-                        sprite.singlePixelToTargetTorbit(fromPoint, toPoint);
-                }
-            }
-    }
-
-// ############################################################################
-// ############################################################################
-// ############################################################################
-
-
-
-    void
-    additionsToPhymap(Phymap phymap)
-    in { assert(_addsForPhymap.all!(
-        tc => tc.update == _addsForPhymap[0].update));
-    }
-    out {
-        assert (_addsForPhymap == null);
-    }
-    body {
-        foreach (const tc; _addsForPhymap) {
-            version (tharsisprofiling)
-                auto zone = Zone(profiler, "PhysDraw lookupmap "
-                                           ~ tc.type.to!string);
-            mixin AdditionsDefs;
-            assert (yl > 0, format("%s queued with yl <= 0; yl = %d",
-                tc.type.to!string, yl));
-            // If land exists, remember the changes to be able to draw them
-            // later. No land in noninteractive mode => needn't save this.
-            // We still create it properly... to keep my code short. <_<;;
-            auto fc = FlaggedAddition(tc);
-            foreach (int y; 0 .. yl)
-                foreach (int x; 0 .. xl) {
-                    Point target = tc.loc + Point(x, y);
-                    if (phymap.getSolid(target))
-                        fc.drawPerPixelDueToExistingTerrain = true;
-                    else {
-                        phymap.add(target, Phybit.terrain);
-                        fc.needsColoring[y][x] = true;
-                    }
-                }
-            _addsForLand ~= fc;
-        }
-        _addsForPhymap = null;
-    }
-
     void additionsToLandForPhyu(in Phymap phymap, in Phyu upd)
-    in { assertChangesForLand(_addsForLand, upd); }
-    out {
-        assert (_addsForLand == null
-            ||  _addsForLand[0].update > upd);
+    in {
+        assertChangesForLand(_addsForLand, upd);
+        // And assume that land (that isn't passed into here) is draw-target.
     }
+    out { assert (_addsForLand == null || _addsForLand[0].update > upd); }
     body {
         auto processThese = splitOffFromArray(_addsForLand, upd);
         if (processThese == null)
@@ -390,11 +178,8 @@ private:
         al_hold_bitmap_drawing(true);
         scope (exit)
             al_hold_bitmap_drawing(false);
-        foreach (const tc; processThese) {
-            mixin AdditionsDefs;
-            Albit sprite = al_create_sub_bitmap(_mask, x, y, xl, yl);
-            spriteToLand(phymap, tc, sprite);
-            albitDestroy(sprite);
+        foreach (const(FlaggedAddition) fc; processThese) {
+            fc.drawToLand(phymap);
         }
     }
 }

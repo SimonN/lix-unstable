@@ -7,4 +7,5 @@ public import physics.score;
 public import physics.state;
 public import physics.terchang;
 public import physics.physdraw.base;
+public import physics.physdraw.init;
 public import physics.tribe;

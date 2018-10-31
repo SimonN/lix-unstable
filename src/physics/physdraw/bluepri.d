@@ -6,7 +6,6 @@ module physics.physdraw.bluepri;
 
 import physics.physdraw.base;
 import physics.terchang;
-import tile.phymap;
 
 class Blueprinter : LandDrawer {
 private:
