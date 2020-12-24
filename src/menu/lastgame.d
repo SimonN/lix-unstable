@@ -120,6 +120,8 @@ public:
      */
     void delegate(Filename) onSavingManually = null; // may remain null
 
+    bool shown2() const { return true; }
+
     this(Geom g, Harvest ha)
     {
         super(g);
