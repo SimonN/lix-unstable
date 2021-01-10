@@ -60,8 +60,8 @@ public:
         _matcher.forcePointedTo();
         _lv = _matcher.preferredLevel();
         _trophy = levelFilename.match!(
-            () => Trophy(_lv.map!(l => l.built).frontOr(Date.now), ""),
-            (lfn) => Trophy(_lv.map!(l => l.built).frontOr(Date.now), lfn));
+            () => Trophy(_lv.oc.built.frontOr(Date.now), ""),
+            (lfn) => Trophy(_lv.oc.built.frontOr(Date.now), lfn));
         _status = pointsToItself ? Status.noPointer
             : _matcher.isMultiplayer ? Status.multiplayer
             : _lv.empty ? Status.noPointer
@@ -94,7 +94,7 @@ public:
     {
         return format!"%s,%s,%s,%s,%d,%d,%d,%d"(statusWord[_status],
             _rpFn.rootless,
-            levelFilename.map!(fn => fn.rootless).frontOr(""),
+            levelFilename.oc.rootless.frontOr(""),
             _matcher.singleplayerName, _trophy.lixSaved,
             _lv.empty ? 0 : _lv.front.required,
             _trophy.skillsUsed, _phyusUsed);
@@ -110,10 +110,10 @@ public:
         assert (! _lv.empty);
         assert (! _matcher.isMultiplayer);
         TrophyKey key;
-        key.fileNoExt = _matcher.pointedToFilename
-            .map!(fn => fn.fileNoExtNoPre).frontOr("");
-        key.title = _lv.map!(l => l.name).frontOr("");
-        key.author = _lv.map!(l => l.author).frontOr("");
+        key.fileNoExt = _matcher.pointedToFilename.oc
+            .fileNoExtNoPre.frontOr("");
+        key.title = _lv.oc.name.frontOr("");
+        key.author = _lv.oc.author.frontOr("");
         return maybeImprove(key, _trophy);
     }
 

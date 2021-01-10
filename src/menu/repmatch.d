@@ -122,7 +122,7 @@ public:
         TrophyKey key;
         key.fileNoExt = pref.fnMayBeZero !is null
             ? pref.fnMayBeZero.fileNoExtNoPre
-            : _rp.levelFilename.map!(fn => fn.fileNoExtNoPre).frontOr("");
+            : _rp.levelFilename.oc.fileNoExtNoPre.frontOr("");
         key.title = pref.level.front.name;
         key.author = pref.level.front.author;
         return new Game(pref.level.front, key,

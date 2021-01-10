@@ -62,7 +62,7 @@ protected:
 
     override void forceReloadOfCurrentDir()
     {
-        if (_lastGame.map!(e => e.shown).frontOr(false)) {
+        if (_lastGame.any!(lg => lg.shown)) {
             _showLastGameOnNextHighlight = true;
         }
         super.forceReloadOfCurrentDir();
