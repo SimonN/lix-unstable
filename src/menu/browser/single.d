@@ -19,9 +19,8 @@ import gui.picker;
 import hardware.sound;
 import level.level;
 import menu.browser.withlast;
-import menu.lastgame;
 
-final class BrowserSingle : BrowserWithLastAndDelete {
+final class BrowserSingle : BrowserWithDelete {
 private:
     bool _gotoEditorLoadFileRecent;
     bool _gotoEditorNewLevel;
@@ -42,17 +41,6 @@ public:
         commonConstructor();
         // Final class calls:
         super.highlight(file.option.singleLastLevel);
-    }
-
-    this(Harvest ha, Optional!(const Replay) lastLoaded)
-    {
-        super(Lang.browserSingleTitle.transl,
-            basics.globals.dirLevels, super.pickerConfig());
-        commonConstructor();
-        // Final class calls in correct order:
-        super.addStatsThenHighlight(
-            new StatsAfterReplay(super.newStatsGeom(), ha, lastLoaded),
-            file.option.singleLastLevel);
     }
 
     override @property inout(Level) levelRecent() inout
@@ -83,14 +71,7 @@ protected:
         previewNone();
     }
 
-    final override void onHighlightWithLastGame(Filename fn, bool solved)
-    in { assert (fn, "call onHighlightNone() instead"); }
-    do {
-        onHighlightWithoutLastGame(fn);
-        _trophySkills.shown = false;
-    }
-
-    final override void onHighlightWithoutLastGame(Filename fn)
+    final override void onOnHighlight(Filename fn)
     in { assert (fn, "call onHighlightNone() instead"); }
     do {
         only(_edit, _exportImage, _repForLev, _by, _save).each!(e => e.show());

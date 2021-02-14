@@ -314,11 +314,11 @@ public:
                 else {
                     final switch (afterGameGoto) {
                     case AfterGameGoto.browSin:
-                        browSin = new BrowserSingle(harvest, lastLoaded);
+                        browSin = new BrowserSingle();
                         gui.addElder(browSin);
                         break;
                     case AfterGameGoto.browRep:
-                        browRep = new BrowserReplay(harvest, lastLoaded);
+                        browRep = new BrowserReplay();
                         gui.addElder(browRep);
                         break;
                     }
