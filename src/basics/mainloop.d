@@ -33,6 +33,7 @@ import menu.browser.replay;
 import menu.browser.single;
 import menu.lobby.lobby;
 import menu.mainmenu;
+import menu.outcome.single;
 import menu.options;
 import menu.rep4lev;
 import menu.repmatch;
@@ -52,6 +53,7 @@ private:
     RepForLev repForLev;
     Lobby lobby;
     BrowserReplay browRep;
+    SinglePlayerOutcome singlePlayerOutcome;
     OptionsMenu optionsMenu;
     MenuAskName askName;
 
@@ -164,6 +166,11 @@ public:
             gui.rmElder(browRep);
             destroy(browRep); // see comment for destroy(browSin)
             browRep = null;
+        }
+        if (singlePlayerOutcome) {
+            gui.rmElder(singlePlayerOutcome);
+            singlePlayerOutcome.dispose();
+            singlePlayerOutcome = null;
         }
         if (optionsMenu) {
             gui.rmElder(optionsMenu);
@@ -290,6 +297,19 @@ public:
                 gui.addElder(mainMenu);
             }
         }
+        else if (singlePlayerOutcome) with (SinglePlayerOutcome.ExitWith) {
+            final switch (singlePlayerOutcome.exitWith) {
+            case notYet:
+                break;
+            case gotoSameLevel:
+            case gotoAnyNextLevel:
+            case gotoNextUnsolvedLevel:
+            case gotoBrowser:
+                kill();
+                browSin = new BrowserSingle();
+                gui.addElder(browSin);
+            }
+        }
         else if (optionsMenu) {
             if (optionsMenu.gotoMainMenu)
                 toMainMenuWithResChange();
@@ -314,8 +334,8 @@ public:
                 else {
                     final switch (afterGameGoto) {
                     case AfterGameGoto.browSin:
-                        browSin = new BrowserSingle();
-                        gui.addElder(browSin);
+                        singlePlayerOutcome = new SinglePlayerOutcome(harvest);
+                        gui.addElder(singlePlayerOutcome);
                         break;
                     case AfterGameGoto.browRep:
                         browRep = new BrowserReplay();
