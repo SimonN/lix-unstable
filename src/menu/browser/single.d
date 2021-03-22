@@ -48,14 +48,18 @@ public:
         return _levelRecent;
     }
 
-    @property bool gotoEditorNewLevel() const { return _gotoEditorNewLevel; }
-    @property bool gotoEditorLoadFileRecent() const
+    bool gotoEditorNewLevel() const pure nothrow @safe @nogc
+    {
+        return _gotoEditorNewLevel;
+    }
+
+    bool gotoEditorLoadFileRecent() const pure nothrow @safe @nogc
     {
         assert (! _gotoEditorLoadFileRecent || fileRecent);
         return _gotoEditorLoadFileRecent;
     }
 
-    @property bool gotoRepForLev() const
+    bool gotoRepForLev() const pure nothrow @safe @nogc
     {
         assert (! _gotoRepForLev || fileRecent);
         return _gotoRepForLev;

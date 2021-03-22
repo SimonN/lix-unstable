@@ -191,7 +191,7 @@ public:
         }
     }
 
-    @property bool gotoMainMenu() { return _gotoMainMenu; }
+    bool gotoMainMenu() const pure nothrow @safe @nogc { return _gotoMainMenu;}
 
     Harvest harvest() const
     {

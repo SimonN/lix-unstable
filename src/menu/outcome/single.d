@@ -18,9 +18,9 @@ private:
 public:
     enum ExitWith {
         notYet,
-        gotoSameLevel,
-        gotoAnyNextLevel,
-        gotoNextUnsolvedLevel,
+        //gotoSameLevel, ---------- uncomment once implemented
+        //gotoAnyNextLevel,
+        //gotoNextUnsolvedLevel,
         gotoBrowser,
     }
 
