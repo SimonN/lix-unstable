@@ -24,8 +24,6 @@ module mainloop.topscrn;
 import gui;
 
 interface TopLevelScreen {
-    void calc();
-    void draw();
     void dispose();
 
     const pure nothrow @safe @nogc {
@@ -61,16 +59,13 @@ public:
         _theElder = null;
     }
 
-    final void calc() {} // Done by gui.root for us.
-    final void draw() {} // Done by gui.root for us.
-
     // Some defaults that nearly every child will want >_>
     const pure nothrow @safe @nogc {
         bool proposesToExitApp() { return false; }
         bool proposesToDrawMouseCursor() { return true; }
     }
     void emergencySave() {}
-    string filenamePrefixForScreenshot() const pure nothrow @safe @nogc
+    string filenamePrefixForScreenshot() const
     {
         return "screenshot";
     }

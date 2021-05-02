@@ -91,14 +91,13 @@ public:
         hardware.display .calc();
         hardware.mouse   .calc();
         hardware.keyboard.calcCallThisAfterMouseCalc();
-        gui              .calc();
 
         if (hardware.display.displayCloseWasClicked()
             || shiftHeld() && keyTapped(ALLEGRO_KEY_ESCAPE)
         ) {
             return true;
         }
-        screen.calc();
+        gui.calc(); // Will also calc the screen that is registered as Elder
         if (screen.done) {
             if (screen.proposesToExitApp) {
                 return true;
@@ -112,8 +111,7 @@ public:
 
     private void draw()
     {
-        screen.draw();
-        gui.draw();
+        gui.draw(); // Will also draw the screen that is registered as Elder
         if (screen.proposesToDrawMouseCursor)
             hardware.mousecur.draw();
         hardware.sound.draw();

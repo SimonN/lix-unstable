@@ -62,7 +62,7 @@ public:
     }
 }
 
-class ZockerScreen : TopLevelScreen {
+class ZockerScreen : GuiElderTopLevelScreen {
 private:
     Game _game; // We'll own this, we'll dispose it.
     AfterwardsGoto _after;
@@ -90,16 +90,12 @@ public:
         _game = gameToTakeOwnershipOf;
         _lastLoaded = lastLoaded;
         _after = after;
+        super(_game);
     }
 
-    void calc() { _game.calc(); }
-    void draw() { _game.draw(); }
-    void dispose() { _game.dispose(); }
-
-    const pure nothrow @safe @nogc {
-        bool done() { return _game.gotoMainMenu; }
-        bool proposesToExitApp() { return false; }
-        bool proposesToDrawMouseCursor() { return true; }
+    bool done() const pure nothrow @safe @nogc
+    {
+        return _game.gotoMainMenu;
     }
 
     TopLevelScreen nextTopLevelScreen()
@@ -111,11 +107,17 @@ public:
             : new SinglePlayerOutcomeScreen(_game.harvest, _after);
     }
 
-    void emergencySave() {}
-
-    string filenamePrefixForScreenshot() const
+    override string filenamePrefixForScreenshot() const
     {
         return _game.filenamePrefixForScreenshot;
+    }
+
+protected:
+    override void onDispose()
+    {
+        if (_game) {
+            _game.dispose();
+        }
     }
 }
 

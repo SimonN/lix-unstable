@@ -54,7 +54,7 @@ import physics;
 import net.repdata;
 import net.structs;
 
-class Game {
+class Game : IRoot {
 public:
     const(Level) level;
 
@@ -229,8 +229,15 @@ public:
             ? "multiplayer" : "singleplayer";
     }
 
-    void calc() { implGameCalc(this); }
-    void draw() { implGameDraw(this); }
+    void work() { implGameCalc(this); }
+    void calc() { /* Empty, really a hack, we decide in work() */ }
+
+    // We always draw ourselves.
+    void reqDraw() { }
+    bool draw() {
+        implGameDraw(this);
+        return true; // We've always drawn land/lix, even when window-covered.
+    }
 
 package:
     static int updatesBackMany()
