@@ -1,4 +1,4 @@
-module menu.preview.forlevel;
+module menu.preview.namepl;
 
 import std.algorithm;
 import std.format;
@@ -18,6 +18,8 @@ private:
     ReplayNameplate _replay;
 
 public:
+    static enum float minYlg = 60f;
+
     this(Geom g)
     {
         super(g);
@@ -56,7 +58,7 @@ private:
 public:
     this(Geom g)
     in {
-        assert (geom.ylg >= 60f);
+        assert (geom.ylg >= Nameplate.minYlg);
     }
     body {
         super(g);
@@ -87,7 +89,7 @@ private:
 public:
     this(Geom g)
     in {
-        assert (geom.ylg >= 60f);
+        assert (geom.ylg >= Nameplate.minYlg);
     }
     body {
         super(g);
