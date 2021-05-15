@@ -1,6 +1,10 @@
 module menu.namepl.base;
 
 /*
+ * PreviewLevelOrReplay is the interface of Nameplate.
+ * It's useful by itself: Preview (the small level image) implements it, too.
+ * Classes that combine Nameplate and Preview will also implement this.
+ *
  * A Nameplate is the structure of text labels below a Preview.
  * Usually, it describes a level, sometimes, it describes a replay. E.g.:
  *
@@ -14,6 +18,11 @@ module menu.namepl.base;
  * of Nameplate?
  */
 
-interface Nameplate {
+public import level.level;
+public import file.replay;
+
+interface PreviewLevelOrReplay {
     void previewNone();
+    void preview(in Level);
+    void preview(in Replay, in Level);
 }

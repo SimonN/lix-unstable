@@ -113,6 +113,7 @@ enum Lang {
     browserInfoInitgoal,
     browserInfoBestSaved,
     browserInfoBestSkills,
+    browserInfoPlayer,
 
     browserReplayTitle,
     browserReplayPointedTo,

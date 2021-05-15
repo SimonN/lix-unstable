@@ -41,6 +41,7 @@ $browserInfoAuthor By:
 $browserInfoInitgoal Goal:
 $browserInfoBestSaved Best:
 $browserInfoBestSkills Skills:
+$browserInfoPlayer Player:
 
 $browserReplayTitle Replays|From the main menu, go to the replay browser.
 $browserReplayPointedTo Pointed-to level

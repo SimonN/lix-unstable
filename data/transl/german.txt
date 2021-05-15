@@ -37,6 +37,7 @@ $browserInfoAuthor Von:
 $browserInfoInitgoal Ziel:
 $browserInfoBestSaved Rekord:
 $browserInfoBestSkills Fähigkeiten:
+$browserInfoPlayer Spieler:
 
 $browserReplayTitle Replays|Vom Hauptmenü den Replay-Browser aufrufen.
 $browserReplayPointedTo Verwiesener Level
