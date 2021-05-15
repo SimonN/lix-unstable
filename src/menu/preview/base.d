@@ -1,4 +1,4 @@
-module menu.namepl.base;
+module menu.preview.base;
 
 /*
  * PreviewLevelOrReplay is the interface of Nameplate.

@@ -1,4 +1,4 @@
-module menu.namepl.forlevel;
+module menu.preview.forlevel;
 
 import std.algorithm;
 import std.format;
@@ -9,7 +9,7 @@ import optional;
 import graphic.color;
 import file.language;
 import level.level;
-import menu.namepl.base;
+import menu.preview.base;
 import gui;
 
 class Nameplate : Element, PreviewLevelOrReplay {

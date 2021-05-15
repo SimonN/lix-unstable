@@ -9,14 +9,14 @@ import gui;
 import gui.picker;
 import hardware.mouse;
 import level.level;
-import menu.preview;
+import menu.preview.thumbn;
 
 class BrowserHighlight : Window {
 private:
     Picker     _picker;
     bool       _gotoMainMenu;
     TextButton _buttonExit;
-    Preview    _preview;
+    LevelThumbnail _preview;
     Label      _previewLevelTitle;
 
 public:
@@ -44,7 +44,7 @@ public:
         _buttonExit = new TextButton(new Geom(infoX + infoXl/2, 20,
             infoXl/2, 40, From.BOTTOM_LEFT), Lang.commonBack.transl);
         _buttonExit.hotkey = file.option.keyMenuExit;
-        _preview = new Preview(newPreviewGeom());
+        _preview = new LevelThumbnail(newPreviewGeom());
         _previewLevelTitle = new Label(new Geom(infoX, infoY, infoXl+17, 20));
         _previewLevelTitle.undrawBeforeDraw = true;
         addChildren(_picker, _buttonExit, _preview, _previewLevelTitle);
@@ -84,7 +84,7 @@ public:
     do {
         _preview.shown = true;
         _previewLevelTitle.text = l.name;
-        _preview.level = l;
+        _preview.preview(l);
     }
 
     final Filename currentDir() const { return _picker.currentDir; }
