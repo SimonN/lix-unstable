@@ -36,6 +36,7 @@ public:
 
     void preview(in Level lev)
     {
+        _level.show();
         _level.preview(lev);
         _replay.hide();
     }
@@ -43,6 +44,7 @@ public:
     void preview(in Replay rep, in Level lev)
     {
         _level.hide();
+        _replay.show();
         _replay.preview(rep, lev);
     }
 }
@@ -58,7 +60,7 @@ private:
 public:
     this(Geom g)
     in {
-        assert (geom.ylg >= Nameplate.minYlg);
+        assert (g.ylg >= Nameplate.minYlg);
     }
     body {
         super(g);
@@ -89,7 +91,7 @@ private:
 public:
     this(Geom g)
     in {
-        assert (geom.ylg >= Nameplate.minYlg);
+        assert (g.ylg >= Nameplate.minYlg);
     }
     body {
         super(g);

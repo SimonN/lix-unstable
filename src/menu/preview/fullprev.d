@@ -20,10 +20,15 @@ public:
     {
         super(g);
         _thumbnail = new LevelThumbnail(
-            new Geom(0, 0, xlg, ylg - Nameplate.minYlg));
+            new Geom(0, 0, xlg, ylg - 20 - Nameplate.minYlg));
         _nameplate = new Nameplate(
             new Geom(0, 0, xlg, Nameplate.minYlg, From.BOTTOM));
         addChildren(_thumbnail, _nameplate);
+    }
+
+    void dispose()
+    {
+        _thumbnail.dispose();
     }
 
     void previewNone()
