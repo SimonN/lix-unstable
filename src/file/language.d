@@ -109,11 +109,6 @@ enum Lang {
     browserExportImageDone,
     browserMkdirTitle,
     browserMkdirPleaseEnter,
-    browserInfoAuthor,
-    browserInfoInitgoal,
-    browserInfoBestSaved,
-    browserInfoBestSkills,
-    browserInfoPlayer,
 
     browserReplayTitle,
     browserReplayPointedTo,
@@ -136,13 +131,20 @@ enum Lang {
     verifyStatusMercyKilled,
     verifyStatusSolved,
 
+    previewLevelAuthor,
+    previewLevelSingleGoal,
+    previewLevelSingleTrophySaved,
+    previewLevelSingleTrophySkills,
+    previewLevelMultiIntendedNumPlayers,
+    previewReplayPlayer,
+    previewReplayPointsTo,
+    previewMissingTiles,
+    previewMissingTilesMoreSee,
+
     harvestYouSavedThisTime,
     harvestReplayAutoSaved,
     harvestReplaySaveManuallyAtAll,
     harvestReplaySaveManuallyToo,
-
-    previewMissingTiles,
-    previewMissingTilesMoreSee,
 
     winSearchTitle,
     winSearchPrompt,

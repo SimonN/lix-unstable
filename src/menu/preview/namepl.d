@@ -18,7 +18,7 @@ private:
     ReplayNameplate _replay;
 
 public:
-    static enum float minYlg = 60f;
+    enum float minYlg = 60f;
 
     this(Geom g)
     {
@@ -67,9 +67,9 @@ public:
         _title = new Label(new Geom(0, 0, xlg, 20));
         _title.undrawBeforeDraw = true;
         _by = new LabelTwo(new Geom(0, 20, xlg, 20),
-            Lang.browserInfoAuthor.transl);
+            Lang.previewLevelAuthor.transl);
         _save = new LabelTwo(new Geom(0, 40, xlg, 20),
-            Lang.browserInfoInitgoal.transl);
+            Lang.previewLevelSingleGoal.transl);
         addChildren(_title, _by, _save);
         undrawColor = color.guiM;
     }
@@ -98,9 +98,9 @@ public:
         _title = new Label(new Geom(0, 0, xlg, 20));
         _title.undrawBeforeDraw = true;
         _player = new LabelTwo(new Geom(0, 20, xlg, 20),
-            Lang.browserInfoPlayer.transl);
+            Lang.previewReplayPlayer.transl);
         _pointsTo = new LabelTwo(new Geom(0, 40, xlg, 20),
-            "\u27F6"); // Unicode: long arrow right
+            Lang.previewReplayPointsTo.transl);
         addChildren(_title, _player, _pointsTo);
         undrawColor = color.guiM;
     }
