@@ -19,8 +19,9 @@ public:
     this(Geom g)
     {
         super(g);
+        immutable float ySpacing = g.ylg >= 220f ? 20f : 5f;
         _thumbnail = new LevelThumbnail(
-            new Geom(0, 0, xlg, ylg - 20 - Nameplate.minYlg));
+            new Geom(0, 0, xlg, ylg - ySpacing - Nameplate.minYlg));
         _nameplate = new Nameplate(
             new Geom(0, 0, xlg, Nameplate.minYlg, From.BOTTOM));
         addChildren(_thumbnail, _nameplate);
