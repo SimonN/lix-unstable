@@ -80,9 +80,11 @@ do {
     if (l.terrain != null)
         file.writeln();
     const(TileGroup)[] writtenGroups;
+    const nameSource = TilegroupNameSource.roll();
+
     foreach (ref const(TerOcc) occ; l.terrain) {
-        file.writeDependencies(occ.tile, &writtenGroups);
-        auto line = groupOrRegularTileLine(occ, writtenGroups);
+        file.writeDependencies(occ.tile, &writtenGroups, nameSource);
+        auto line = groupOrRegularTileLine(occ, writtenGroups, nameSource);
         assert (line);
         file.writeln(line);
     }
@@ -94,13 +96,43 @@ do {
 private: ///////////////////////////////////////////////////////////// :private
 ///////////////////////////////////////////////////////////////////////////////
 
+struct TilegroupNameSource {
+    string randomButUniquePerLevelSave;
 
+    public static typeof(this) roll()
+    {
+        typeof(this) ret;
+        ret.reroll();
+        return ret;
+    }
+
+    private void reroll()
+    {
+        import std.random;
+        import std.range;
+        import std.array;
+        import std.exception;
+        randomButUniquePerLevelSave = generate!(
+            () => uniform(0U, 26U))
+            .take(10)
+            .map!(function char(uint i) { return ('a' + i) & 0xFF; })
+            .array
+            .assumeUnique;
+    }
+}
 
 // Returns null if we can't resolve the occurrence back to key.
 // Returns an IoLine with non-null text1 otherwise.
 private IoLine groupOrRegularTileLine(
     in TerOcc occ,
-    in const(TileGroup)[] writtenGroups)
+    in const(TileGroup)[] writtenGroups,
+    /*
+     * nameSource: This is a dumb hack. The writtenGroups should really
+     * remember their names. In this hack, instead, we abuse our knowledge
+     * that the names are (string const per save) + "-" + running count.
+     */
+    in TilegroupNameSource nameSource
+)
 out (ret) {
     assert (ret is null || ret.text1 != null);
 }
@@ -108,8 +140,14 @@ do {
     auto ret = occ.toIoLine();
     if (ret.text1 == null) {
         auto id = writtenGroups.countUntil(occ.tile);
-        if (id >= 0)
-            ret.text1 = "%s%d".format(glo.levelUseGroup, id);
+        if (id >= 0) {
+            /*
+             * Here, we duplicate the knowledge that the names are
+             * (const per save) + "-" + running count.
+             */
+            ret.text1 = "%s%s-%d".format(glo.levelUseGroup,
+                nameSource.randomButUniquePerLevelSave, id);
+        }
     }
     return (ret.text1 != null) ? ret : null;
 }
@@ -117,14 +155,15 @@ do {
 private void writeDependencies(
     std.stdio.File file,
     in AbstractTile tile,
-    const(TileGroup)[]* written
+    const(TileGroup)[]* written,
+    const(TilegroupNameSource) nameSource
 ) {
     if (canFind(*written, tile))
         return;
     // Recursive traversal of the dependencies
     foreach (dep; tile.dependencies)
         if (! canFind(*written, dep))
-            file.writeDependencies(dep, written);
+            file.writeDependencies(dep, written, nameSource);
     assert (tile.dependencies.all!(dep => canFind(*written, dep)
         || dep.dependencies.empty), "I don't write non-groups (that have no "
         ~ "dependencies) to the list, but everything else should be there.");
@@ -138,14 +177,23 @@ private void writeDependencies(
         scope (exit)
             *written ~= group;
         file.writeln(IoLine.Dollar(glo.levelBeginGroup,
-                                   written.length.to!string));
+                    createNameForThisGroup(*written, nameSource)));
         scope (exit)
             file.writeln(IoLine.Dollar(glo.levelEndGroup, ""));
         foreach (elem; group.key.elements) {
-            auto line = groupOrRegularTileLine(elem, *written);
+            auto line = groupOrRegularTileLine(elem, *written, nameSource);
             assert (line, "We should only write groups when all elements "
                 ~ "are either already-written groups or plain tiles!");
             file.writeln(line);
         }
     }
+}
+
+private string createNameForThisGroup(
+    const(TileGroup[]) writtenBeforeThis,
+    const(TilegroupNameSource) nameSource,
+) {
+    return nameSource.randomButUniquePerLevelSave
+        ~ "-"
+        ~ writtenBeforeThis.length.to!string;
 }
