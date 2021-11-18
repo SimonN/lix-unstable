@@ -6,6 +6,7 @@ import std.stdio;
 import std.string;
 
 import glo = basics.globals;
+import file.date;
 import file.filename;
 import file.io;
 import file.log;
@@ -80,7 +81,7 @@ do {
     if (l.terrain != null)
         file.writeln();
     const(TileGroup)[] writtenGroups;
-    const nameSource = TilegroupNameSource.roll();
+    const nameSource = TilegroupNameSource.fromDate(l.built);
 
     foreach (ref const(TerOcc) occ; l.terrain) {
         file.writeDependencies(occ.tile, &writtenGroups, nameSource);
@@ -97,27 +98,19 @@ private: ///////////////////////////////////////////////////////////// :private
 ///////////////////////////////////////////////////////////////////////////////
 
 struct TilegroupNameSource {
-    string randomButUniquePerLevelSave;
+    string builtAsString;
 
-    public static typeof(this) roll()
+    public static typeof(this) fromDate(Date d)
     {
-        typeof(this) ret;
-        ret.reroll();
-        return ret;
-    }
-
-    private void reroll()
-    {
-        import std.random;
-        import std.range;
+        import std.ascii;
         import std.array;
         import std.exception;
-        randomButUniquePerLevelSave = generate!(
-            () => uniform(0U, 26U))
-            .take(10)
-            .map!(function char(uint i) { return ('a' + i) & 0xFF; })
-            .array
-            .assumeUnique;
+
+        typeof(this) ret;
+        ret.builtAsString = d.toString
+            .map!(function char(dchar c) { return c & 0xFF; })
+            .filter!isDigit.array.assumeUnique;
+        return ret;
     }
 }
 
@@ -146,7 +139,7 @@ do {
              * (const per save) + "-" + running count.
              */
             ret.text1 = "%s%s-%d".format(glo.levelUseGroup,
-                nameSource.randomButUniquePerLevelSave, id);
+                nameSource.builtAsString, id);
         }
     }
     return (ret.text1 != null) ? ret : null;
@@ -193,7 +186,7 @@ private string createNameForThisGroup(
     const(TileGroup[]) writtenBeforeThis,
     const(TilegroupNameSource) nameSource,
 ) {
-    return nameSource.randomButUniquePerLevelSave
+    return nameSource.builtAsString
         ~ "-"
         ~ writtenBeforeThis.length.to!string;
 }
