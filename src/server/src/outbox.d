@@ -1,4 +1,4 @@
-module net.server.ihotelob;
+module net.server.outbox;
 
 /*
  * Hotel uses an Outbox.
@@ -8,6 +8,9 @@ module net.server.ihotelob;
  * The Hotel will then tell the Outbox what to send to everybody.
  *
  * This way, there is no tight coupling between the server and hotel.
+ *
+ * The server implements Outbox, but really contains several real Outboxes
+ * (that will call the enet API) to which the server (as Outbox) forwards.
  */
 
 import net.repdata;

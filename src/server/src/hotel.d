@@ -21,7 +21,7 @@ import std.range;
 
 import net.packetid;
 import net.repdata;
-import net.server.ihotelob;
+import net.server.outbox;
 import net.server.suite;
 import net.plnr;
 import net.profile;

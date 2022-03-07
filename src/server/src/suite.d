@@ -20,7 +20,7 @@ import net.profile;
 import net.repdata;
 import net.structs;
 import net.server.festival;
-import net.server.ihotelob;
+import net.server.outbox;
 
 interface Suite {
     void dispose();

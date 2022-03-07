@@ -11,9 +11,9 @@ module net.server.server;
 import std.algorithm;
 import derelict.enet.enet;
 
-import net.server.ihotelob;
-import net.server.inbox;
 import net.server.hotel;
+import net.server.inbox;
+import net.server.outbox;
 import net.enetglob;
 import net.packetid;
 import net.permu;
