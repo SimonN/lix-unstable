@@ -42,7 +42,7 @@ string enetLinkedVersion()
         ENET_VERSION_GET_MINOR(ver), ENET_VERSION_GET_PATCH(ver));
 }
 
-ENetPacket* createPacket(T)(T wantLen) nothrow
+ENetPacket* createPacket(T)(T wantLen) nothrow @nogc
     if (is (T == int) || is (T == size_t))
 {
     return enet_packet_create(null, wantLen & 0x7FFF_FFFF,
@@ -59,11 +59,18 @@ void enetSendTo(Struct, Args...)(
     in Struct st,
     ENetPeer* dest,
     Args args,
-)   if (!is (Struct == ENetPacket*))
+) nothrow @nogc
+    if (!is (Struct == ENetPacket*))
 {
     ENetPacket* packet = st.createPacket(args);
+    enetSendTo(packet, dest);
+}
+
+// Takes ownership of the packet.
+void enetSendTo(ENetPacket* packet, ENetPeer* dest) nothrow @nogc
+{
     immutable err = enet_peer_send(dest, 0, packet);
-    // enet_peer_send only deallocates on success (err == 0).
+    // enet_peer_send only takes ownership on success (err == 0).
     if (err < 0) {
         enet_packet_destroy(packet);
     }

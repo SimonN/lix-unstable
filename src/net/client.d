@@ -210,7 +210,7 @@ public:
         if (! connected)
             return;
         struct LevelPacket {
-            ENetPacket* createPacket() const {
+            ENetPacket* createPacket() const nothrow @nogc {
                 ENetPacket* ret = .createPacket(buffer.length + 2);
                 ret.data[0] = PacketCtoS.levelFile;
                 ret.data[2 .. ret.dataLength]

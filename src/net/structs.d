@@ -11,7 +11,6 @@ module net.structs;
  * Structs that read or write from bare buffers don't allocate.
  */
 
-import core.stdc.string;
 import std.algorithm;
 import std.bitmanip;
 import std.conv;
@@ -52,7 +51,7 @@ struct HelloPacket {
     Version fromVersion;
     Profile profile;
 
-    ENetPacket* createPacket() const nothrow
+    ENetPacket* createPacket() const nothrow @nogc
     in { assert (header.packetID == PacketCtoS.hello); }
     out (ret) { assert (ret.data[0] == PacketCtoS.hello); }
     do {
@@ -79,7 +78,7 @@ struct HelloAnswerPacket {
     PacketHeader header;
     Version serverVersion;
 
-    ENetPacket* createPacket() const nothrow
+    ENetPacket* createPacket() const nothrow @nogc
     {
         auto ret = .createPacket(len);
         header.serializeTo(ret.data[0 .. header.len]);
@@ -114,7 +113,7 @@ struct ProfilePacket {
     PacketHeader header;
     Profile profile;
 
-    ENetPacket* createPacket() const nothrow
+    ENetPacket* createPacket() const nothrow @nogc
     {
         auto ret = .createPacket(len);
         header.serializeTo(ret.data[0 .. header.len]);
@@ -140,18 +139,18 @@ struct ListPacket(Index)
     Index[] indices; // structure of arrays, indices[i] belongs to profiles[i]
     Profile[] profiles;
 
-    @property int len() const nothrow
+    @property int len() const nothrow @nogc
     {
         int numProfiles = profiles.length & 0x7FFF;
         return header.len + (Index.len + Profile.len) * numProfiles;
     }
 
-    private @property int mid() const nothrow
+    private @property int mid() const nothrow @nogc
     {
         return header.len + Index.len * (indices.length & 0x7FFF);
     }
 
-    ENetPacket* createPacket() const nothrow
+    ENetPacket* createPacket() const nothrow @nogc
     out (ret) {
         assert (indices.length == 0 || ret.data[header.len] == indices[0]);
     }
@@ -222,7 +221,7 @@ struct RoomChangePacket {
     PacketHeader header;
     Room room;
 
-    ENetPacket* createPacket() const nothrow
+    ENetPacket* createPacket() const nothrow @nogc
     {
         auto ret = .createPacket(len);
         header.serializeTo(ret.data[0 .. header.len]);
@@ -243,7 +242,6 @@ struct ChatPacket {
     PacketHeader header;
     string text;
 
-    // +1 for string null-termination
     static assert (netChatMaxLen <= 0xFFFF);
     int len() const pure nothrow @safe @nogc
     {
@@ -252,12 +250,14 @@ struct ChatPacket {
             + 1; // Terminating nullbyte
     }
 
-    ENetPacket* createPacket() const nothrow
+    ENetPacket* createPacket() const nothrow @nogc
     {
         auto ret = .createPacket(len);
         header.serializeTo(ret.data[0 .. header.len]);
-        strncpy(cast (char*) (ret.data + header.len), text.toStringz,
-                                                      netChatMaxLen);
+        ret.data[header.len .. len] = '\0';
+        foreach (int i; 0 .. (len - header.len - 1)) {
+            ret.data[header.len + i] = text[i];
+        }
         ret.data[len - 1] = '\0';
         return ret;
     }
@@ -296,7 +296,7 @@ struct MillisecondsSinceGameStartPacket {
 
     enum len = header.len + milliseconds.sizeof;
 
-    ENetPacket* createPacket() const nothrow
+    ENetPacket* createPacket() const nothrow @nogc
     {
         auto ret = .createPacket(len);
         header.serializeTo(ret.data[0 .. header.len]);

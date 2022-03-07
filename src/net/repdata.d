@@ -55,7 +55,7 @@ struct Ply {
         // be with these. Keep such records in whatever order they were input.
     }
 
-    ENetPacket* createPacket(ubyte packetID) const nothrow
+    ENetPacket* createPacket(ubyte packetID) const nothrow @nogc
     {
         ENetPacket* pck = .createPacket(len);
         assert (pck);

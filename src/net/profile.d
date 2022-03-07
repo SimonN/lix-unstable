@@ -1,6 +1,7 @@
 module net.profile;
 
 import core.stdc.string;
+import std.algorithm;
 import std.conv;
 import std.string;
 
@@ -98,14 +99,15 @@ public:
                 != (rhs.feeling == Feeling.observing);
     }
 
-    void serializeTo(ref ubyte[len] buf) const nothrow
+    void serializeTo(ref ubyte[len] buf) const nothrow @nogc
     {
         buf[0] = room;
         buf[1] = style;
         buf[2] = feeling;
-        strncpy(cast (char*) (buf.ptr + ubytes), name.toStringz,
-                                                 nameMaxLenExcludingNullbyte);
-        buf[ubytes + nameMaxLenExcludingNullbyte] = '\0';
+        buf[ubytes .. ubytes + nameMaxLenIncludingNullbyte] = '\0';
+        foreach (int i; 0 .. min(name.length, nameMaxLenExcludingNullbyte)) {
+            buf[ubytes + i] = name[i];
+        }
     }
 
     this(ref const(ubyte[len]) buf) nothrow
