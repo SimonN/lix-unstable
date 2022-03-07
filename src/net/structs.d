@@ -65,11 +65,16 @@ struct HelloPacket {
 
     this(const(ENetPacket*) p)
     {
-        enforce(p.dataLength == len);
+        // In <= 0.9.42, we had here: enforce(p.dataLength == len), not >=
+        enforce(p.dataLength >= len);
         header = PacketHeader(p.data[0 .. header.len]);
         enforce(header.packetID == PacketCtoS.hello);
         fromVersion = Version(p.data[header.len .. header.len + Version.len]);
         profile = Profile(p.data[len - profile.len .. len]);
+        /*
+         * If the client sent a longer packet, we ignore what comes at
+         * >= HelloPacket.len. Future server versions might interpret it.
+         */
     }
 }
 
