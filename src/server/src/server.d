@@ -8,15 +8,13 @@ module net.server.server;
  * local NetServer, and treats that NetServer without knowing it's local.
  */
 
-import std.algorithm;
 import derelict.enet.enet;
 
+import net.server.adapter;
 import net.server.hotel;
-import net.server.inbox;
 import net.server.outbox;
 import net.enetglob;
 import net.packetid;
-import net.permu;
 import net.profile;
 import net.structs;
 import net.repdata;
@@ -26,9 +24,9 @@ class NetServer {
 private:
     ENetHost* _host; // We own it.
     Hotel _hotel; // We create and own this.
-    Inbox _inbox; // Forwards to our _hotel.
-    Outbox _outbox; // Sends via our our _host.
-    SendWithEnet _sendWithEnet; // We own it.
+    Inboxes _inboxes; // All of them forward to hour _hotel.
+    SendViaEnetHost _sendWithEnet; // We own it.
+    DispatchingOutbox _outbox; // Sends via our our _host.
 
 public:
     this(in int port)
@@ -44,10 +42,10 @@ public:
             0); // assume any amount of outgoing bandwidth
         assert (_host, "error creating enet server host");
 
-        _sendWithEnet = new SendWithEnet(_host);
-        _outbox = new Outbox2016(_sendWithEnet);
+        _sendWithEnet = new SendViaEnetHost(_host);
+        _outbox = new DispatchingOutbox(_sendWithEnet);
         _hotel = Hotel(_outbox);
-        _inbox = new Inbox2016(&_hotel);
+        _inboxes = Inboxes(&_hotel);
     }
 
     ~this()
@@ -68,6 +66,8 @@ public:
         ENetEvent event = void;
         while (enet_host_service(_host, &event, 0) > 0) {
             _sendWithEnet.computeSizeOfEnetPeer(event.peer);
+            immutable PlNr from = PlNr(event.peer.incomingPeerID & 0xFF);
+
             final switch (event.type) {
             case ENET_EVENT_TYPE_NONE:
                 assert (false, "enet_host_service should have returned 0");
@@ -76,7 +76,7 @@ public:
                 // We will do that when the peer sends its hello packet.
                 break;
             case ENET_EVENT_TYPE_RECEIVE:
-                receivePacket(peerToPlNr(event.peer), event.packet);
+                receivePacket(from, event.packet);
                 enet_packet_destroy(event.packet);
                 break;
             case ENET_EVENT_TYPE_DISCONNECT:
@@ -86,7 +86,7 @@ public:
                 // Or he disconnected by his own will. The difference is
                 // whether he's in our player array. Remove from hotel and
                 // let the hotel decide what to do.
-                _hotel.removePlayerWhoHasDisconnected(peerToPlNr(event.peer));
+                _hotel.removePlayerWhoHasDisconnected(from);
                 break;
             }
         }
@@ -96,25 +96,40 @@ public:
 
 // ############################################################################
 private:
-    void receivePacket(in PlNr from, ENetPacket* got)
+    void receivePacket(in PlNr from, ENetPacket* got) nothrow
     {
         assert (got);
         if (got.dataLength < 1)
             return;
-        /* Convention:
-         * When we make a struct from the packet data, this struct contains
-         * a header, but we don't trust header.plNr. To see who sent this
-         * packet, we always infer the plNr from peerToPlNr.
-         */
-        with (PacketCtoS) try switch (got.data[0]) {
-            case hello: receiveHello(from, got); break;
-            case toExistingRoom: _inbox.receiveRoomChange(from, got); break;
-            case createRoom: _inbox.receiveCreateRoom(from, got); break;
-            case myProfile: _inbox.receiveProfileChange(from, got); break;
-            case chatMessage: _inbox.receiveChat(from, got); break;
-            case levelFile: _inbox.receiveLevel(from, got); break;
-            case myPly: _inbox.receivePly(from, got); break;
-            default: break;
+        try {
+            if (got.data[0] == PacketCtoS.hello) {
+                receiveHello(from, got);
+            }
+            else {
+                Inbox inbox = _inboxes.protocolOf(from);
+                switch (got.data[0]) {
+                case PacketCtoS.toExistingRoom:
+                    inbox.receiveRoomChange(from, got);
+                    break;
+                case PacketCtoS.createRoom:
+                    inbox.receiveCreateRoom(from, got);
+                    break;
+                case PacketCtoS.myProfile:
+                    inbox.receiveProfileChange(from, got);
+                    break;
+                case PacketCtoS.chatMessage:
+                    inbox.receiveChat(from, got);
+                    break;
+                case PacketCtoS.levelFile:
+                    inbox.receiveLevel(from, got);
+                    break;
+                case PacketCtoS.myPly:
+                    inbox.receivePly(from, got);
+                    break;
+                default:
+                    break;
+                }
+            }
         }
         catch (Exception) {}
     }
@@ -132,6 +147,8 @@ private:
         _sendWithEnet.send(from, answer.createPacket);
 
         if (answer.header.packetID == PacketStoC.youGoodHeresPlNr) {
+            _inboxes.setProtocol(from, hello.fromVersion);
+            _outbox.setProtocol(from, hello.fromVersion);
             _hotel.addNewPlayerToLobby(from, hello.profile);
         }
         else {
@@ -144,12 +161,82 @@ private:
 // ############################################################################
 // ############################################################################
 
-private PlNr peerToPlNr(in ENetPeer* peer) pure nothrow @safe @nogc
-{
-    return PlNr(peer.incomingPeerID & 0xFF);
+private struct Inboxes {
+private:
+    Inbox2016 _inbox2016;
+    Inbox[] _receiveVia;
+
+    this(Hotel* whereToSend) {
+        _inbox2016 = new Inbox2016(whereToSend);
+    }
+
+    void setProtocol(in PlNr who, in Version hisClient) nothrow @safe
+    {
+        if (who >= _receiveVia.length) {
+            _receiveVia.length = who + 1;
+        }
+        _receiveVia[who] = _inbox2016
+            = hisClient >= Version(0, 10, 0) ? _inbox2016
+            : _inbox2016;
+    }
+
+    Inbox protocolOf(in PlNr who)
+    in { assert (who < _receiveVia.length); }
+    do {
+        return _receiveVia[who];
+    }
 }
 
-private class SendWithEnet {
+/*
+ * DispatchingOutbox: Implements the outbox interface, but merely delegates
+ * to other Outboxes (that it owns) that know what to send per client version.
+ *
+ * Server can give the DispatchingOutbox to the hotel, then the hotel can
+ * call whatever the hotel likes on the PlNrs without worrying about how
+ * exactly the resulting packet should look like.
+ */
+private class DispatchingOutbox : Outbox {
+private:
+    Outbox_0_9_x _outbox_0_9_x;
+    Outbox_0_10_x _outbox_0_10_x;
+    Outbox[] _dispatchVia;
+
+public:
+    this(SendWithEnet whereToSend) {
+        _outbox_0_9_x = new Outbox_0_9_x(whereToSend);
+        _outbox_0_10_x = new Outbox_0_10_x(whereToSend);
+    }
+
+    void setProtocol(in PlNr who, in Version hisClient) nothrow @safe
+    {
+        if (who >= _dispatchVia.length) {
+            _dispatchVia.length = who + 1;
+        }
+        _dispatchVia[who]
+            = hisClient >= Version(0, 10, 0) ? _outbox_0_10_x
+            : _outbox_0_9_x;
+    }
+
+    /*
+     * Implement each Outbox interface method by:
+     * Look up the recipient's Outbox (e.g., Outbox_0_10_x) in the array,
+     * then forward the method call there, with identical arguments.
+     */
+    static foreach (func; __traits(allMembers, Outbox)) {
+        import net.server.meta;
+        import std.format;
+        mixin(format!q{
+            override void %s(%s) {
+                assert (_dispatchVia[receiv] !is null,
+                    "Call setProtocol(receiv, hisClient) before calling %s.");
+                _dispatchVia[receiv].%s(%s);
+            }
+        }(func, ParamTypesAndNames!(Outbox, func),
+            func, func, ParamNamesOnly!(Outbox, func)));
+    }
+}
+
+private class SendViaEnetHost : SendWithEnet {
 private:
     ENetHost* _host; // We don't own it. We merely know the server's host.
 
@@ -182,7 +269,7 @@ public:
     }
 
     // Takes ownership of the packet.
-    void send(in PlNr receiv, ENetPacket* what) @nogc
+    override void send(in PlNr receiv, ENetPacket* what) @nogc
     {
         enetSendTo(what, plNrToPeer(receiv));
     }
@@ -198,120 +285,8 @@ public:
             / peerInArray.incomingPeerID;
     }
 
-    void disconnectLater(in PlNr toDiscon)
+    override void disconnectLater(in PlNr toDiscon)
     {
         enet_peer_disconnect_later(plNrToPeer(toDiscon), 0);
-    }
-}
-
-private class Outbox2016 : Outbox {
-private:
-    SendWithEnet _out; // We don't own it. We merely know the server's.
-
-public:
-    this(SendWithEnet viaWhichWeSend)
-    {
-        _out = viaWhichWeSend;
-    }
-
-    void sendChat(in PlNr receiv, in PlNr fromChatter, in string text)
-    {
-        ChatPacket chat;
-        chat.header.packetID = PacketStoC.peerChatMessage;
-        chat.header.plNr = fromChatter;
-        chat.text = text;
-        _out.send(receiv, chat.createPacket);
-    }
-
-    void sendLevelByChooser(PlNr receiv, const(ubyte[]) level, PlNr from) @nogc
-    {
-        struct LevelPacket {
-            const(ubyte[]) _level;
-            PlNr _from;
-            ENetPacket* createPacket() const nothrow @nogc {
-                PacketHeader header;
-                header.packetID = PacketStoC.peerLevelFile;
-                header.plNr = _from;
-                auto ret = .createPacket(header.len + _level.length);
-                header.serializeTo(ret.data[0 .. header.len]);
-                ret.data[header.len .. ret.dataLength] = _level[0 .. $];
-                return ret;
-            }
-        }
-        _out.send(receiv, LevelPacket(level, from).createPacket);
-    }
-
-    void sendProfileChangeBy(in PlNr receiv, in PlNr ofWhom, in Profile full)
-    {
-        ProfilePacket pa;
-        pa.header.packetID = PacketStoC.peerProfile;
-        pa.header.plNr = ofWhom;
-        pa.profile = full;
-        _out.send(receiv, pa.createPacket);
-    }
-
-    void sendPly(PlNr receiv, Ply data)
-    {
-        _out.send(receiv, data.createPacket(PacketStoC.peerPly));
-    }
-
-    void describeRoom(in PlNr receiv, in Profile[PlNr] contents)
-    {
-        auto informMover = ProfileListPacket();
-        informMover.header.packetID = PacketStoC.peersAlreadyInYourNewRoom;
-        informMover.header.plNr = receiv;
-        foreach (key, prof; contents) {
-            informMover.indices ~= key;
-            informMover.profiles ~= prof;
-        }
-        _out.send(receiv, informMover.createPacket);
-    }
-
-    void informLobbyistAboutRooms(PlNr receiv, in RoomListPacket rlp)
-    {
-        _out.send(receiv, rlp.createPacket);
-    }
-
-    void sendPeerEnteredYourRoom(PlNr receiv, PlNr mover, in Profile ofMover)
-    {
-        auto pa = ProfilePacket();
-        pa.header.packetID = PacketStoC.peerJoinsYourRoom;
-        pa.header.plNr = mover;
-        pa.profile = ofMover;
-        _out.send(receiv, pa.createPacket);
-    }
-
-    void sendPeerLeftYourRoom(PlNr receiv, PlNr mover, in Room toWhere)
-    {
-        auto pa = RoomChangePacket();
-        pa.header.packetID = PacketStoC.peerLeftYourRoom;
-        pa.header.plNr = mover;
-        pa.room = toWhere;
-        _out.send(receiv, pa.createPacket);
-    }
-
-    void sendPeerDisconnected(in PlNr receiv, in PlNr disconnected)
-    {
-        auto discon = SomeoneDisconnectedPacket();
-        discon.packetID = PacketStoC.peerDisconnected;
-        discon.plNr = disconnected;
-        _out.send(receiv, discon.createPacket);
-    }
-
-    void startGame(in PlNr receiv, in PlNr roomOwner, in int permuLength)
-    {
-        auto pa = StartGameWithPermuPacket(permuLength);
-        pa.header.packetID = PacketStoC.gameStartsWithPermu;
-        pa.header.plNr = roomOwner;
-        _out.send(receiv, pa.createPacket);
-    }
-
-    void sendMillisecondsSinceGameStart(PlNr receiv, int millis)
-    {
-        auto pa = MillisecondsSinceGameStartPacket();
-        pa.header.packetID = PacketStoC.millisecondsSinceGameStart;
-        pa.header.plNr = receiv; // doesn't matter
-        pa.milliseconds = millis;
-        _out.send(receiv, pa.createPacket);
     }
 }

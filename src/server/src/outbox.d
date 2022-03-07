@@ -24,8 +24,8 @@ interface Outbox {
     void sendLevelByChooser(PlNr receiv, const(ubyte[]) level, PlNr from);
     void sendPly(PlNr receiv, Ply data);
 
-    void describeRoom(in PlNr receiv, in Profile[PlNr]);
-    void informLobbyistAboutRooms(PlNr receiv, in RoomListPacket);
+    void describeRoom(in PlNr receiv, in Profile[PlNr] inhab);
+    void informLobbyistAboutRooms(PlNr receiv, in RoomListPacket rlp);
     void sendPeerEnteredYourRoom(PlNr receiv, PlNr mover, in Profile ofMover);
     void sendPeerLeftYourRoom(PlNr receiv, PlNr mover, in Room toWhere);
     void sendPeerDisconnected(PlNr receiv, PlNr disconnector);

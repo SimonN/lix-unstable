@@ -20,7 +20,7 @@ struct Version {
     int minor;
     int patch;
 
-    this(int major, int minor, int patch)
+    this(int major, int minor, int patch) pure nothrow @safe @nogc
     {
         this.major = major;
         this.minor = minor;
@@ -53,7 +53,7 @@ struct Version {
         return "%d.%d.*".format(major, minor);
     }
 
-    int opCmp(in Version rhs) const
+    int opCmp(in Version rhs) const pure nothrow @safe @nogc
     {
         return major > rhs.major ? 1 : major < rhs.major ? -1
             :  minor > rhs.minor ? 1 : minor < rhs.minor ? -1
