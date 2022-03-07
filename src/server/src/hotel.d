@@ -80,9 +80,8 @@ public:
         return candidate == Room.maxExclusive ? Room(0) : candidate;
     }
 
-    void addNewPlayerToLobby(in PlNr nrOfNewbie, Profile newbie)
+    void addNewPlayerToLobby(in PlNr nrOfNewbie, Profile2022 newbie)
     {
-        newbie.room = Room(0);
         _suites[Room(0)].add(nrOfNewbie, newbie);
         // It would be enough to send the overview only to the newbie.
         // But it's easiest to ask to send it to all. (Hotel knows no outbox.)
@@ -97,9 +96,8 @@ public:
         if (from.empty || _suites[to].contains(mover)) {
             return;
         }
-        Profile pr = from.front.pop(mover,
+        const pr = from.front.pop(mover,
             Suite.PopReason(Suite.PopReason.Reason.movedToRoom, to));
-        pr.room = to;
         _suites[to].add(mover, pr);
         sendRoomOverviewToLobbyists();
     }
@@ -113,10 +111,10 @@ public:
                 Suite.PopReason(Suite.PopReason.Reason.disconnected)));
     }
 
-    void changeProfile(in PlNr ofWhom, in Profile wish)
+    void changeProfileButKeepVersion(in PlNr ofWhom, in Profile2022 wish)
     {
         foreach (where; _suites[].find!(sui => sui.contains(ofWhom)).takeOne) {
-            where.changeProfile(ofWhom, wish);
+            where.changeProfileButKeepVersion(ofWhom, wish);
         }
     }
 
@@ -165,7 +163,7 @@ private:
 
         foreach (const sui; _suites[Room(1) .. $].filter!(s => ! s.empty)) {
             ret.indices ~= sui.room;
-            ret.profiles ~= sui.profileOfOwner;
+            ret.profiles ~= sui.profileOfOwner.to2016with(sui.room);
         }
         return ret;
     }

@@ -21,6 +21,7 @@ import net.repdata;
 import net.structs;
 import net.server.festival;
 import net.server.outbox;
+import net.versioning;
 
 interface Suite {
     void dispose();
@@ -30,14 +31,22 @@ interface Suite {
         int numPlayers();
         final bool empty() { return numPlayers() == 0; }
         bool contains(in PlNr);
-        Profile profileOfOwner() in { assert (!empty); };
+        Profile2022 profileOfOwner() in { assert (!empty); };
+        bool allows(in Version);
     }
 
-    void add(in PlNr nrOfNewbie, in Profile newbie)
+    void add(in PlNr nrOfNewbie, in Profile2022 newbie)
         in { assert (! contains(nrOfNewbie)); };
-    Profile pop(in PlNr who, in PopReason)
+    Profile2022 pop(in PlNr who, in PopReason)
         in { assert (contains(who)); };
-    void changeProfile(in PlNr ofWhom, in Profile wish)
+    /*
+     * Hack to accept packets that contained Profile2016: The inbox had
+     * to put some dummy version in the arguments. Ideally, the inbox
+     * doesn't have to guess anything to pass us.
+     */
+    void changeProfileButKeepVersion(
+        in PlNr ofWhom,
+        in Profile2022 wish)
         in { assert (contains(ofWhom)); };
 
     void broadcastChat(in PlNr chatter, in string text);
@@ -61,7 +70,7 @@ private:
     Room _room;
     Outbox _outbox;
     Festival _fe;
-    Profile[PlNr] _players;
+    Profile2022[PlNr] _players;
 
 public:
     this(in Room ro, Outbox anOutbox)
@@ -87,33 +96,38 @@ public:
         return (who in _players) !is null;
     }
 
-    Profile profileOfOwner() const pure nothrow @safe @nogc
+    Profile2022 profileOfOwner() const pure nothrow @safe @nogc
     in { assert (! empty); }
     do {
-        const Profile* ret = _fe.owner in _players;
+        const Profile2022* ret = _fe.owner in _players;
         assert (ret !is null, "should be ensured by housekeep()");
         return *ret;
     }
 
-    void add(in PlNr who, in Profile newbie)
+    bool allows(in Version newbie) const pure nothrow @safe @nogc
+    {
+        return empty || newbie.compatibleWith(profileOfOwner.clientVersion);
+    }
+
+    void add(in PlNr who, in Profile2022 newbie)
     {
         assert (who !in _players);
         _players[who] = newbie;
         unreadyAll();
         housekeep();
-        _outbox.describeRoom(who, _players);
+        _outbox.describeRoom(who, room, _players);
         if (_fe.level !is null) {
             _outbox.sendLevelByChooser(who, _fe.level, _fe.levelChooser);
         }
         foreach (receiv; _players.byKey.filter!(pl => pl != who)) {
-            _outbox.sendPeerEnteredYourRoom(receiv, who, newbie);
+            _outbox.sendPeerEnteredYourRoom(receiv, room, who, newbie);
         }
     }
 
-    Profile pop(in PlNr who, in PopReason reason)
+    Profile2022 pop(in PlNr who, in PopReason reason)
     {
         assert (who in _players);
-        const Profile ret = *(who in _players);
+        const Profile2022 ret = *(who in _players);
         unreadyAll();
         _players.remove(who);
         housekeep();
@@ -121,17 +135,22 @@ public:
         return ret;
     }
 
-    void changeProfile(in PlNr ofWhom, in Profile wish)
+    void changeProfileButKeepVersion(in PlNr ofWhom, in Profile2022 wish)
     {
-        const(Profile*) old = ofWhom in _players;
+        const(Profile2022*) old = ofWhom in _players;
         assert (old);
         if (old.wouldForceAllNotReadyOnReplace(wish)) {
             unreadyAll();
         }
-        _players[ofWhom] = wish;
+        {
+            immutable Version oldVer = _players[ofWhom].clientVersion;
+            _players[ofWhom] = wish;
+            _players[ofWhom].clientVersion = oldVer;
+        }
         foreach (receiv; _players.byKey) {
             // Yes, to all in the room, including back to the sender.
-            _outbox.sendProfileChangeBy(receiv, ofWhom, _players[ofWhom]);
+            _outbox.sendProfileChangeBy(
+                receiv, room, ofWhom, _players[ofWhom]);
         }
         maybeStartGame();
     }
@@ -186,7 +205,7 @@ private:
         // Only server-side; doesn't send packets.
         // The clients must do that on receiving peer-entered/left-room.
         // Somewhere else in the Suite code, we'll send those packets.
-        foreach (ref Profile pr; _players) {
+        foreach (ref Profile2022 pr; _players) {
             pr.setNotReady();
         }
     }
@@ -207,8 +226,8 @@ private:
         auto party() {
             return _players.byValue();
         }
-        if ( ! party.any!(prof => prof.feeling == Profile.Feeling.ready)
-            || party.any!(prof => prof.feeling == Profile.Feeling.thinking)
+        if ( ! party.any!(prof => prof.feeling == Profile2022.Feeling.ready)
+            || party.any!(prof => prof.feeling == Profile2022.Feeling.thinking)
         ) {
             return;
         }
@@ -227,10 +246,10 @@ private:
     }
 }
 
-private int numberOfDifferentTribes(in Profile[PlNr] players) pure nothrow @safe @nogc
+private int numberOfDifferentTribes(in Profile2022[PlNr] players) pure nothrow @safe @nogc
 {
     auto styles = players.byValue
-        .filter!(p => p.feeling == Profile.Feeling.ready)
+        .filter!(p => p.feeling == Profile2022.Feeling.ready)
         .map!(p => p.style);
     return 0xFFFF & styles.save.enumerate.count!(
         enuStyle => ! styles.save.take(enuStyle.index).canFind!(
@@ -239,9 +258,9 @@ private int numberOfDifferentTribes(in Profile[PlNr] players) pure nothrow @safe
 
 unittest {
     import net.style;
-    Profile[PlNr] a;
-    Profile p;
-    p.feeling = Profile.Feeling.ready;
+    Profile2022[PlNr] a;
+    Profile2022 p;
+    p.feeling = Profile2022.Feeling.ready;
     a[PlNr(3)] = a[PlNr(5)] = a[PlNr(7)] = a[PlNr(9)] = p;
     a[PlNr(3)].style = Style.red;
     a[PlNr(5)].style = Style.yellow;
@@ -252,7 +271,7 @@ unittest {
 
 class Lobby : Suite {
     Outbox _outbox;
-    Profile[PlNr] _lobbyists;
+    Profile2022[PlNr] _lobbyists;
 
 public:
     this(Outbox anOutbox)
@@ -277,13 +296,18 @@ public:
         return (who in _lobbyists) !is null;
     }
 
-    Profile profileOfOwner() const pure nothrow @safe @nogc
+    Profile2022 profileOfOwner() const pure nothrow @safe @nogc
     in { assert (!empty); }
     do {
-        return Profile(); // shouldn't be called. Questionable OO.
+        return Profile2022(); // shouldn't be called. Questionable OO.
     }
 
-    void add(in PlNr who, in Profile newbie)
+    bool allows(in Version newbie) const pure nothrow @safe @nogc
+    {
+        return true;
+    }
+
+    void add(in PlNr who, in Profile2022 newbie)
     {
         version (assert) {
             import std.conv;
@@ -291,20 +315,20 @@ public:
                 ~ " shouldn't be in _lobbyists=" ~ _lobbyists.to!string);
         }
         _lobbyists[who] = newbie;
-        _outbox.describeRoom(who, _lobbyists);
+        _outbox.describeRoom(who, room, _lobbyists);
         foreach (lobbyist; _lobbyists.byKey.filter!(pl => pl != who)) {
-            _outbox.sendPeerEnteredYourRoom(lobbyist, who, newbie);
+            _outbox.sendPeerEnteredYourRoom(lobbyist, room, who, newbie);
         }
     }
 
-    Profile pop(in PlNr who, in Suite.PopReason reason)
+    Profile2022 pop(in PlNr who, in Suite.PopReason reason)
     {
         version (assert) {
             import std.conv;
             assert (who in _lobbyists, "who=" ~ who.to!string
                 ~ " shouldn't be in _lobbyists=" ~ _lobbyists.to!string);
         }
-        const Profile ret = *(who in _lobbyists);
+        const Profile2022 ret = *(who in _lobbyists);
         _lobbyists.remove(who);
         _lobbyists.notifyAboutBeingLeftBehind(who, reason, _outbox);
         return ret;
@@ -317,12 +341,17 @@ public:
         }
     }
 
-    void changeProfile(in PlNr ofWhom, in Profile wish)
+    void changeProfileButKeepVersion(in PlNr ofWhom, in Profile2022 wish)
     {
-        _lobbyists[ofWhom] = wish;
+        {
+            immutable Version oldVer = _lobbyists[ofWhom].clientVersion;
+            _lobbyists[ofWhom] = wish;
+            _lobbyists[ofWhom].clientVersion = oldVer;
+        }
         foreach (receiv; _lobbyists.byKey) {
             // Yes, to all in the room, including back to the sender.
-            _outbox.sendProfileChangeBy(receiv, ofWhom, _lobbyists[ofWhom]);
+            _outbox.sendProfileChangeBy(
+                receiv, room, ofWhom, _lobbyists[ofWhom]);
         }
     }
 
@@ -339,7 +368,7 @@ public:
 }
 
 void notifyAboutBeingLeftBehind(
-    in Profile[PlNr] comrades,
+    in Profile2022[PlNr] comrades,
     in PlNr mover,
     in Suite.PopReason reason,
     Outbox outbox,

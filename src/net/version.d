@@ -60,7 +60,7 @@ struct Version {
             :  patch > rhs.patch ? 1 : patch < rhs.patch ? -1 : 0;
     }
 
-    bool compatibleWith(in Version rhs) const
+    bool compatibleWith(in Version rhs) const pure nothrow @safe @nogc
     {
         return major == rhs.major
             && minor == rhs.minor;

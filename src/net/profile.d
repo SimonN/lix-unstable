@@ -43,7 +43,24 @@ public:
      * they don't send an updated profile as a room change.
      */
 
-    Profile2016 toProfile2016withRoom(Room aRoom)
+    void setNotReady() @nogc
+    {
+        if (feeling == Feeling.ready)
+            feeling = Feeling.thinking;
+    }
+
+    // If a player changes his profile from this to rhs, should we require
+    // everybody in the room to mark themselves as not-ready?
+    bool wouldForceAllNotReadyOnReplace(
+        in typeof(this) rhs) const pure nothrow @safe @nogc
+    {
+        return this.style != rhs.style
+            || this.name != rhs.name
+            ||    (this.feeling == Feeling.observing)
+                != (rhs.feeling == Feeling.observing);
+    }
+
+    Profile2016 to2016with(Room aRoom) const pure nothrow @safe @nogc
     {
         Profile2016 ret;
         ret.room = aRoom;
@@ -70,17 +87,6 @@ public:
     Feeling feeling;
     string name;
 
-    @property Style style() const pure nothrow @safe @nogc
-    {
-        assert (goodForMultiplayer(_style));
-        return _style;
-    }
-
-    @property void style(in Style st) nothrow
-    {
-        _style = goodForMultiplayer(st) ? st : Style.red;
-    }
-
     void setNotReady() @nogc
     {
         if (feeling == Feeling.ready)
@@ -97,6 +103,16 @@ public:
             || this.name != rhs.name
             ||    (this.feeling == Feeling.observing)
                 != (rhs.feeling == Feeling.observing);
+    }
+
+    Profile2022 to2022with(in Version ver) const pure nothrow @safe @nogc
+    {
+        Profile2022 ret;
+        ret.clientVersion = ver;
+        ret.feeling = feeling;
+        ret.style = style;
+        ret.name = name;
+        return ret;
     }
 
     void serializeTo(ref ubyte[len] buf) const nothrow @nogc

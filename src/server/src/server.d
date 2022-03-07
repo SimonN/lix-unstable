@@ -149,7 +149,8 @@ private:
         if (answer.header.packetID == PacketStoC.youGoodHeresPlNr) {
             _inboxes.setProtocol(from, hello.fromVersion);
             _outbox.setProtocol(from, hello.fromVersion);
-            _hotel.addNewPlayerToLobby(from, hello.profile);
+            _hotel.addNewPlayerToLobby(from,
+                hello.profile.to2022with(hello.fromVersion));
         }
         else {
             _sendWithEnet.disconnectLater(from);

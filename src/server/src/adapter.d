@@ -60,7 +60,10 @@ public:
 
     void receiveProfileChange(in PlNr from, in ENetPacket* got)
     {
-        _hotel.changeProfile(from, ProfilePacket(got).profile);
+        import net.versioning;
+        _hotel.changeProfileButKeepVersion(from,
+            ProfilePacket(got).profile.to2022with(Version(0, 1, 2)) // Ignored.
+        );
     }
 
     void receiveChat(in PlNr from, in ENetPacket* got)
@@ -149,12 +152,16 @@ private mixin template sendLevel2016() {
 }
 
 private mixin template sendProfile2016() {
-    void sendProfileChangeBy(in PlNr receiv, in PlNr ofWhom, in Profile full)
+    void sendProfileChangeBy(
+        in PlNr receiv,
+        in Room here,
+        in PlNr ofWhom,
+        in Profile2022 full)
     {
         ProfilePacket pa;
         pa.header.packetID = PacketStoC.peerProfile;
         pa.header.plNr = ofWhom;
-        pa.profile = full;
+        pa.profile = full.to2016with(here);
         _out.send(receiv, pa.createPacket);
     }
 }
@@ -167,14 +174,17 @@ private mixin template sendPly2016() {
 }
 
 private mixin template describeRoom2016() {
-    void describeRoom(in PlNr receiv, in Profile[PlNr] contents)
+    void describeRoom(
+        in PlNr receiv,
+        in Room here,
+        in Profile2022[PlNr] contents)
     {
         auto informMover = ProfileListPacket();
         informMover.header.packetID = PacketStoC.peersAlreadyInYourNewRoom;
         informMover.header.plNr = receiv;
         foreach (key, prof; contents) {
             informMover.indices ~= key;
-            informMover.profiles ~= prof;
+            informMover.profiles ~= prof.to2016with(here);
         }
         _out.send(receiv, informMover.createPacket);
     }
@@ -188,12 +198,16 @@ private mixin template informLobbyist2016() {
 }
 
 private mixin template sendPeerEnteredYourRoom2016() {
-    void sendPeerEnteredYourRoom(PlNr receiv, PlNr mover, in Profile ofMover)
+    void sendPeerEnteredYourRoom(
+        in PlNr receiv,
+        in Room here,
+        in PlNr mover,
+        in Profile2022 ofMover)
     {
         auto pa = ProfilePacket();
         pa.header.packetID = PacketStoC.peerJoinsYourRoom;
         pa.header.plNr = mover;
-        pa.profile = ofMover;
+        pa.profile = ofMover.to2016with(here);
         _out.send(receiv, pa.createPacket);
     }
 }
