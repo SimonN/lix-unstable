@@ -142,12 +142,12 @@ struct ListPacket(Index)
 {
     PacketHeader header;
     Index[] indices; // structure of arrays, indices[i] belongs to profiles[i]
-    Profile[] profiles;
+    Profile2016[] profiles;
 
     @property int len() const nothrow @nogc
     {
         int numProfiles = profiles.length & 0x7FFF;
-        return header.len + (Index.len + Profile.len) * numProfiles;
+        return header.len + (Index.len + Profile2016.len) * numProfiles;
     }
 
     private @property int mid() const nothrow @nogc
@@ -172,10 +172,10 @@ struct ListPacket(Index)
             // profile.serializeTo expects the slice length at compile-time.
             // I don't know how to create a fixed-length D array from a pointer
             // and the length, so I do it with this otherwise-unecessary copy.
-            ubyte[Profile.len] temp;
+            ubyte[Profile2016.len] temp;
             profile.serializeTo(temp);
-            ret.data[mid + Profile.len * i
-                ..   mid + Profile.len * (i+1)] = temp[];
+            ret.data[mid + Profile2016.len * i
+                ..   mid + Profile2016.len * (i+1)] = temp[];
         }
         return ret;
     }
@@ -183,19 +183,19 @@ struct ListPacket(Index)
     this(const(ENetPacket*) p)
     out { assert (indices.length == profiles.length); }
     do {
-        enforce((p.dataLength - header.len) % (Profile.len + Index.len) == 0);
+        enforce((p.dataLength - header.len) % (Profile2016.len + Index.len) == 0);
         header = PacketHeader(p.data[0 .. header.len]);
         indices.length = (p.dataLength - header.len)
-                        / (Profile.len + Index.len);
+                        / (Profile2016.len + Index.len);
         foreach (i, ref oneIndex; indices) {
             static assert (oneIndex.len == 1);
             oneIndex = Index(p.data[header.len + i]);
         }
         profiles.length = indices.length;
         foreach (i, ref profile; profiles) {
-            ubyte[Profile.len] temp = p.data[mid + Profile.len * i
-                                          .. mid + Profile.len * (i+1)];
-            profile = Profile(temp);
+            ubyte[Profile2016.len] temp = p.data[mid + Profile2016.len * i
+                                              .. mid + Profile2016.len * (i+1)];
+            profile = Profile2016(temp);
         }
     }
 }

@@ -53,7 +53,7 @@ interface Suite {
     void receiveLevel(in PlNr chooser, const(ubyte[]) level);
     void receivePly(in Ply);
     void sendTimeSyncingPackets();
-    void sendToEachLobbyist(in RoomListPacket);
+    void informLobbyistsAboutRooms(in Suite[Room.maxExclusive]);
 
     struct PopReason {
         enum Reason {
@@ -197,7 +197,7 @@ public:
         }
     }
 
-    void sendToEachLobbyist(in RoomListPacket) {}
+    void informLobbyistsAboutRooms(in Suite[Room.maxExclusive]) {}
 
 private:
     void unreadyAll() @nogc
@@ -326,7 +326,7 @@ public:
         version (assert) {
             import std.conv;
             assert (who in _lobbyists, "who=" ~ who.to!string
-                ~ " shouldn't be in _lobbyists=" ~ _lobbyists.to!string);
+                ~ " should be in _lobbyists=" ~ _lobbyists.to!string);
         }
         const Profile2022 ret = *(who in _lobbyists);
         _lobbyists.remove(who);
@@ -359,10 +359,24 @@ public:
     void receivePly(in Ply) {}
     void sendTimeSyncingPackets() {}
 
-    void sendToEachLobbyist(in RoomListPacket rlp)
+    /*
+     * Everybody gets to see only the rooms compatible with himself.
+     */
+    void informLobbyistsAboutRooms(in Suite[Room.maxExclusive] suites)
     {
-        foreach (lobbyist; _lobbyists.byKey) {
-            _outbox.informLobbyistAboutRooms(lobbyist, rlp);
+        import net.packetid;
+        foreach (receiv, lobbyist; _lobbyists) {
+            RoomListPacket forHim;
+            forHim.header.packetID = PacketStoC.listOfExistingRooms;
+            forHim.header.plNr = receiv; // Although irrelevant in 2016
+
+            foreach (sui; suites[].filter!(
+                s => ! s.empty && s.allows(lobbyist.clientVersion))
+            ) {
+                forHim.indices ~= sui.room;
+                forHim.profiles ~= sui.profileOfOwner.to2016with(sui.room);
+            }
+            _outbox.informLobbyistAboutRooms(receiv, forHim);
         }
     }
 }
