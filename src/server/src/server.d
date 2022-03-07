@@ -12,6 +12,7 @@ import std.algorithm;
 import derelict.enet.enet;
 
 import net.server.ihotelob;
+import net.server.inbox;
 import net.server.hotel;
 import net.enetglob;
 import net.packetid;
@@ -24,7 +25,8 @@ import net.versioning;
 class NetServer : Outbox {
 private:
     ENetHost* _host;
-    Hotel _hotel;
+    Hotel _hotel; // We create and own this.
+    Inbox _inbox; // Forwards to our _hotel.
 
     /*
      * Hack to detect size of ENetPeer at runtime, independently from the
@@ -51,6 +53,7 @@ public:
         address.host = ENET_HOST_ANY;
         address.port = port & 0xFFFF;
         _hotel = Hotel(this);
+        _inbox = new Inbox2016(&_hotel);
         _host = enet_host_create(&address,
             127, // max connections. PlNr is ubyte, redesign PlNr if want more
             2, // allow up to 2 channels to be used, 0 and 1
@@ -85,7 +88,7 @@ public:
                 // We will do that when the peer sends its hello packet.
                 break;
             case ENET_EVENT_TYPE_RECEIVE:
-                receivePacket(event.peer, event.packet);
+                receivePacket(peerToPlNr(event.peer), event.packet);
                 enet_packet_destroy(event.packet);
                 break;
             case ENET_EVENT_TYPE_DISCONNECT:
@@ -216,10 +219,8 @@ public:
 // ############################################################################
 
 private:
-    void receivePacket(ENetPeer* peer, ENetPacket* got)
+    void receivePacket(in PlNr from, ENetPacket* got)
     {
-        assert (_host);
-        assert (peer);
         assert (got);
         if (got.dataLength < 1)
             return;
@@ -229,13 +230,13 @@ private:
          * packet, we always infer the plNr from peerToPlNr.
          */
         with (PacketCtoS) try switch (got.data[0]) {
-            case hello: receiveHello(peer, got); break;
-            case toExistingRoom: receiveRoomChange(peer, got); break;
-            case createRoom: receiveCreateRoom(peer, got); break;
-            case myProfile: receiveProfileChange(peer, got); break;
-            case chatMessage: receiveChat(peer, got); break;
-            case levelFile: receiveLevel(peer, got); break;
-            case myPly: receivePly(peer, got); break;
+            case hello: receiveHello(from, got); break;
+            case toExistingRoom: _inbox.receiveRoomChange(from, got); break;
+            case createRoom: _inbox.receiveCreateRoom(from, got); break;
+            case myProfile: _inbox.receiveProfileChange(from, got); break;
+            case chatMessage: _inbox.receiveChat(from, got); break;
+            case levelFile: _inbox.receiveLevel(from, got); break;
+            case myPly: _inbox.receivePly(from, got); break;
             default: break;
         }
         catch (Exception) {}
@@ -261,63 +262,23 @@ private:
         return cast(ENetPeer*)(cast(void*)_host.peers + plNr * sizeOfEnetPeer);
     }
 
-    void receiveHello(ENetPeer* peer, ENetPacket* got)
+    void receiveHello(in PlNr from, in ENetPacket* got)
     {
         immutable hello = HelloPacket(got);
         auto answer = HelloAnswerPacket();
-        immutable plNr = peerToPlNr(peer);
-        answer.header.plNr = plNr;
+        answer.header.plNr = from;
         answer.header.packetID = hello.fromVersion.compatibleWith(gameVersion)
                                ? PacketStoC.youGoodHeresPlNr
                                : hello.fromVersion < gameVersion
                                ? PacketStoC.youTooOld : PacketStoC.youTooNew;
         answer.serverVersion = gameVersion;
-        answer.enetSendTo(peer);
+        answer.enetSendTo(plNrToPeer(from));
 
         if (answer.header.packetID == PacketStoC.youGoodHeresPlNr) {
-            _hotel.addNewPlayerToLobby(plNr, hello.profile);
+            _hotel.addNewPlayerToLobby(from, hello.profile);
         }
         else {
-            enet_peer_disconnect_later(peer, answer.header.packetID);
+            enet_peer_disconnect_later(plNrToPeer(from), answer.header.packetID);
         }
-    }
-
-    void receiveRoomChange(ENetPeer* peer, ENetPacket* got)
-    {
-        immutable wish = RoomChangePacket(got);
-        _hotel.movePlayer(peerToPlNr(peer), wish.room);
-    }
-
-    void receiveCreateRoom(ENetPeer* peer, ENetPacket* got)
-    {
-        _hotel.movePlayer(peerToPlNr(peer), _hotel.firstFreeRoomElseLobby());
-    }
-
-    void receiveProfileChange(ENetPeer* peer, ENetPacket* got)
-    {
-        _hotel.changeProfile(peerToPlNr(peer), ProfilePacket(got).profile);
-    }
-
-    void receiveChat(ENetPeer* peer, ENetPacket* got)
-    {
-        _hotel.broadcastChat(peerToPlNr(peer), ChatPacket(got).text);
-    }
-
-    void receiveLevel(ENetPeer* peer, ENetPacket* got)
-    {
-        if (got.dataLength < 2) {
-            return; // Too short for even an empty level.
-        }
-        _hotel.receiveLevel(peerToPlNr(peer), got.data[2 .. got.dataLength]);
-    }
-
-    void receivePly(ENetPeer* peer, ENetPacket* got)
-    {
-        if (got.dataLength != Ply.len) {
-            return;
-        }
-        auto ply = Ply(got);
-        ply.player = peerToPlNr(peer); // Don't trust. We decide who sent it!
-        _hotel.receivePly(ply);
     }
 }
