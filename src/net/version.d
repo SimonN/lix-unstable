@@ -74,7 +74,7 @@ struct Version {
         buf[8 .. 12] = nativeToBigEndian!int(patch);
     }
 
-    this(ref const(ubyte[len]) buf)
+    this(ref const(ubyte[len]) buf) pure nothrow @nogc
     {
         major = bigEndianToNative!int(buf[0 .. 4]);
         minor = bigEndianToNative!int(buf[4 .. 8]);
