@@ -179,7 +179,7 @@ private mixin template describeRoom2016() {
         in Room here,
         in Profile2022[PlNr] contents)
     {
-        auto informMover = ProfileListPacket();
+        auto informMover = ProfileListPacket2016();
         informMover.header.packetID = PacketStoC.peersAlreadyInYourNewRoom;
         informMover.header.plNr = receiv;
         foreach (key, prof; contents) {
@@ -191,7 +191,7 @@ private mixin template describeRoom2016() {
 }
 
 private mixin template informLobbyist2016() {
-    void informLobbyistAboutRooms(PlNr receiv, in RoomListPacket rlp)
+    void informLobbyistAboutRooms(PlNr receiv, in RoomListPacket2016 rlp)
     {
         _out.send(receiv, rlp.createPacket);
     }

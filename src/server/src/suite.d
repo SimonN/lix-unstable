@@ -366,7 +366,7 @@ public:
     {
         import net.packetid;
         foreach (receiv, lobbyist; _lobbyists) {
-            RoomListPacket forHim;
+            RoomListPacket2016 forHim;
             forHim.header.packetID = PacketStoC.listOfExistingRooms;
             forHim.header.plNr = receiv; // Although irrelevant in 2016
 

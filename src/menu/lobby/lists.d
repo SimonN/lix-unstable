@@ -16,7 +16,6 @@ import gui;
 import gui.picker.scrolist;
 import net.plnr;
 import net.profile;
-import net.structs : RoomListPacket;
 
 class PeerLine : Button {
 private:

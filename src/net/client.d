@@ -345,7 +345,7 @@ private:
             _onPeerLeavesRoomTo && _onPeerLeavesRoomTo(name, gone.room);
         }
         else if (got.data[0] == PacketStoC.peersAlreadyInYourNewRoom) {
-            auto list = ProfileListPacket(got);
+            auto list = ProfileListPacket2016(got);
             _profilesInOurRoom.clear();
             foreach (i, const(PlNr) plNr; list.indices)
                 _profilesInOurRoom[plNr] = list.profiles[i];
@@ -354,7 +354,7 @@ private:
                 _profilesInOurRoom[_ourPlNr].room);
         }
         else if (got.data[0] == PacketStoC.listOfExistingRooms) {
-            auto list = RoomListPacket(got);
+            auto list = RoomListPacket2016(got);
             if (_onListOfExistingRooms)
                 _onListOfExistingRooms(list.indices, list.profiles);
         }

@@ -36,7 +36,7 @@ interface Outbox {
         in Room here, // Only needed to send Profile2016 to 0.9.x clients
         in Profile2022[PlNr] inhab);
 
-    void informLobbyistAboutRooms(PlNr receiv, in RoomListPacket rlp);
+    void informLobbyistAboutRooms(PlNr receiv, in RoomListPacket2016 rlp);
 
     void sendPeerEnteredYourRoom(
         in PlNr receiv,

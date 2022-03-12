@@ -134,10 +134,10 @@ struct ProfilePacket {
     }
 }
 
-alias ProfileListPacket = ListPacket!PlNr;
-alias RoomListPacket = ListPacket!Room;
+alias ProfileListPacket2016 = ListPacket2016!PlNr;
+alias RoomListPacket2016 = ListPacket2016!Room;
 
-struct ListPacket(Index)
+struct ListPacket2016(Index)
     if (is (Index == PlNr) || is (Index == Room))
 {
     PacketHeader header;
@@ -206,7 +206,7 @@ unittest {
     scope (exit)
         deinitializeEnet();
 
-    ProfileListPacket list;
+    ProfileListPacket2016 list;
     list.indices = [ PlNr(80), PlNr(81), PlNr(82) ];
     list.profiles = [ Profile(), Profile(), Profile() ];
     list.profiles[1].name = "Hello";
@@ -215,7 +215,7 @@ unittest {
     assert (packet.data[list.header.len + 0] == 80);
     assert (packet.data[list.header.len + 1] == 81);
 
-    auto anotherList = ProfileListPacket(packet);
+    auto anotherList = ProfileListPacket2016(packet);
     assert (anotherList.profiles.length == 3);
     assert (anotherList.indices[1] == 81);
     assert (anotherList.profiles[1].name == "Hello");
