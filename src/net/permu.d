@@ -8,9 +8,9 @@ import std.string;
 import derelict.enet.enet;
 
 import net.enetglob;
+import net.header;
 import net.repdata;
 import net.packetid;
-import net.plnr;
 
 class Permu {
 private:
@@ -83,7 +83,7 @@ public:
 /* Length of the network-sent permutation is determined from packet length
  */
 struct StartGameWithPermuPacket {
-    PacketHeader header;
+    PacketHeader2016 header;
     PlNr[] arr;
 
     int len() const nothrow { return header.len + (arr.length & 0xFF); }
@@ -110,7 +110,7 @@ struct StartGameWithPermuPacket {
     {
         enforce(p.dataLength >= 3);
         enforce(p.dataLength < header.len + PlNr.maxExclusive);
-        header = PacketHeader(p.data[0 .. header.len]);
+        header = PacketHeader2016(p.data[0 .. header.len]);
         arr.length = p.dataLength - header.len;
         foreach (int i; 0 .. 0xFF & arr.length)
             arr[i] = p.data[header.len + i];

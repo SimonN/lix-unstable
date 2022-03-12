@@ -6,6 +6,7 @@ module net.server.adapter;
 
 import derelict.enet.enet;
 import net.enetglob;
+import net.header;
 import net.plnr;
 import net.repdata;
 import net.server.hotel;
@@ -138,7 +139,7 @@ private mixin template sendLevel2016() {
             const(ubyte[]) _level;
             PlNr _from;
             ENetPacket* createPacket() const nothrow @nogc {
-                PacketHeader header;
+                PacketHeader2016 header;
                 header.packetID = PacketStoC.peerLevelFile;
                 header.plNr = _from;
                 auto ret = .createPacket(header.len + _level.length);

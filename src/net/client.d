@@ -11,6 +11,7 @@ import std.exception;
 import derelict.enet.enet;
 
 import net.enetglob;
+import net.header;
 import net.iclient;
 import net.packetid;
 import net.permu;
@@ -200,7 +201,7 @@ public:
     {
         if (! connected)
             return;
-        PacketHeader wish;
+        PacketHeader2016 wish;
         wish.packetID = PacketCtoS.createRoom;
         wish.enetSendTo(_serverPeer);
     }

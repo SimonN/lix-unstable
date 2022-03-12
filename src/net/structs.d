@@ -21,6 +21,7 @@ import std.string;
 import derelict.enet.enet;
 
 import net.enetglob;
+import net.header;
 import net.packetid;
 import net.style;
 import net.plnr;
@@ -28,10 +29,14 @@ import net.profile;
 import net.versioning;
 
 struct SomeoneDisconnectedPacket {
-    PacketHeader header;
+    PacketHeader2016 header;
     alias header this;
 
-    this(const(ENetPacket*) p) { header = PacketHeader(p); }
+    this(const(ENetPacket*) p)
+    {
+        enforce(p.dataLength >= PacketHeader2016.len);
+        header = PacketHeader2016(p.data[0 .. PacketHeader2016.len]);
+    }
 }
 
 // Give this function a range with all profiles from the same room
@@ -47,7 +52,7 @@ bool mayRoomDeclareReady(R)(R range)
 
 struct HelloPacket {
     enum len = header.len + fromVersion.len + profile.len;
-    PacketHeader header;
+    PacketHeader2016 header;
     Version fromVersion;
     Profile profile;
 
@@ -67,7 +72,7 @@ struct HelloPacket {
     {
         // In <= 0.9.42, we had here: enforce(p.dataLength == len), not >=
         enforce(p.dataLength >= len);
-        header = PacketHeader(p.data[0 .. header.len]);
+        header = PacketHeader2016(p.data[0 .. header.len]);
         enforce(header.packetID == PacketCtoS.hello);
         fromVersion = Version(p.data[header.len .. header.len + Version.len]);
         profile = Profile(p.data[len - profile.len .. len]);
@@ -80,7 +85,7 @@ struct HelloPacket {
 
 struct HelloAnswerPacket {
     enum len = header.len + serverVersion.len;
-    PacketHeader header;
+    PacketHeader2016 header;
     Version serverVersion;
 
     ENetPacket* createPacket() const nothrow @nogc
@@ -94,7 +99,7 @@ struct HelloAnswerPacket {
     this(const(ENetPacket*) p)
     {
         enforce(p.dataLength == len);
-        header = PacketHeader(p.data[0 .. header.len]);
+        header = PacketHeader2016(p.data[0 .. header.len]);
         serverVersion = Version(p.data[len - serverVersion.len .. len]);
     }
 }
@@ -115,7 +120,7 @@ unittest {
 
 struct ProfilePacket {
     enum len = header.len + profile.len;
-    PacketHeader header;
+    PacketHeader2016 header;
     Profile profile;
 
     ENetPacket* createPacket() const nothrow @nogc
@@ -129,7 +134,7 @@ struct ProfilePacket {
     this(const(ENetPacket*) p)
     {
         enforce(p.dataLength == len);
-        header = PacketHeader(p.data[0 .. header.len]);
+        header = PacketHeader2016(p.data[0 .. header.len]);
         profile = Profile(p.data[len - profile.len .. len]);
     }
 }
@@ -140,7 +145,7 @@ alias RoomListPacket2016 = ListPacket2016!Room;
 struct ListPacket2016(Index)
     if (is (Index == PlNr) || is (Index == Room))
 {
-    PacketHeader header;
+    PacketHeader2016 header;
     Index[] indices; // structure of arrays, indices[i] belongs to profiles[i]
     Profile2016[] profiles;
 
@@ -184,7 +189,7 @@ struct ListPacket2016(Index)
     out { assert (indices.length == profiles.length); }
     do {
         enforce((p.dataLength - header.len) % (Profile2016.len + Index.len) == 0);
-        header = PacketHeader(p.data[0 .. header.len]);
+        header = PacketHeader2016(p.data[0 .. header.len]);
         indices.length = (p.dataLength - header.len)
                         / (Profile2016.len + Index.len);
         foreach (i, ref oneIndex; indices) {
@@ -223,7 +228,7 @@ unittest {
 
 struct RoomChangePacket {
     enum len = header.len + Room.sizeof;
-    PacketHeader header;
+    PacketHeader2016 header;
     Room room;
 
     ENetPacket* createPacket() const nothrow @nogc
@@ -238,13 +243,13 @@ struct RoomChangePacket {
     this(const(ENetPacket*) p)
     {
         enforce(p.dataLength == len);
-        header = PacketHeader(p.data[0 .. header.len]);
+        header = PacketHeader2016(p.data[0 .. header.len]);
         room = Room(p.data[header.len]);
     }
 }
 
 struct ChatPacket {
-    PacketHeader header;
+    PacketHeader2016 header;
     string text;
 
     static assert (netChatMaxLen <= 0xFFFF);
@@ -270,7 +275,7 @@ struct ChatPacket {
     this(const(ENetPacket*) p)
     {
         enforce(p.dataLength >= 3);
-        header = PacketHeader(p.data[0 .. header.len]);
+        header = PacketHeader2016(p.data[0 .. header.len]);
         if (p.data[p.dataLength - 1] == '\0')
             text = fromStringz(cast (char*) (p.data + header.len)).idup;
     }
@@ -296,7 +301,7 @@ unittest {
 }
 
 struct MillisecondsSinceGameStartPacket {
-    PacketHeader header;
+    PacketHeader2016 header;
     int milliseconds;
 
     enum len = header.len + milliseconds.sizeof;
@@ -313,7 +318,7 @@ struct MillisecondsSinceGameStartPacket {
     this(const(ENetPacket*) p)
     {
         enforce(p.dataLength >= len);
-        header = PacketHeader(p.data[0 .. header.len]);
+        header = PacketHeader2016(p.data[0 .. header.len]);
         milliseconds = bigEndianToNative!int(
             p.data[header.len .. header.len + milliseconds.sizeof]);
     }
