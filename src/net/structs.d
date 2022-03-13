@@ -28,6 +28,31 @@ import net.plnr;
 import net.profile;
 import net.versioning;
 
+struct PacketHeader2016 {
+    enum len = 2;
+    ubyte packetID;
+    PlNr plNr;
+
+    this(ref const(ubyte[len]) buf) nothrow @nogc
+    {
+        packetID = buf[0];
+        plNr = PlNr(buf[1]);
+    }
+
+    void serializeTo(ref ubyte[len] buf) const nothrow @nogc
+    {
+        buf[0] = packetID;
+        buf[1] = plNr;
+    }
+
+    ENetPacket* createPacket() const nothrow @nogc
+    {
+        auto ret = .createPacket(len);
+        serializeTo(ret.data[0 .. len]);
+        return ret;
+    }
+}
+
 struct SomeoneDisconnectedPacket {
     PacketHeader2016 header;
     alias header this;
@@ -139,6 +164,8 @@ struct ProfilePacket {
     }
 }
 
+// ############################################################### list packets
+
 alias ProfileListPacket2016 = ListPacket2016!PlNr;
 alias RoomListPacket2016 = ListPacket2016!Room;
 
@@ -225,6 +252,8 @@ unittest {
     assert (anotherList.indices[1] == 81);
     assert (anotherList.profiles[1].name == "Hello");
 }
+
+// ######################################################## end of list packets
 
 struct RoomChangePacket {
     enum len = header.len + Room.sizeof;

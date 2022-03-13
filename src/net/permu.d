@@ -8,7 +8,7 @@ import std.string;
 import derelict.enet.enet;
 
 import net.enetglob;
-import net.header;
+import net.structs;
 import net.repdata;
 import net.packetid;
 

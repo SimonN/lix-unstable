@@ -14,35 +14,6 @@ import derelict.enet.enet;
 import net.enetglob;
 import net.plnr;
 
-struct PacketHeader2016 {
-    enum len = 2;
-    ubyte packetID;
-    PlNr plNr;
-
-    void serializeTo(ref ubyte[len] buf) const nothrow @nogc
-    {
-        buf[0] = packetID;
-        buf[1] = plNr;
-    }
-
-    this(ref const(ubyte[len]) buf) nothrow @nogc
-    {
-        packetID = buf[0];
-        plNr = PlNr(buf[1]);
-    }
-
-    mixin CreatePacketFromThis cpft;
-}
-
-private mixin template CreatePacketFromThis() {
-    public ENetPacket* createPacket() const nothrow @nogc
-    {
-        auto ret = .createPacket(len);
-        serializeTo(ret.data[0 .. len]);
-        return ret;
-    }
-}
-
 // ####################################################################### 2022
 
 private mixin template CommonHeaderFields() {
@@ -176,17 +147,6 @@ public:
         _header.room = ofSubject;
     }
 
-    void serializeTo(ref ubyte[] buf) const pure nothrow @nogc
-    {
-        housekeep();
-        enforce(buf.length >= len);
-        _header.serializeTo(buf[0 .. _header.len]);
-        for (int i = 0; i < arr.length; ++i) {
-            arr[i].serializeTo(buf[_header.offsetOfField(i)
-                                .. _header.offsetOfField(i+1)]);
-        }
-    }
-
     this(ref const(ubyte[len]) buf) pure nothrow @nogc
     {
         arr = [];
@@ -201,7 +161,23 @@ public:
         }
     }
 
-    mixin CreatePacketFromThis;
+    void serializeTo(ref ubyte[] buf) const pure nothrow @nogc
+    {
+        housekeep();
+        enforce(buf.length >= len);
+        _header.serializeTo(buf[0 .. _header.len]);
+        for (int i = 0; i < arr.length; ++i) {
+            arr[i].serializeTo(buf[_header.offsetOfField(i)
+                                .. _header.offsetOfField(i+1)]);
+        }
+    }
+
+    ENetPacket* createPacket() const nothrow @nogc
+    {
+        auto ret = .createPacket(len);
+        serializeTo(ret.data[0 .. len]);
+        return ret;
+    }
 
 private:
     void housekeep()
