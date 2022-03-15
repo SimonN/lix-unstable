@@ -139,20 +139,20 @@ public:
         return _header;
     }
 
-    void setHeader(in ubyte packetID, in PlNr subject, in Room ofSubject)
+    void setHeader(in ubyte packetId, in PlNr subject, in Room ofSubject)
     {
         housekeep();
-        _header.packetID = packetID;
-        _header.plNr = subject;
-        _header.room = ofSubject;
+        _header.packetId = packetId;
+        _header.subject = subject;
+        _header.subjectsRoom = ofSubject;
     }
 
-    this(ref const(ubyte[len]) buf) pure nothrow @nogc
+    this(in ubyte[] buf) pure
     {
         arr = [];
         housekeep();
-        enforce(buf.length >= _header.length);
-        _header = ArrayPacketHeader2022(buf);
+        enforce(buf.length >= _header.len);
+        _header = ArrayPacketHeader2022(buf[0 .. _header.len]);
         for (int i = 0; i < _header.numFields
             && _header.offsetOfField(i+1) <= buf.length; ++i
         ) {
@@ -161,18 +161,19 @@ public:
         }
     }
 
-    void serializeTo(ref ubyte[] buf) const pure nothrow @nogc
+    void serializeTo(ubyte[] buf) pure // Can't be const. Reason: housekeep()
     {
         housekeep();
         enforce(buf.length >= len);
         _header.serializeTo(buf[0 .. _header.len]);
         for (int i = 0; i < arr.length; ++i) {
-            arr[i].serializeTo(buf[_header.offsetOfField(i)
-                                .. _header.offsetOfField(i+1)]);
+            ubyte[ElementType.len] temp;
+            arr[i].serializeTo(temp);
+            buf[_header.offsetOfField(i) .. _header.offsetOfField(i+1)] = temp;
         }
     }
 
-    ENetPacket* createPacket() const nothrow @nogc
+    ENetPacket* createPacket()
     {
         auto ret = .createPacket(len);
         serializeTo(ret.data[0 .. len]);

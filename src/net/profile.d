@@ -34,16 +34,9 @@ public:
         ready = 2, // Frame 2
         observing = 4 // Frame 4
     }
-    Feeling feeling; // serializes to 1 byte
-    Version clientVersion; // serializes to 3 ints = 12 bytes
+    Feeling feeling;
+    Version clientVersion;
     Handicap handicap;
-    /*
-     * Room is not part of the profile.
-     * Server tracks players' rooms in a struct { Profile, Room }.
-     * Clients automatically only interact with others in their own room.
-     * Clients already send room changes with a special packet ID number;
-     * they don't send an updated profile as a room change.
-     */
 
     void setNotReady() @nogc
     {
@@ -56,9 +49,10 @@ public:
     bool wouldForceAllNotReadyOnReplace(
         in typeof(this) rhs) const pure nothrow @safe @nogc
     {
-        return this.style != rhs.style
-            || this.name != rhs.name
-            ||    (this.feeling == Feeling.observing)
+        return style != rhs.style
+            || name != rhs.name
+            || handicap != rhs.handicap
+            || (feeling == Feeling.observing)
                 != (rhs.feeling == Feeling.observing);
     }
 
@@ -72,7 +66,7 @@ public:
         return ret;
     }
 
-    void serializeTo(ref ubyte[len] buf) const nothrow @nogc
+    void serializeTo(ref ubyte[len] buf) const pure nothrow @nogc
     {
         clientVersion.serializeTo(buf[0 .. 0+12]);
         buf[12] = style;
@@ -82,8 +76,16 @@ public:
         _name.serializeTo(buf[24 .. 24 + _name.len]);
     }
 
-    this(ref const(ubyte[len]) buf) pure
+    /*
+     * Profile2022 may be of different length in different Lix versions.
+     * We decode only the part that is known to both the sender and the
+     * receiver. But we enforce the minimal (since 2022) length that all
+     * senders and all receivers must support.
+     */
+    this(in ubyte[] buf) pure
     {
+        enum minLenIn2022 = 24 + _name.len;
+        enforce (buf.length >= minLenIn2022);
         clientVersion = Version(buf[0 .. 0+12]);
         try {
             style = buf[12].to!Style;
@@ -93,6 +95,7 @@ public:
         }
         handicap = Handicap(buf[20 .. 24]);
         _name = FixStr!64(buf[24 .. 24 + _name.len]);
+        // If struct grows in future, check buf.length before each field.
     }
 }
 
@@ -137,7 +140,7 @@ public:
         return ret;
     }
 
-    void serializeTo(ref ubyte[len] buf) const nothrow @nogc
+    void serializeTo(ref ubyte[len] buf) const pure nothrow @nogc
     {
         buf[0] = room;
         buf[1] = style;
@@ -200,7 +203,7 @@ private mixin template NameAsFixStr(int lenInclNull) {
  *
  * In the serialization, the last byte at [len - 1] is always '\0'.
  * If the string is shorter than max length, there will be more nullbytes
- * before it (= before the guaranteed nullbyte at [len - 1]).
+ * before the guaranteed nullbyte at [len - 1].
  */
 struct FixStr(int lenInclNull) if (lenInclNull > 0) {
 private:

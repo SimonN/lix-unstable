@@ -67,7 +67,7 @@ struct Version {
     }
 
     enum len = 12;
-    void serializeTo(ref ubyte[len] buf) const nothrow @nogc
+    void serializeTo(ref ubyte[len] buf) const pure nothrow @nogc
     {
         buf[0 .. 4] = nativeToBigEndian!int(major);
         buf[4 .. 8] = nativeToBigEndian!int(minor);

@@ -253,6 +253,30 @@ unittest {
     assert (anotherList.profiles[1].name == "Hello");
 }
 
+alias RoomListPacket2022 = ArrayPacket!RoomListEntry2022;
+
+struct RoomListEntry2022 {
+    Room room;
+    int numInhabitants;
+    Profile2022 owner;
+
+    enum int len = 8 + owner.len;
+
+    this(in ubyte[] buf) pure {
+        enforce (buf.length >= len);
+        room = Room(0xFF & buf[0 .. 4].bigEndianToNative!int);
+        numInhabitants = buf[4 .. 8].bigEndianToNative!int;
+        owner = Profile2022(buf[8 .. buf.length]);
+    }
+
+    void serializeTo(ref ubyte[len] buf) const pure nothrow @nogc
+    {
+        buf[0 .. 4] = room.nativeToBigEndian!int;
+        buf[4 .. 8] = numInhabitants.nativeToBigEndian!int;
+        owner.serializeTo(buf[8 .. len]);
+    }
+}
+
 // ######################################################## end of list packets
 
 struct RoomChangePacket {
