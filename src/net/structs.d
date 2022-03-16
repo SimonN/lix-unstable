@@ -238,22 +238,48 @@ unittest {
     scope (exit)
         deinitializeEnet();
 
-    ProfileListPacket2016 list;
-    list.indices = [ PlNr(80), PlNr(81), PlNr(82) ];
-    list.profiles = [ Profile(), Profile(), Profile() ];
-    list.profiles[1].name = "Hello";
+    // 2016
+    {
+        ProfileListPacket2016 list;
+        list.indices = [ PlNr(80), PlNr(81), PlNr(82) ];
+        list.profiles = [ Profile(), Profile(), Profile() ];
+        list.profiles[1].name = "Hello";
 
-    auto packet = list.createPacket;
-    assert (packet.data[list.header.len + 0] == 80);
-    assert (packet.data[list.header.len + 1] == 81);
+        auto packet = list.createPacket;
+        assert (packet.data[list.header.len + 0] == 80);
+        assert (packet.data[list.header.len + 1] == 81);
 
-    auto anotherList = ProfileListPacket2016(packet);
-    assert (anotherList.profiles.length == 3);
-    assert (anotherList.indices[1] == 81);
-    assert (anotherList.profiles[1].name == "Hello");
+        auto anotherList = ProfileListPacket2016(packet);
+        assert (anotherList.profiles.length == 3);
+        assert (anotherList.indices[1] == 81);
+        assert (anotherList.profiles[1].name == "Hello");
+    }
+    // 2022
+    {
+        RoomListEntry2022 createEntry(in Room r, in int i, in string name) {
+            RoomListEntry2022 ret;
+            ret.room = r;
+            ret.numInhabitants = i;
+            ret.owner = Profile2022();
+            ret.owner.name = name;
+            return ret;
+        }
+        RoomListPacket2022 before;
+        before.arr ~= createEntry(Room(3), 33, "Hello");
+        before.arr ~= createEntry(Room(5), 55, "World");
+
+        auto packet = before.createPacket;
+        auto after = RoomListPacket2022(packet.data[0 .. packet.dataLength]);
+        assert (after.arr.length == 2);
+        assert (after.arr[0].owner.name == "Hello");
+        assert (after.arr[1].owner.name == "World");
+        assert (after.arr[1].room == Room(5));
+        assert (after.arr[1].numInhabitants == 55);
+    }
 }
 
-alias RoomListPacket2022 = ArrayPacket!RoomListEntry2022;
+alias RoomListPacket2022
+    = ArrayPacket!(PacketStoC.listOfExistingRooms, RoomListEntry2022);
 
 struct RoomListEntry2022 {
     Room room;
@@ -264,15 +290,17 @@ struct RoomListEntry2022 {
 
     this(in ubyte[] buf) pure {
         enforce (buf.length >= len);
-        room = Room(0xFF & buf[0 .. 4].bigEndianToNative!int);
-        numInhabitants = buf[4 .. 8].bigEndianToNative!int;
+        room = Room(0xFF & buf[0 .. 2].bigEndianToNative!short);
+        numInhabitants = buf[2 .. 4].bigEndianToNative!short;
+        // buf[4 .. 8] unused, they're always 0.
         owner = Profile2022(buf[8 .. buf.length]);
     }
 
     void serializeTo(ref ubyte[len] buf) const pure nothrow @nogc
     {
-        buf[0 .. 4] = room.nativeToBigEndian!int;
-        buf[4 .. 8] = numInhabitants.nativeToBigEndian!int;
+        buf[0 .. 2] = nativeToBigEndian!short(room);
+        buf[2 .. 4] = nativeToBigEndian!short(numInhabitants & 0x7FFF);
+        buf[4 .. 8] = 0; // Unused, reserved.
         owner.serializeTo(buf[8 .. len]);
     }
 }

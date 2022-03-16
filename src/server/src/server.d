@@ -225,6 +225,7 @@ public:
      */
     static foreach (func; __traits(allMembers, Outbox)) {
         import net.server.meta;
+        import net.header;
         import std.format;
         mixin(format!q{
             override void %s(%s) {

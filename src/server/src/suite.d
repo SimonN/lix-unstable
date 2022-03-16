@@ -28,8 +28,8 @@ interface Suite {
 
     const pure nothrow @safe @nogc {
         Room room();
-        int numPlayers();
-        final bool empty() { return numPlayers() == 0; }
+        int numInhabitants();
+        final bool empty() { return numInhabitants() == 0; }
         bool contains(in PlNr);
         Profile2022 profileOfOwner() in { assert (!empty); };
         bool allows(in Version);
@@ -53,7 +53,7 @@ interface Suite {
     void receiveLevel(in PlNr chooser, const(ubyte[]) level);
     void receivePly(in Ply);
     void sendTimeSyncingPackets();
-    void informLobbyistsAboutRooms(in Suite[Room.maxExclusive]);
+    void informLobbyistsAboutRooms(in RoomListPacket2022);
 
     struct PopReason {
         enum Reason {
@@ -81,7 +81,7 @@ public:
 
     void dispose() { _fe.dispose(); }
 
-    int numPlayers() const pure nothrow @safe @nogc
+    int numInhabitants() const pure nothrow @safe @nogc
     {
         return _players.length & 0xFFFF;
     }
@@ -197,7 +197,7 @@ public:
         }
     }
 
-    void informLobbyistsAboutRooms(in Suite[Room.maxExclusive]) {}
+    void informLobbyistsAboutRooms(in RoomListPacket2022) {}
 
 private:
     void unreadyAll() @nogc
@@ -281,7 +281,7 @@ public:
 
     void dispose() {}
 
-    int numPlayers() const pure nothrow @safe @nogc
+    int numInhabitants() const pure nothrow @safe @nogc
     {
         return _lobbyists.length & 0xFFFF;
     }
@@ -359,24 +359,11 @@ public:
     void receivePly(in Ply) {}
     void sendTimeSyncingPackets() {}
 
-    /*
-     * Everybody gets to see only the rooms compatible with himself.
-     */
-    void informLobbyistsAboutRooms(in Suite[Room.maxExclusive] suites)
+    void informLobbyistsAboutRooms(in RoomListPacket2022 rlp)
     {
-        import net.packetid;
         foreach (receiv, lobbyist; _lobbyists) {
-            RoomListPacket2016 forHim;
-            forHim.header.packetID = PacketStoC.listOfExistingRooms;
-            forHim.header.plNr = receiv; // Although irrelevant in 2016
-
-            foreach (sui; suites[].filter!(
-                s => ! s.empty && s.allows(lobbyist.clientVersion))
-            ) {
-                forHim.indices ~= sui.room;
-                forHim.profiles ~= sui.profileOfOwner.to2016with(sui.room);
-            }
-            _outbox.informLobbyistAboutRooms(receiv, forHim);
+            _outbox.informLobbyistAboutRooms(receiv,
+                lobbyist.clientVersion, rlp);
         }
     }
 }

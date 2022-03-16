@@ -119,72 +119,71 @@ template isSerializable(ElementType) {
         && is(typeof(ElementType.serializeTo));
 }
 
-struct ArrayPacket(ElementType)
+struct ArrayPacket(ubyte packetId, ElementType)
     if (isSerializable!ElementType)
 {
-private:
-    ArrayPacketHeader2022 _header;
-
 public:
+    ubyte packetId;
+    PlNr subject;
+    Room subjectsRoom;
     ElementType[] arr;
 
     int len() const pure nothrow @safe @nogc
     {
-        return _header.len + (arr.length & 0x7FFF) * ElementType.len;
+        return ArrayPacketHeader2022.len
+            + (arr.length & 0x7FFF) * ElementType.len;
     }
 
-    ref const(ArrayPacketHeader2022) header() pure nothrow @safe @nogc
+    ArrayPacketHeader2022 header() const pure nothrow @safe @nogc
     {
-        housekeep();
-        return _header;
+        ArrayPacketHeader2022 ret;
+        ret.packetId = packetId;
+        ret.subject = subject;
+        ret.subjectsRoom = subjectsRoom;
+        ret.offsetField0 = ret.len;
+        ret.numFields = arr.length & 0x7FFF;
+        ret.bytesPerField = ElementType.len & 0x7FFF;
+        return ret;
     }
 
-    void setHeader(in ubyte packetId, in PlNr subject, in Room ofSubject)
+    void setHeader(in PlNr subj, in Room ofSubject)
     {
-        housekeep();
-        _header.packetId = packetId;
-        _header.subject = subject;
-        _header.subjectsRoom = ofSubject;
+        subject = subj;
+        subjectsRoom = ofSubject;
     }
 
     this(in ubyte[] buf) pure
     {
         arr = [];
-        housekeep();
-        enforce(buf.length >= _header.len);
-        _header = ArrayPacketHeader2022(buf[0 .. _header.len]);
-        for (int i = 0; i < _header.numFields
-            && _header.offsetOfField(i+1) <= buf.length; ++i
+        enforce(buf.length >= ArrayPacketHeader2022.len);
+        auto hea = ArrayPacketHeader2022(buf[0 .. ArrayPacketHeader2022.len]);
+        for (int i = 0; i < hea.numFields
+            && hea.offsetOfField(i+1) <= buf.length; ++i
         ) {
-            arr ~= ElementType(buf[_header.offsetOfField(i)
-                                .. _header.offsetOfField(i+1)]);
+            arr ~= ElementType(buf[hea.offsetOfField(i)
+                                .. hea.offsetOfField(i+1)]);
         }
+        packetId = hea.packetId;
+        subject = hea.subject;
+        subjectsRoom = hea.subjectsRoom;
     }
 
-    void serializeTo(ubyte[] buf) pure // Can't be const. Reason: housekeep()
+    void serializeTo(ubyte[] buf) const pure
     {
-        housekeep();
         enforce(buf.length >= len);
-        _header.serializeTo(buf[0 .. _header.len]);
+        const hea = header();
+        hea.serializeTo(buf[0 .. hea.len]);
         for (int i = 0; i < arr.length; ++i) {
             ubyte[ElementType.len] temp;
             arr[i].serializeTo(temp);
-            buf[_header.offsetOfField(i) .. _header.offsetOfField(i+1)] = temp;
+            buf[hea.offsetOfField(i) .. hea.offsetOfField(i+1)] = temp;
         }
     }
 
-    ENetPacket* createPacket()
+    ENetPacket* createPacket() const
     {
         auto ret = .createPacket(len);
         serializeTo(ret.data[0 .. len]);
         return ret;
-    }
-
-private:
-    void housekeep()
-    {
-        _header.offsetField0 = _header.len;
-        _header.numFields = arr.length & 0x7FFF;
-        _header.bytesPerField = ElementType.len & 0x7FFF;
     }
 }

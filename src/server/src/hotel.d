@@ -85,7 +85,7 @@ public:
         _suites[Room(0)].add(nrOfNewbie, newbie);
         // It would be enough to send the overview only to the newbie.
         // But it's easiest to ask to send it to all. (Hotel knows no outbox.)
-        _suites[Room(0)].informLobbyistsAboutRooms(_suites);
+        informLobbyistsAboutRooms();
     }
 
     // The server should call this after the server has set the mover's room
@@ -99,7 +99,7 @@ public:
         const pr = from.front.pop(mover,
             Suite.PopReason(Suite.PopReason.Reason.movedToRoom, to));
         _suites[to].add(mover, pr);
-        _suites[Room(0)].informLobbyistsAboutRooms(_suites);
+        informLobbyistsAboutRooms();
     }
 
     // The server calls this when it got a disconnection packet.
@@ -144,5 +144,21 @@ public:
         foreach (suite; _suites) {
             suite.sendTimeSyncingPackets();
         }
+    }
+
+private:
+    void informLobbyistsAboutRooms()
+    {
+        RoomListPacket2022 rlp;
+        rlp.arr = _suites[]
+            .filter!(sui => ! sui.empty && sui.room != Room(0))
+            .map!((in Suite sui) {
+                RoomListEntry2022 entry;
+                entry.room = sui.room;
+                entry.numInhabitants = sui.numInhabitants;
+                entry.owner = sui.profileOfOwner;
+                return entry;
+            }).array;
+        _suites[Room(0)].informLobbyistsAboutRooms(rlp);
     }
 }

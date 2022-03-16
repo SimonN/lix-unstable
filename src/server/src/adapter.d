@@ -3,6 +3,8 @@ module net.server.adapter;
 /*
  * net.server.adapter: Concrete Inboxes and Outboxes that NetServer will use.
  */
+import std.array;
+import std.algorithm;
 
 import derelict.enet.enet;
 import net.enetglob;
@@ -15,6 +17,7 @@ import net.packetid;
 import net.permu;
 import net.profile;
 import net.structs;
+import net.versioning;
 
 // ############################################################################
 // Client to Server: ##########################################################
@@ -192,7 +195,34 @@ private mixin template describeRoom2016() {
 }
 
 private mixin template informLobbyist2016() {
-    void informLobbyistAboutRooms(PlNr receiv, in RoomListPacket2016 rlp)
+    void informLobbyistAboutRooms(
+        in PlNr receiv,
+        in Version ofReceiver,
+        in RoomListPacket2022 rlp)
+    {
+        RoomListPacket2016 old;
+        old.header.packetID = PacketStoC.listOfExistingRooms;
+        old.header.plNr = receiv;
+        foreach (e; rlp.arr) {
+            if (! e.owner.clientVersion.compatibleWith(ofReceiver)) {
+                /*
+                 * Don't show un-enterable rooms to 2016 protocol users;
+                 * they expect all shown rooms to be enterable.
+                 */
+                continue;
+            }
+            old.indices ~= e.room;
+            old.profiles ~= e.owner.to2016with(e.room);
+        }
+        _out.send(receiv, old.createPacket);
+    }
+}
+
+private mixin template informLobbyist2022() {
+    void informLobbyistAboutRooms(
+        in PlNr receiv,
+        in Version ofReceiver_LegacyFor2016toFilterIncompatibleRooms,
+        in RoomListPacket2022 rlp)
     {
         _out.send(receiv, rlp.createPacket);
     }

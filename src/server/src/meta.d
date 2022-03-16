@@ -26,19 +26,60 @@ template ParamTypesAndNames(T, string func)
 }
 
 /*
- * Input: (void(in A a, in B b, C c))
+ * Input: (void(in A a, in B!(X, Y, Z) b, C c))
  * Output: a, b, c
  */
 template ParamNamesOnly(T, string func)
 {
     enum string ParamNamesOnly
         = ParamTypesAndNames!(T, func)
-        .splitter(", ")
+        .splitterBetweenTheCommasOutsideTemplateArguments
         .map!toLastWord
         .join(", ");
 }
 
-private static string toLastWord(string words)
+private:
+
+auto splitterBetweenTheCommasOutsideTemplateArguments(in string arg)
+{
+    struct SplitterResult {
+        string tail; // The unparsed remainder.
+        string fr = ""; // What front() returns. Never part of tail.
+
+        pure nothrow @safe @nogc:
+        bool empty()    { sanitize(); return tail.empty && fr.empty; }
+        string front()  { sanitize(); return fr; }
+        void popFront() { fr = ""; /* Next call to front() will sanitize. */ }
+
+        void sanitize() {
+            if (fr != "") {
+                // Already sanitized.
+                return;
+            }
+            int parenthesesLevel = 0;
+            for (int i = 0; i < tail.length; ++i) {
+                if (tail[i] == '(') {
+                    ++parenthesesLevel;
+                }
+                else if (tail[i] == ')') {
+                    --parenthesesLevel;
+                }
+                else if (tail[i] == ',' && parenthesesLevel == 0) {
+                    fr = tail[0 .. i];
+                    tail = tail[i + 1 .. $];
+                    return;
+                }
+            }
+            // No comma found.
+            fr = tail;
+            tail = "";
+        }
+    }
+
+    return SplitterResult(arg);
+}
+
+string toLastWord(string words)
 {
     while (words.findSkip(" ")) {}
     return words;
