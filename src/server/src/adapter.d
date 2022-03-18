@@ -65,8 +65,8 @@ public:
     void receiveProfileChange(in PlNr from, in ENetPacket* got)
     {
         import net.versioning;
-        _hotel.changeProfileButKeepVersion(from,
-            ProfilePacket(got).profile.to2022with(Version(0, 1, 2)) // Ignored.
+        _hotel.changeProfileButKeepVersion(from, ProfilePacket2016(got)
+            .profile.to2022with(Version(0, 7, 77)) // We ignore 2016 versions.
         );
     }
 
@@ -182,8 +182,9 @@ private mixin template describePeersInRoom2022() {
         in PlNr receiv,
         in Profile2022[PlNr] contents,
     ) {
-        auto informMover = PeerInRoomPacket2022();
-        informMover.setSubjectInHeader(receiv, Room(0));
+        auto informMover = PeersInRoomPacket2022();
+        informMover.setHeader(PacketStoC.peersAlreadyInYourNewRoom,
+            receiv, Room(0));
         foreach (key, prof; contents) {
             PeerInRoomEntry2022 entry;
             entry.plnr = key;
@@ -200,8 +201,9 @@ private mixin template describePeersInRoom2022() {
         in Profile2022[PlNr] contents,
         in PlNr ownerOfHere)
     {
-        auto informMover = PeerInRoomPacket2022();
-        informMover.setSubjectInHeader(receiv, here);
+        auto informMover = PeersInRoomPacket2022();
+        informMover.setHeader(PacketStoC.peersAlreadyInYourNewRoom,
+            receiv, here);
         foreach (key, prof; contents) {
             PeerInRoomEntry2022 entry;
             entry.plnr = key;
@@ -254,7 +256,7 @@ private mixin template sendPeerEnteredYourRoom2016() {
         in PlNr mover,
         in Profile2022 ofMover)
     {
-        auto pa = ProfilePacket();
+        auto pa = ProfilePacket2016();
         pa.header.packetID = PacketStoC.peerJoinsYourRoom;
         pa.header.plNr = mover;
         pa.profile = ofMover.to2016with(here);
@@ -269,7 +271,7 @@ private mixin template sendProfile2016() {
         in PlNr ofWhom,
         in Profile2022 full)
     {
-        ProfilePacket pa;
+        ProfilePacket2016 pa;
         pa.header.packetID = PacketStoC.peerProfile;
         pa.header.plNr = ofWhom;
         pa.profile = full.to2016with(here);

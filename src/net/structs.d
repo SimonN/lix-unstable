@@ -143,7 +143,7 @@ unittest {
     assert (b.serverVersion.minor == 23);
 }
 
-struct ProfilePacket {
+struct ProfilePacket2016 {
     enum len = header.len + profile.len;
     PacketHeader2016 header;
     Profile profile;
@@ -163,6 +163,8 @@ struct ProfilePacket {
         profile = Profile(p.data[len - profile.len .. len]);
     }
 }
+
+alias ProfilePacket2022 = NeckPacket!(Profile2022);
 
 // ############################################################### list packets
 
@@ -278,9 +280,7 @@ unittest {
     }
 }
 
-alias RoomListPacket2022
-    = ArrayPacket!(PacketStoC.listOfExistingRooms, RoomListEntry2022);
-
+alias RoomListPacket2022 = ArrayPacket!(RoomListEntry2022);
 struct RoomListEntry2022 {
     Room room;
     int numInhabitants;
@@ -329,8 +329,7 @@ struct PeerInRoomEntry2022 {
     }
 }
 
-alias PeerInRoomPacket2022
-    = ArrayPacket!(PacketStoC.peersAlreadyInYourNewRoom, PeerInRoomEntry2022);
+alias PeersInRoomPacket2022 = ArrayPacket!(PeerInRoomEntry2022);
 
 // ######################################################## end of list packets
 

@@ -297,7 +297,7 @@ private:
             return;
         // Never affect our profiles directly. Always send the desire
         // to change color over the network and wait for the return packet.
-        ProfilePacket newStyle;
+        ProfilePacket2016 newStyle;
         newStyle.header.packetID = PacketCtoS.myProfile;
         newStyle.profile = _profilesInOurRoom[_ourPlNr];
         changeTheProfile(newStyle.profile);
@@ -306,7 +306,7 @@ private:
 
     Profile* receiveProfilePacket(ENetPacket* got)
     {
-        auto updated = ProfilePacket(got);
+        auto updated = ProfilePacket2016(got);
         auto ptr = updated.header.plNr in _profilesInOurRoom;
         if (ptr is null || ptr.wouldForceAllNotReadyOnReplace(updated.profile))
             foreach (ref profile; _profilesInOurRoom)

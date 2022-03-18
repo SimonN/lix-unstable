@@ -109,29 +109,26 @@ template isSerializable(ElementType) {
         && is(typeof(ElementType.serializeTo));
 }
 
-alias NeckPacket(ubyte packetId, ElementType)
-    = NeckWithArrayPacket!(packetId, ElementType, void);
-
-alias ArrayPacket(ubyte packetId, ElementType)
-    = NeckWithArrayPacket!(packetId, void, ElementType);
+alias NeckPacket(ElementType) = NeckWithArrayPacket!(ElementType, void);
+alias ArrayPacket(ElementType) = NeckWithArrayPacket!(void, ElementType);
 
 struct NeckWithArrayPacket(
-    ubyte packetId,
     NeckType,
     ArrayElemType,
 ) if ( (isSerializable!NeckType || is(NeckType == void))
     && (isSerializable!ArrayElemType || is(ArrayElemType == void))) {
 public:
+    ubyte packetId;
     PlNr subject;
     Room subjectsRoom;
-    static if (hasNeck) { NeckType payload; }
+    static if (hasNeck) { NeckType neck; }
     static if (hasArr) { ArrayElemType[] arr; }
 
     int len() const pure nothrow @safe @nogc
     {
         int ret = PacketHeader2022.len;
         static if (hasNeck) {
-            ret += payload.len;
+            ret += neck.len;
         }
         static if (hasArr) {
             ret += (arr.length & 0x7FFF) * ArrayElemType.len;
@@ -160,22 +157,23 @@ public:
         return ret;
     }
 
-    void setSubjectInHeader(in PlNr subj, in Room ofSubject)
+    void setHeader(in ubyte paId, in PlNr subj, in Room ofSubject)
     {
+        packetId = paId;
         subject = subj;
         subjectsRoom = ofSubject;
     }
 
     this(in ubyte[] buf) pure
     {
-        arr = [];
         enforce(buf.length >= PacketHeader2022.len);
         auto hea = PacketHeader2022(buf[0 .. PacketHeader2022.len]);
         enforce(hea.packetId == packetId);
         static if (hasNeck) {
-            payload = ElementType(buf[hea.len .. hea.offsetOfField(0)]);
+            neck = NeckType(buf[hea.len .. hea.offsetOfField(0)]);
         }
         static if (hasArr) {
+            arr = [];
             for (int i = 0; i < hea.numFields
                 && hea.offsetOfField(i+1) <= buf.length; ++i
             ) {
@@ -194,7 +192,7 @@ public:
         hea.serializeTo(buf[0 .. hea.len]);
         static if (hasNeck) {
             ubyte[NeckType.len] temp;
-            payload.serializeTo(temp);
+            neck.serializeTo(temp);
             buf[hea.len .. hea.offsetOfField(0)] = temp;
         }
         static if (hasArr) {
