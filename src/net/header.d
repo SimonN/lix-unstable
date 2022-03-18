@@ -35,8 +35,8 @@ import net.plnr;
 struct PacketHeader2022 {
     enum int len = 16;
     ubyte packetId;
+    Room subjectsRoom; // Room where the subject is, see next field.
     PlNr subject; // Somebody else. Or the recipient if the array holds plnrs.
-    Room subjectsRoom;
     /*
      * (numFields) is >= 0. It's legal to send an empty array.
      * arr[0] starts at (offsetField0) from the start of the packet.
@@ -82,8 +82,8 @@ struct PacketHeader2022 {
     {
         buf[0] = packetId;
         buf[1] = 0; // Reserved for a future sub-packetID. Unused as of 2022.
-        buf[2 .. 4] = subject.nativeToBigEndian!short;
-        buf[4 .. 6] = subjectsRoom.nativeToBigEndian!short;
+        buf[2 .. 4] = subjectsRoom.nativeToBigEndian!short;
+        buf[4 .. 6] = subject.nativeToBigEndian!short;
         buf[6 .. 8] = offsetField0.nativeToBigEndian!short;
         buf[8 .. 10] = numFields.nativeToBigEndian!short;
         buf[10 .. 12] = bytesPerField.nativeToBigEndian!short;
@@ -94,8 +94,8 @@ struct PacketHeader2022 {
     {
         packetId = buf[0];
         // buf[1] is reserved, see serializeTo.
-        subject = PlNr(0xFF & bigEndianToNative!short(buf[2 .. 4]));
-        subjectsRoom = Room(0xFF & bigEndianToNative!short(buf[4 .. 6]));
+        subjectsRoom = Room(0xFF & bigEndianToNative!short(buf[2 .. 4]));
+        subject = PlNr(0xFF & bigEndianToNative!short(buf[4 .. 6]));
         offsetField0 = bigEndianToNative!short(buf[6 .. 8]);
         numFields = bigEndianToNative!short(buf[8 .. 10]);
         bytesPerField = bigEndianToNative!short(buf[10 .. 12]);
@@ -119,8 +119,8 @@ struct NeckWithArrayPacket(
     && (isSerializable!ArrayElemType || is(ArrayElemType == void))) {
 public:
     ubyte packetId;
-    PlNr subject;
     Room subjectsRoom;
+    PlNr subject;
     static if (hasNeck) { NeckType neck; }
     static if (hasArr) { ArrayElemType[] arr; }
 
@@ -157,7 +157,7 @@ public:
         return ret;
     }
 
-    void setHeader(in ubyte paId, in PlNr subj, in Room ofSubject)
+    void setHeader(in ubyte paId, in Room ofSubject, in PlNr subj)
     {
         packetId = paId;
         subject = subj;

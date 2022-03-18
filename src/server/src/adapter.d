@@ -111,7 +111,7 @@ public:
     this(SendWithEnet viaWhichWeSend) { _out = viaWhichWeSend; }
     mixin sendChat2016;
     mixin informLobbyist2016;
-    mixin describePeersInRoom2016;
+    mixin describePeers2016;
     mixin sendPeerEnteredYourRoom2016;
     mixin sendProfile2016;
     mixin sendPeerLeftYourRoom2016;
@@ -130,9 +130,9 @@ public:
     this(SendWithEnet viaWhichWeSend) { _out = viaWhichWeSend; }
     mixin sendChat2016;
     mixin informLobbyist2022;
-    mixin describePeersInRoom2022;
-    mixin sendPeerEnteredYourRoom2016;
-    mixin sendProfile2016;
+    mixin describePeers2022;
+    mixin sendPeerEnteredYourRoom2022;
+    mixin sendProfile2022;
     mixin sendPeerLeftYourRoom2016;
     mixin sendPeerDisconnected2016;
     mixin sendLevel2016;
@@ -149,69 +149,6 @@ private mixin template sendChat2016() {
         chat.header.plNr = fromChatter;
         chat.text = text;
         _out.send(receiv, chat.createPacket);
-    }
-}
-
-private mixin template describePeersInRoom2016() {
-    void describeLobbyists(
-        in PlNr receiv,
-        in Profile2022[PlNr] contents,
-    ) {
-        describePeersInRoom(receiv, Room(0), contents, receiv);
-    }
-
-    void describePeersInRoom(
-        in PlNr receiv,
-        in Room here,
-        in Profile2022[PlNr] contents,
-        in PlNr ownerOfHere_unusedIn2016,
-    ) {
-        auto informMover = ProfileListPacket2016();
-        informMover.header.packetID = PacketStoC.peersAlreadyInYourNewRoom;
-        informMover.header.plNr = receiv;
-        foreach (key, prof; contents) {
-            informMover.indices ~= key;
-            informMover.profiles ~= prof.to2016with(here);
-        }
-        _out.send(receiv, informMover.createPacket);
-    }
-}
-
-private mixin template describePeersInRoom2022() {
-    void describeLobbyists(
-        in PlNr receiv,
-        in Profile2022[PlNr] contents,
-    ) {
-        auto informMover = PeersInRoomPacket2022();
-        informMover.setHeader(PacketStoC.peersAlreadyInYourNewRoom,
-            receiv, Room(0));
-        foreach (key, prof; contents) {
-            PeerInRoomEntry2022 entry;
-            entry.plnr = key;
-            entry.isOwner = false;
-            entry.profile = prof;
-            informMover.arr ~= entry;
-        }
-        _out.send(receiv, informMover.createPacket);
-    }
-
-    void describePeersInRoom(
-        in PlNr receiv,
-        in Room here,
-        in Profile2022[PlNr] contents,
-        in PlNr ownerOfHere)
-    {
-        auto informMover = PeersInRoomPacket2022();
-        informMover.setHeader(PacketStoC.peersAlreadyInYourNewRoom,
-            receiv, here);
-        foreach (key, prof; contents) {
-            PeerInRoomEntry2022 entry;
-            entry.plnr = key;
-            entry.isOwner = (key == ownerOfHere);
-            entry.profile = prof;
-            informMover.arr ~= entry;
-        }
-        _out.send(receiv, informMover.createPacket);
     }
 }
 
@@ -249,6 +186,69 @@ private mixin template informLobbyist2022() {
     }
 }
 
+private mixin template describePeers2016() {
+    void describeLobbyists(
+        in PlNr receiv,
+        in Profile2022[PlNr] contents,
+    ) {
+        describePeersInRoom(receiv, Room(0), contents, receiv);
+    }
+
+    void describePeersInRoom(
+        in PlNr receiv,
+        in Room here,
+        in Profile2022[PlNr] contents,
+        in PlNr ownerOfHere_unusedIn2016,
+    ) {
+        auto informMover = ProfileListPacket2016();
+        informMover.header.packetID = PacketStoC.peersAlreadyInYourNewRoom;
+        informMover.header.plNr = receiv;
+        foreach (key, prof; contents) {
+            informMover.indices ~= key;
+            informMover.profiles ~= prof.to2016with(here);
+        }
+        _out.send(receiv, informMover.createPacket);
+    }
+}
+
+private mixin template describePeers2022() {
+    void describeLobbyists(
+        in PlNr receiv,
+        in Profile2022[PlNr] contents,
+    ) {
+        auto informMover = PeersInRoomPacket2022();
+        informMover.setHeader(PacketStoC.peersAlreadyInYourNewRoom,
+            Room(0), receiv);
+        foreach (key, prof; contents) {
+            PeerInRoomEntry2022 entry;
+            entry.plnr = key;
+            entry.isOwner = false;
+            entry.profile = prof;
+            informMover.arr ~= entry;
+        }
+        _out.send(receiv, informMover.createPacket);
+    }
+
+    void describePeersInRoom(
+        in PlNr receiv,
+        in Room here,
+        in Profile2022[PlNr] contents,
+        in PlNr ownerOfHere)
+    {
+        auto informMover = PeersInRoomPacket2022();
+        informMover.setHeader(PacketStoC.peersAlreadyInYourNewRoom,
+            here, receiv);
+        foreach (key, prof; contents) {
+            PeerInRoomEntry2022 entry;
+            entry.plnr = key;
+            entry.isOwner = (key == ownerOfHere);
+            entry.profile = prof;
+            informMover.arr ~= entry;
+        }
+        _out.send(receiv, informMover.createPacket);
+    }
+}
+
 private mixin template sendPeerEnteredYourRoom2016() {
     void sendPeerEnteredYourRoom(
         in PlNr receiv,
@@ -264,6 +264,20 @@ private mixin template sendPeerEnteredYourRoom2016() {
     }
 }
 
+private mixin template sendPeerEnteredYourRoom2022() {
+    void sendPeerEnteredYourRoom(
+        in PlNr receiv,
+        in Room here,
+        in PlNr mover,
+        in Profile2022 ofMover)
+    {
+        auto pa = ProfilePacket2022();
+        pa.setHeader(PacketStoC.peerJoinsYourRoom, here, mover);
+        pa.neck = ofMover;
+        _out.send(receiv, pa.createPacket);
+    }
+}
+
 private mixin template sendProfile2016() {
     void sendProfileChangeBy(
         in PlNr receiv,
@@ -275,6 +289,20 @@ private mixin template sendProfile2016() {
         pa.header.packetID = PacketStoC.peerProfile;
         pa.header.plNr = ofWhom;
         pa.profile = full.to2016with(here);
+        _out.send(receiv, pa.createPacket);
+    }
+}
+
+private mixin template sendProfile2022() {
+    void sendProfileChangeBy(
+        in PlNr receiv,
+        in Room here,
+        in PlNr ofWhom,
+        in Profile2022 full)
+    {
+        ProfilePacket2022 pa;
+        pa.setHeader(PacketStoC.peerProfile, here, ofWhom);
+        pa.neck = full;
         _out.send(receiv, pa.createPacket);
     }
 }
