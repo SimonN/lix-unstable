@@ -119,18 +119,34 @@ template isSerializable(ElementType) {
         && is(typeof(ElementType.serializeTo));
 }
 
-struct ArrayPacket(ubyte packetId, ElementType)
-    if (isSerializable!ElementType)
-{
+alias SingleStructPacket(ubyte packetId, ElementType)
+    = SingleStructPlusArrayPacket!(packetId, ElementType, void);
+
+alias ArrayPacket(ubyte packetId, ElementType)
+    = SingleStructPlusArrayPacket!(packetId, void, ElementType);
+
+struct SingleStructPlusArrayPacket(
+    ubyte packetId,
+    SingleStructType,
+    ArrayElementType,
+) if ( (isSerializable!SingleStructType || is(SingleStructType == void))
+    && (isSerializable!ArrayElementType || is(ArrayElementType == void))) {
 public:
     PlNr subject;
     Room subjectsRoom;
-    ElementType[] arr;
+    static if (hasSin) { SingleStructType payload; }
+    static if (hasArr) { ArrayElementType[] arr; }
 
     int len() const pure nothrow @safe @nogc
     {
-        return ArrayPacketHeader2022.len
-            + (arr.length & 0x7FFF) * ElementType.len;
+        int ret = ArrayPacketHeader2022.len;
+        static if (hasSin) {
+            ret += payload.len;
+        }
+        static if (hasArr) {
+            ret += (arr.length & 0x7FFF) * ArrayElementType.len;
+        }
+        return ret;
     }
 
     ArrayPacketHeader2022 header() const pure nothrow @safe @nogc
@@ -139,9 +155,18 @@ public:
         ret.packetId = packetId;
         ret.subject = subject;
         ret.subjectsRoom = subjectsRoom;
-        ret.offsetField0 = ret.len;
-        ret.numFields = arr.length & 0x7FFF;
-        ret.bytesPerField = ElementType.len & 0x7FFF;
+        ret.offsetField0 = delegate short() {
+            static if (hasSin) { return (ret.len + SingleStructType.len) & 0x7FFF; }
+            else               { return ret.len & 0x7FFF; }
+        }();
+        ret.numFields = delegate short() {
+            static if (hasArr) { return arr.length & 0x7FFF; }
+            else               { return 0; }
+        }();
+        ret.bytesPerField = delegate short() {
+            static if (hasArr) { return ArrayElementType.len & 0x7FFF; }
+            else               { return 0; }
+        }();
         return ret;
     }
 
@@ -157,12 +182,16 @@ public:
         enforce(buf.length >= ArrayPacketHeader2022.len);
         auto hea = ArrayPacketHeader2022(buf[0 .. ArrayPacketHeader2022.len]);
         enforce(hea.packetId == packetId);
-
-        for (int i = 0; i < hea.numFields
-            && hea.offsetOfField(i+1) <= buf.length; ++i
-        ) {
-            arr ~= ElementType(buf[hea.offsetOfField(i)
-                                .. hea.offsetOfField(i+1)]);
+        static if (hasSin) {
+            payload = ElementType(buf[hea.len .. hea.offsetOfField(0)]);
+        }
+        static if (hasArr) {
+            for (int i = 0; i < hea.numFields
+                && hea.offsetOfField(i+1) <= buf.length; ++i
+            ) {
+                arr ~= ArrayElementType(buf[hea.offsetOfField(i)
+                                         .. hea.offsetOfField(i+1)]);
+            }
         }
         subject = hea.subject;
         subjectsRoom = hea.subjectsRoom;
@@ -173,10 +202,17 @@ public:
         enforce(buf.length >= len);
         const hea = header();
         hea.serializeTo(buf[0 .. hea.len]);
-        for (int i = 0; i < arr.length; ++i) {
-            ubyte[ElementType.len] temp;
-            arr[i].serializeTo(temp);
-            buf[hea.offsetOfField(i) .. hea.offsetOfField(i+1)] = temp;
+        static if (hasSin) {
+            ubyte[SingleStructType.len] temp;
+            payload.serializeTo(temp);
+            buf[hea.len .. hea.offsetOfField(0)] = temp;
+        }
+        static if (hasArr) {
+            for (int i = 0; i < arr.length; ++i) {
+                ubyte[ArrayElementType.len] temp;
+                arr[i].serializeTo(temp);
+                buf[hea.offsetOfField(i) .. hea.offsetOfField(i+1)] = temp;
+            }
         }
     }
 
@@ -186,4 +222,8 @@ public:
         serializeTo(ret.data[0 .. len]);
         return ret;
     }
+
+private:
+    enum bool hasSin = !is(SingleStructType == void);
+    enum bool hasArr = !is(ArrayElementType == void);
 }
