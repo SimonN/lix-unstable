@@ -47,11 +47,35 @@ private:
     Hotel* _hotel; // We don't own it. We merely know it and forward to it.
 
 public:
-    this(Hotel* thatWeShallForwardTo)
-    {
-        _hotel = thatWeShallForwardTo;
-    }
+    this(Hotel* thatWeShallForwardTo) { _hotel = thatWeShallForwardTo; }
+    mixin commonInboxMethods;
 
+    void receiveProfileChange(in PlNr from, in ENetPacket* got)
+    {
+        import net.versioning;
+        _hotel.changeProfileButKeepVersion(from, ProfilePacket2016(got)
+            .profile.to2022with(Version(0, 7, 77)) // We ignore 2016 versions.
+        );
+    }
+}
+
+class Inbox2022 : Inbox {
+private:
+    Hotel* _hotel; // We don't own it. We merely know it and forward to it.
+
+public:
+    this(Hotel* thatWeShallForwardTo) { _hotel = thatWeShallForwardTo; }
+    mixin commonInboxMethods;
+
+    void receiveProfileChange(in PlNr from, in ENetPacket* got)
+    {
+        import net.versioning;
+        _hotel.changeProfileButKeepVersion(from,
+            ProfilePacket2022(got.data[0 .. got.dataLength]).neck);
+    }
+}
+
+private mixin template commonInboxMethods() {
     void receiveRoomChange(in PlNr from, in ENetPacket* got)
     {
         _hotel.movePlayer(from, RoomChangePacket(got).room);
@@ -60,14 +84,6 @@ public:
     void receiveCreateRoom(in PlNr from, in ENetPacket* got)
     {
         _hotel.movePlayer(from, _hotel.firstFreeRoomElseLobby());
-    }
-
-    void receiveProfileChange(in PlNr from, in ENetPacket* got)
-    {
-        import net.versioning;
-        _hotel.changeProfileButKeepVersion(from, ProfilePacket2016(got)
-            .profile.to2022with(Version(0, 7, 77)) // We ignore 2016 versions.
-        );
     }
 
     void receiveChat(in PlNr from, in ENetPacket* got)

@@ -170,6 +170,8 @@ public:
         auto hea = PacketHeader2022(buf[0 .. PacketHeader2022.len]);
         enforce(hea.packetId == packetId);
         static if (hasNeck) {
+            enforce(buf.length >= hea.len + NeckType.len);
+            enforce(hea.offsetOfField(0) >= buf.length);
             neck = NeckType(buf[hea.len .. hea.offsetOfField(0)]);
         }
         static if (hasArr) {

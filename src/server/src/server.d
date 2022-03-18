@@ -107,7 +107,7 @@ private:
             }
             else {
                 Inbox inbox = _inboxes.protocolOf(from);
-                switch (got.data[0]) {
+                if (inbox !is null) switch (got.data[0]) {
                 case PacketCtoS.toExistingRoom:
                     inbox.receiveRoomChange(from, got);
                     break;
@@ -164,11 +164,13 @@ private:
 
 private struct Inboxes {
 private:
-    Inbox2016 _inbox2016;
+    Inbox _inbox2016;
+    Inbox _inbox2022;
     Inbox[] _receiveVia;
 
     this(Hotel* whereToSend) {
         _inbox2016 = new Inbox2016(whereToSend);
+        _inbox2022 = new Inbox2022(whereToSend);
     }
 
     void setProtocol(in PlNr who, in Version hisClient) nothrow @safe
@@ -177,7 +179,7 @@ private:
             _receiveVia.length = who + 1;
         }
         _receiveVia[who] = _inbox2016
-            = hisClient >= Version(0, 10, 0) ? _inbox2016
+            = hisClient >= Version(0, 10, 0) ? _inbox2022
             : _inbox2016;
     }
 
@@ -198,8 +200,8 @@ private:
  */
 private class DispatchingOutbox : Outbox {
 private:
-    Outbox_0_9_x _outbox_0_9_x;
-    Outbox_0_10_x _outbox_0_10_x;
+    Outbox _outbox_0_9_x;
+    Outbox _outbox_0_10_x;
     Outbox[] _dispatchVia;
 
 public:
@@ -213,11 +215,8 @@ public:
         if (who >= _dispatchVia.length) {
             _dispatchVia.length = who + 1;
         }
-        if (hisClient >= Version(0, 10, 0)) {
-            _dispatchVia[who] = _outbox_0_10_x;
-        } else {
-            _dispatchVia[who] = _outbox_0_9_x;
-        }
+        _dispatchVia[who] = hisClient >= Version(0, 10, 0) ? _outbox_0_10_x
+            : _outbox_0_9_x;
     }
 
     /*
