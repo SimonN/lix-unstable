@@ -5,6 +5,24 @@ module net.header;
  * How packet ID and PlNr (and maybe Room) aggregate  into a binary message
  * packet header (PacketHeader2016 or PacketHeader2022)
  * that will be the first several bytes of the many-byte binary messages.
+ *
+ * +--------------------------------+
+ * | Packet Header, always 16 bytes |  The header always exists.
+ * +--------------------------------+
+ * |     Optional: Packet Neck.     |  The neck may or may not exist.
+ * |     The packet header tells    |  But it either always exists for the same
+ * |   where the neck ends: At the  |  packet type, or it never exists for it.
+ * |    start of array entry #0.    |
+ * +--------------------------------+
+ * |   Optional: Array entry #0     |  It's legal to send 2022 headers that
+ * | Header tells start and length. |  have zero array elements, with or
+ * +--------------------------------+  without a neck.
+ * |   Optional: Array entry #1     |
+ * |                                |  Number of array elements is not constant
+ * +--------------------------------+  even within packets of the same type.
+ * |   Optional: Array entry #2     |
+ * :                                :
+ * .                                .
  */
 
 import std.bitmanip;
@@ -14,39 +32,11 @@ import derelict.enet.enet;
 import net.enetglob;
 import net.plnr;
 
-// ####################################################################### 2022
-
-private mixin template CommonHeaderFields() {
-    enum len = 16;
+struct PacketHeader2022 {
+    enum int len = 16;
     ubyte packetId;
     PlNr subject; // Somebody else. Or the recipient if the array holds plnrs.
     Room subjectsRoom;
-}
-
-struct NonarrayPacketHeader2022 {
-    mixin CommonHeaderFields;
-
-    void serializeTo(ref ubyte[len] buf) const pure nothrow @nogc
-    {
-        buf[0] = packetId;
-        buf[1] = 0; // Reserved for a future sub-packetID. Unused as of 2022.
-        buf[2 .. 4] = subject.nativeToBigEndian!short;
-        buf[4 .. 6] = subjectsRoom.nativeToBigEndian!short;
-        buf[6 .. 8] = len.nativeToBigEndian!short;
-        buf[8 .. 12] = 0; // No array elements. The nonarray data starts at 16.
-        buf[12 .. 16] = 0; // Reserved for a future int, possibly per-packetID.
-    }
-
-    public this(ref const(ubyte[len]) buf) pure nothrow @nogc
-    {
-        packetId = buf[0];
-        subject = PlNr(0xFF & bigEndianToNative!short(buf[2 .. 4]));
-        subjectsRoom = Room(0xFF & bigEndianToNative!short(buf[4 .. 6]));
-    }
-}
-
-struct ArrayPacketHeader2022 {
-    mixin CommonHeaderFields;
     /*
      * (numFields) is >= 0. It's legal to send an empty array.
      * arr[0] starts at (offsetField0) from the start of the packet.
@@ -77,8 +67,8 @@ struct ArrayPacketHeader2022 {
      *
      * Recipients may reject packets with smaller bytesPerField than they need.
      */
-    short offsetField0 = len;
-    short numFields = 1;
+    short offsetField0 = len; // Offset in bytes from start of packet header
+    short numFields;
     short bytesPerField;
 
     int offsetOfField(in int index) const pure @safe
@@ -119,44 +109,44 @@ template isSerializable(ElementType) {
         && is(typeof(ElementType.serializeTo));
 }
 
-alias SingleStructPacket(ubyte packetId, ElementType)
-    = SingleStructPlusArrayPacket!(packetId, ElementType, void);
+alias NeckPacket(ubyte packetId, ElementType)
+    = NeckWithArrayPacket!(packetId, ElementType, void);
 
 alias ArrayPacket(ubyte packetId, ElementType)
-    = SingleStructPlusArrayPacket!(packetId, void, ElementType);
+    = NeckWithArrayPacket!(packetId, void, ElementType);
 
-struct SingleStructPlusArrayPacket(
+struct NeckWithArrayPacket(
     ubyte packetId,
-    SingleStructType,
-    ArrayElementType,
-) if ( (isSerializable!SingleStructType || is(SingleStructType == void))
-    && (isSerializable!ArrayElementType || is(ArrayElementType == void))) {
+    NeckType,
+    ArrayElemType,
+) if ( (isSerializable!NeckType || is(NeckType == void))
+    && (isSerializable!ArrayElemType || is(ArrayElemType == void))) {
 public:
     PlNr subject;
     Room subjectsRoom;
-    static if (hasSin) { SingleStructType payload; }
-    static if (hasArr) { ArrayElementType[] arr; }
+    static if (hasNeck) { NeckType payload; }
+    static if (hasArr) { ArrayElemType[] arr; }
 
     int len() const pure nothrow @safe @nogc
     {
-        int ret = ArrayPacketHeader2022.len;
-        static if (hasSin) {
+        int ret = PacketHeader2022.len;
+        static if (hasNeck) {
             ret += payload.len;
         }
         static if (hasArr) {
-            ret += (arr.length & 0x7FFF) * ArrayElementType.len;
+            ret += (arr.length & 0x7FFF) * ArrayElemType.len;
         }
         return ret;
     }
 
-    ArrayPacketHeader2022 header() const pure nothrow @safe @nogc
+    PacketHeader2022 header() const pure nothrow @safe @nogc
     {
-        ArrayPacketHeader2022 ret;
+        PacketHeader2022 ret;
         ret.packetId = packetId;
         ret.subject = subject;
         ret.subjectsRoom = subjectsRoom;
         ret.offsetField0 = delegate short() {
-            static if (hasSin) { return (ret.len + SingleStructType.len) & 0x7FFF; }
+            static if (hasNeck) { return (ret.len + NeckType.len) & 0x7FFF; }
             else               { return ret.len & 0x7FFF; }
         }();
         ret.numFields = delegate short() {
@@ -164,7 +154,7 @@ public:
             else               { return 0; }
         }();
         ret.bytesPerField = delegate short() {
-            static if (hasArr) { return ArrayElementType.len & 0x7FFF; }
+            static if (hasArr) { return ArrayElemType.len & 0x7FFF; }
             else               { return 0; }
         }();
         return ret;
@@ -179,17 +169,17 @@ public:
     this(in ubyte[] buf) pure
     {
         arr = [];
-        enforce(buf.length >= ArrayPacketHeader2022.len);
-        auto hea = ArrayPacketHeader2022(buf[0 .. ArrayPacketHeader2022.len]);
+        enforce(buf.length >= PacketHeader2022.len);
+        auto hea = PacketHeader2022(buf[0 .. PacketHeader2022.len]);
         enforce(hea.packetId == packetId);
-        static if (hasSin) {
+        static if (hasNeck) {
             payload = ElementType(buf[hea.len .. hea.offsetOfField(0)]);
         }
         static if (hasArr) {
             for (int i = 0; i < hea.numFields
                 && hea.offsetOfField(i+1) <= buf.length; ++i
             ) {
-                arr ~= ArrayElementType(buf[hea.offsetOfField(i)
+                arr ~= ArrayElemType(buf[hea.offsetOfField(i)
                                          .. hea.offsetOfField(i+1)]);
             }
         }
@@ -202,14 +192,14 @@ public:
         enforce(buf.length >= len);
         const hea = header();
         hea.serializeTo(buf[0 .. hea.len]);
-        static if (hasSin) {
-            ubyte[SingleStructType.len] temp;
+        static if (hasNeck) {
+            ubyte[NeckType.len] temp;
             payload.serializeTo(temp);
             buf[hea.len .. hea.offsetOfField(0)] = temp;
         }
         static if (hasArr) {
             for (int i = 0; i < arr.length; ++i) {
-                ubyte[ArrayElementType.len] temp;
+                ubyte[ArrayElemType.len] temp;
                 arr[i].serializeTo(temp);
                 buf[hea.offsetOfField(i) .. hea.offsetOfField(i+1)] = temp;
             }
@@ -224,6 +214,6 @@ public:
     }
 
 private:
-    enum bool hasSin = !is(SingleStructType == void);
-    enum bool hasArr = !is(ArrayElementType == void);
+    enum bool hasNeck = !is(NeckType == void);
+    enum bool hasArr = !is(ArrayElemType == void);
 }
