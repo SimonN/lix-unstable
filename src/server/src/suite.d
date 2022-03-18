@@ -115,7 +115,7 @@ public:
         _players[who] = newbie;
         unreadyAll();
         housekeep();
-        _outbox.describeRoom(who, room, _players);
+        _outbox.describePeersInRoom(who, room, _players, _fe.owner);
         if (_fe.level !is null) {
             _outbox.sendLevelByChooser(who, _fe.level, _fe.levelChooser);
         }
@@ -315,7 +315,7 @@ public:
                 ~ " shouldn't be in _lobbyists=" ~ _lobbyists.to!string);
         }
         _lobbyists[who] = newbie;
-        _outbox.describeRoom(who, room, _lobbyists);
+        _outbox.describeLobbyists(who, _lobbyists);
         foreach (lobbyist; _lobbyists.byKey.filter!(pl => pl != who)) {
             _outbox.sendPeerEnteredYourRoom(lobbyist, room, who, newbie);
         }

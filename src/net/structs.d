@@ -305,6 +305,33 @@ struct RoomListEntry2022 {
     }
 }
 
+struct PeerInRoomEntry2022 {
+    PlNr plnr;
+    bool isOwner; // Future idea: Make this a room property, not per-profile.
+    Profile2022 profile;
+
+    enum int len = 8 + profile.len;
+
+    this(in ubyte[] buf) pure {
+        enforce (buf.length >= len);
+        plnr = PlNr(0xFF & buf[0 .. 2].bigEndianToNative!short);
+        isOwner = 0 != buf[2 .. 4].bigEndianToNative!short;
+        // buf[4 .. 8] unused, they're always 0.
+        profile = Profile2022(buf[8 .. buf.length]);
+    }
+
+    void serializeTo(ref ubyte[len] buf) const pure nothrow @nogc
+    {
+        buf[0 .. 2] = nativeToBigEndian!short(plnr);
+        buf[2 .. 4] = nativeToBigEndian!short(isOwner);
+        buf[4 .. 8] = 0; // Unused, reserved.
+        profile.serializeTo(buf[8 .. len]);
+    }
+}
+
+alias PeerInRoomPacket2022
+    = ArrayPacket!(PacketStoC.peersAlreadyInYourNewRoom, PeerInRoomEntry2022);
+
 // ######################################################## end of list packets
 
 struct RoomChangePacket {

@@ -21,25 +21,18 @@ import net.versioning;
 interface Outbox {
     void sendChat(in PlNr receiv, in PlNr fromChatter, in string text);
 
-    void sendProfileChangeBy(
-        in PlNr receiv,
-        in Room here, // Only needed to send Profile2016 to 0.9.x clients
-        in PlNr ofWhom,
-        in Profile2022 full);
-
-    void sendLevelByChooser(PlNr receiv, const(ubyte[]) level, PlNr from);
-
-    void sendPly(PlNr receiv, Ply data);
-
-    void describeRoom(
-        in PlNr receiv,
-        in Room here, // Only needed to send Profile2016 to 0.9.x clients
-        in Profile2022[PlNr] inhab);
-
     void informLobbyistAboutRooms(
         in PlNr receiv,
         in Version ofReceiver, // Only needed to filter for 0.9.x clients
         in RoomListPacket2022 rlp);
+
+    void describeLobbyists(in PlNr receiv, in Profile2022[PlNr] lobbyists);
+
+    void describePeersInRoom(
+        in PlNr receiv,
+        in Room here,
+        in Profile2022[PlNr] inhab,
+        in PlNr ownerOfHere);
 
     void sendPeerEnteredYourRoom(
         in PlNr receiv,
@@ -47,11 +40,21 @@ interface Outbox {
         in PlNr mover,
         in Profile2022 ofMover);
 
+    void sendProfileChangeBy(
+        in PlNr receiv,
+        in Room here, // Only needed to send Profile2016 to 0.9.x clients
+        in PlNr ofWhom,
+        in Profile2022 full);
+
     void sendPeerLeftYourRoom(PlNr receiv, PlNr mover, in Room toWhere);
 
     void sendPeerDisconnected(PlNr receiv, PlNr disconnector);
 
+    void sendLevelByChooser(PlNr receiv, const(ubyte[]) level, PlNr from);
+
     void startGame(in PlNr receiv, in PlNr roomOwner, in int permuLength);
+
+    void sendPly(PlNr receiv, Ply data);
 
     void sendMillisecondsSinceGameStart(PlNr receiv, int millis);
 }

@@ -123,7 +123,6 @@ struct ArrayPacket(ubyte packetId, ElementType)
     if (isSerializable!ElementType)
 {
 public:
-    ubyte packetId;
     PlNr subject;
     Room subjectsRoom;
     ElementType[] arr;
@@ -146,7 +145,7 @@ public:
         return ret;
     }
 
-    void setHeader(in PlNr subj, in Room ofSubject)
+    void setSubjectInHeader(in PlNr subj, in Room ofSubject)
     {
         subject = subj;
         subjectsRoom = ofSubject;
@@ -157,13 +156,14 @@ public:
         arr = [];
         enforce(buf.length >= ArrayPacketHeader2022.len);
         auto hea = ArrayPacketHeader2022(buf[0 .. ArrayPacketHeader2022.len]);
+        enforce(hea.packetId == packetId);
+
         for (int i = 0; i < hea.numFields
             && hea.offsetOfField(i+1) <= buf.length; ++i
         ) {
             arr ~= ElementType(buf[hea.offsetOfField(i)
                                 .. hea.offsetOfField(i+1)]);
         }
-        packetId = hea.packetId;
         subject = hea.subject;
         subjectsRoom = hea.subjectsRoom;
     }

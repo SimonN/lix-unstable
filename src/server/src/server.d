@@ -213,9 +213,11 @@ public:
         if (who >= _dispatchVia.length) {
             _dispatchVia.length = who + 1;
         }
-        _dispatchVia[who]
-            = hisClient >= Version(0, 10, 0) ? _outbox_0_10_x
-            : _outbox_0_9_x;
+        if (hisClient >= Version(0, 10, 0)) {
+            _dispatchVia[who] = _outbox_0_10_x;
+        } else {
+            _dispatchVia[who] = _outbox_0_9_x;
+        }
     }
 
     /*

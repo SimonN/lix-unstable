@@ -110,19 +110,36 @@ private:
 public:
     this(SendWithEnet viaWhichWeSend) { _out = viaWhichWeSend; }
     mixin sendChat2016;
-    mixin sendLevel2016;
-    mixin sendProfile2016;
-    mixin sendPly2016;
-    mixin describeRoom2016;
     mixin informLobbyist2016;
+    mixin describePeersInRoom2016;
     mixin sendPeerEnteredYourRoom2016;
+    mixin sendProfile2016;
     mixin sendPeerLeftYourRoom2016;
     mixin sendPeerDisconnected2016;
+    mixin sendLevel2016;
     mixin startGame2016;
+    mixin sendPly2016;
     mixin sendMilliseconds2016;
 }
 
-alias Outbox_0_10_x = Outbox_0_9_x;
+class Outbox_0_10_x : Outbox {
+private:
+    SendWithEnet _out; // We don't own it. We merely know the server's.
+
+public:
+    this(SendWithEnet viaWhichWeSend) { _out = viaWhichWeSend; }
+    mixin sendChat2016;
+    mixin informLobbyist2022;
+    mixin describePeersInRoom2022;
+    mixin sendPeerEnteredYourRoom2016;
+    mixin sendProfile2016;
+    mixin sendPeerLeftYourRoom2016;
+    mixin sendPeerDisconnected2016;
+    mixin sendLevel2016;
+    mixin startGame2016;
+    mixin sendPly2016;
+    mixin sendMilliseconds2016;
+}
 
 private mixin template sendChat2016() {
     void sendChat(in PlNr receiv, in PlNr fromChatter, in string text)
@@ -135,60 +152,62 @@ private mixin template sendChat2016() {
     }
 }
 
-private mixin template sendLevel2016() {
-    void sendLevelByChooser(PlNr receiv, const(ubyte[]) level, PlNr from) @nogc
-    {
-        struct LevelPacket {
-            const(ubyte[]) _level;
-            PlNr _from;
-            ENetPacket* createPacket() const nothrow @nogc {
-                PacketHeader2016 header;
-                header.packetID = PacketStoC.peerLevelFile;
-                header.plNr = _from;
-                auto ret = .createPacket(header.len + _level.length);
-                header.serializeTo(ret.data[0 .. header.len]);
-                ret.data[header.len .. ret.dataLength] = _level[0 .. $];
-                return ret;
-            }
-        }
-        _out.send(receiv, LevelPacket(level, from).createPacket);
+private mixin template describePeersInRoom2016() {
+    void describeLobbyists(
+        in PlNr receiv,
+        in Profile2022[PlNr] contents,
+    ) {
+        describePeersInRoom(receiv, Room(0), contents, receiv);
     }
-}
 
-private mixin template sendProfile2016() {
-    void sendProfileChangeBy(
+    void describePeersInRoom(
         in PlNr receiv,
         in Room here,
-        in PlNr ofWhom,
-        in Profile2022 full)
-    {
-        ProfilePacket pa;
-        pa.header.packetID = PacketStoC.peerProfile;
-        pa.header.plNr = ofWhom;
-        pa.profile = full.to2016with(here);
-        _out.send(receiv, pa.createPacket);
-    }
-}
-
-private mixin template sendPly2016() {
-    void sendPly(PlNr receiv, Ply data)
-    {
-        _out.send(receiv, data.createPacket(PacketStoC.peerPly));
-    }
-}
-
-private mixin template describeRoom2016() {
-    void describeRoom(
-        in PlNr receiv,
-        in Room here,
-        in Profile2022[PlNr] contents)
-    {
+        in Profile2022[PlNr] contents,
+        in PlNr ownerOfHere_unusedIn2016,
+    ) {
         auto informMover = ProfileListPacket2016();
         informMover.header.packetID = PacketStoC.peersAlreadyInYourNewRoom;
         informMover.header.plNr = receiv;
         foreach (key, prof; contents) {
             informMover.indices ~= key;
             informMover.profiles ~= prof.to2016with(here);
+        }
+        _out.send(receiv, informMover.createPacket);
+    }
+}
+
+private mixin template describePeersInRoom2022() {
+    void describeLobbyists(
+        in PlNr receiv,
+        in Profile2022[PlNr] contents,
+    ) {
+        auto informMover = PeerInRoomPacket2022();
+        informMover.setSubjectInHeader(receiv, Room(0));
+        foreach (key, prof; contents) {
+            PeerInRoomEntry2022 entry;
+            entry.plnr = key;
+            entry.isOwner = false;
+            entry.profile = prof;
+            informMover.arr ~= entry;
+        }
+        _out.send(receiv, informMover.createPacket);
+    }
+
+    void describePeersInRoom(
+        in PlNr receiv,
+        in Room here,
+        in Profile2022[PlNr] contents,
+        in PlNr ownerOfHere)
+    {
+        auto informMover = PeerInRoomPacket2022();
+        informMover.setSubjectInHeader(receiv, here);
+        foreach (key, prof; contents) {
+            PeerInRoomEntry2022 entry;
+            entry.plnr = key;
+            entry.isOwner = (key == ownerOfHere);
+            entry.profile = prof;
+            informMover.arr ~= entry;
         }
         _out.send(receiv, informMover.createPacket);
     }
@@ -243,6 +262,21 @@ private mixin template sendPeerEnteredYourRoom2016() {
     }
 }
 
+private mixin template sendProfile2016() {
+    void sendProfileChangeBy(
+        in PlNr receiv,
+        in Room here,
+        in PlNr ofWhom,
+        in Profile2022 full)
+    {
+        ProfilePacket pa;
+        pa.header.packetID = PacketStoC.peerProfile;
+        pa.header.plNr = ofWhom;
+        pa.profile = full.to2016with(here);
+        _out.send(receiv, pa.createPacket);
+    }
+}
+
 private mixin template sendPeerLeftYourRoom2016() {
     void sendPeerLeftYourRoom(PlNr receiv, PlNr mover, in Room toWhere)
     {
@@ -264,6 +298,26 @@ private mixin template sendPeerDisconnected2016() {
     }
 }
 
+private mixin template sendLevel2016() {
+    void sendLevelByChooser(PlNr receiv, const(ubyte[]) level, PlNr from) @nogc
+    {
+        struct LevelPacket {
+            const(ubyte[]) _level;
+            PlNr _from;
+            ENetPacket* createPacket() const nothrow @nogc {
+                PacketHeader2016 header;
+                header.packetID = PacketStoC.peerLevelFile;
+                header.plNr = _from;
+                auto ret = .createPacket(header.len + _level.length);
+                header.serializeTo(ret.data[0 .. header.len]);
+                ret.data[header.len .. ret.dataLength] = _level[0 .. $];
+                return ret;
+            }
+        }
+        _out.send(receiv, LevelPacket(level, from).createPacket);
+    }
+}
+
 private mixin template startGame2016() {
     void startGame(in PlNr receiv, in PlNr roomOwner, in int permuLength)
     {
@@ -271,6 +325,13 @@ private mixin template startGame2016() {
         pa.header.packetID = PacketStoC.gameStartsWithPermu;
         pa.header.plNr = roomOwner;
         _out.send(receiv, pa.createPacket);
+    }
+}
+
+private mixin template sendPly2016() {
+    void sendPly(PlNr receiv, Ply data)
+    {
+        _out.send(receiv, data.createPacket(PacketStoC.peerPly));
     }
 }
 
