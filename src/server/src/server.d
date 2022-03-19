@@ -8,6 +8,8 @@ module net.server.server;
  * local NetServer, and treats that NetServer without knowing it's local.
  */
 
+import std.exception;
+
 import derelict.enet.enet;
 
 import net.server.adapter;
@@ -40,7 +42,7 @@ public:
             2, // allow up to 2 channels to be used, 0 and 1
             0, // assume any amount of incoming bandwidth
             0); // assume any amount of outgoing bandwidth
-        assert (_host, "error creating enet server host");
+        enforce(_host, "error creating enet server host");
 
         _sendWithEnet = new SendViaEnetHost(_host);
         _outbox = new DispatchingOutbox(_sendWithEnet);
@@ -48,7 +50,7 @@ public:
         _inboxes = Inboxes(&_hotel);
     }
 
-    ~this()
+    void dispose()
     {
         if (_host) {
             enet_host_destroy(_host);

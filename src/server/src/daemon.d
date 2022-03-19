@@ -38,8 +38,9 @@ else version (lixDaemon)
         }
         else {
             auto netServer = new NetServer(cmdArgs.port);
-            scope (exit)
-                destroy(netServer);
+            scope (exit) {
+                netServer.dispose();
+            }
             writeln("Lix server is listening on UDP port ", cmdArgs.port, ".");
             while (true) {
                 Thread.sleep(dur!"msecs"(netServer.anyoneConnected ? 5 : 200));

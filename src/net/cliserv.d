@@ -25,7 +25,7 @@ public:
     override void disconnectAndDispose()
     {
         super.disconnectAndDispose();
-        destroy(_server);
+        _server.dispose();
     }
 
     override void calc()
