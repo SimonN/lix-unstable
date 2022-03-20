@@ -20,6 +20,7 @@ import file.option;
 import net.client;
 import net.cliserv;
 import net.iclient;
+import net.versioning;
 
 class ConnectionPicker : Element {
 private:
@@ -113,6 +114,7 @@ private:
         NetClientCfg cfg = NetClientCfg();
         cfg.hostname = _hostname.value;
         cfg.port = _port.number;
+        cfg.clientVersion = gameVersion;
         cfg.ourPlayerName = file.option.userName;
         try
             cfg.ourStyle = file.option.networkLastStyle.value.to!Style;

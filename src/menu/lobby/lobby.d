@@ -267,7 +267,8 @@ private:
     {
         _netClient = new RichClient(cli, _console);
         setOurEventHandlers();
-        _console.add("Lix %s, enet %s. %s %s:%d...".format(gameVersion,
+        _console.add("Lix %s, enet %s. %s %s:%d...".format(
+            cfgThatWasUsed.clientVersion,
             _netClient.enetLinkedVersion, Lang.netChatStartClient.transl,
             cfgThatWasUsed.hostname, cfgThatWasUsed.port));
     }

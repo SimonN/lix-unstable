@@ -25,6 +25,7 @@ import net.versioning;
 struct NetClientCfg {
     string hostname;
     int port;
+    Version clientVersion;
     string ourPlayerName;
     Style ourStyle;
 }
@@ -277,7 +278,7 @@ private:
     {
         HelloPacket hello;
         hello.header.packetID = PacketCtoS.hello;
-        hello.fromVersion = gameVersion;
+        hello.fromVersion = _cfg.clientVersion;
         hello.profile = generateOurProfile();
         assert (_serverPeer);
         hello.enetSendTo(_serverPeer);

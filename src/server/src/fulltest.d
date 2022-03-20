@@ -17,6 +17,7 @@ import core.time;
 import net.server.server;
 import net.client;
 import net.style;
+import net.versioning;
 
 unittest {
     FullTest fulltest;
@@ -38,8 +39,8 @@ public:
         assert (_srv is null, "Don't setup twice.");
         // Server will initialize enet on new, deinitialize on its dispose().
         _srv = new NetServer(thePort);
-        _cliA = new NetClient(
-            NetClientCfg("localhost", thePort, "A", Style.orange));
+        _cliA = new NetClient(NetClientCfg("localhost", thePort,
+            Version(0, 9, 997), "A", Style.orange));
         await("Client A connects to server", () { return _cliA.connected; });
     }
 
