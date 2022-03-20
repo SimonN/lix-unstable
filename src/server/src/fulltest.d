@@ -19,12 +19,15 @@ import std.algorithm;
 import net.server.server;
 import net.client;
 import net.style;
+import net.plnr;
+import net.profile;
 import net.versioning;
 
 unittest {
     FullTest fulltest;
     fulltest.setup();
-    fulltest.colorToYellow();
+    fulltest.cliAPicksYellow();
+    fulltest.cliAOpensRoom();
     fulltest.teardown();
 }
 
@@ -42,49 +45,62 @@ public:
         assert (_srv is null, "Don't setup twice.");
         // Server will initialize enet on new, deinitialize on its dispose().
         _srv = new NetServer(thePort);
-
-        _cliA = new NetClient(NetClientCfg("localhost", thePort,
-            Version(0, 9, 997), "A", Style.orange));
-        await("Client A connects to server", () { return _cliA.connected; });
-        _cliB = new NetClient(NetClientCfg("localhost", thePort,
-            Version(0, 9, 998), "B", Style.green));
-        await("Client B connects to server", () { return _cliB.connected; });
+        _cliA = makeClient(Version(0, 9, 997), "A", Style.orange);
+        _cliB = makeClient(Version(0, 9, 998), "B", Style.green);
+        await("Client A connects to server", () => _cliA.connected);
+        await("Client B connects to server", () => _cliB.connected);
     }
 
     void teardown()
     {
         assert (_srv, "Don't teardown twice.");
-        if (_cliA) {
-            _cliA.disconnectAndDispose();
-            _cliA = null;
-        }
-        if (_cliB) {
-            _cliB.disconnectAndDispose();
-            _cliB = null;
-        }
+        _cliA.disconnectAndDispose();
+        _cliA = null;
+        _cliB.disconnectAndDispose();
+        _cliB = null;
         _srv.dispose(); // This deinitializes enet.
         _srv = null;
     }
 
-    void colorToYellow()
+    void cliAPicksYellow()
     {
         assert (_cliA.connected);
         assert (_cliB.connected);
         assert (_cliA.ourProfile.name == "A");
         assert (_cliA.ourProfile.style == Style.orange);
-        await("Client B got A's initial orange", () {
-            return _cliB.profilesInOurRoom.byValue.canFind!(prof
-                => prof.style == Style.orange);
-        });
+        await("B got A's initial orange", ()
+            => _cliB.profilesInOurRoom.byValue.canFind!(prof
+                => prof.style == Style.orange));
         _cliA.ourStyle = Style.yellow;
-        await("Client A style: orange -> yellow", () {
-            return _cliA.ourProfile.style == Style.yellow
-                && _cliB.profilesInOurRoom.byValue.canFind!(prof
-                    => prof.style == Style.yellow);
-        });
+        await("A picks style, orange -> yellow", ()
+            => _cliA.ourProfile.style == Style.yellow);
+        await("B got A's style, orange -> yellow", ()
+            => _cliB.profilesInOurRoom.byValue.canFind!(prof
+                => prof.style == Style.yellow));
+        assert (_cliB.ourProfile.style == Style.green);
+    }
+
+    void cliAOpensRoom()
+    {
+        assert (_cliA.ourProfile.room == Room(0));
+        assert (_cliB.ourProfile.room == Room(0));
+        Room seenByB = Room(0);
+        _cliB.onListOfExistingRooms =
+            (const(Room[]) rooms, const(Profile2016[]) profs) {
+                auto found = profs.find!(prof => prof.name == "A");
+                seenByB = found.length > 0 ? found[0].room : Room(0);
+            };
+        _cliA.createRoom();
+        await("A creates room", () => _cliA.ourProfile.room != Room(0));
+        await("B sees A's room", () => seenByB != Room(0));
     }
 
 private:
+    NetClient makeClient(in Version v, in string name, in Style st)
+    {
+        return new NetClient(NetClientCfg("localhost", thePort, v, name, st));
+    }
+
     void await(in string testName, bool delegate() successCondition)
     {
         const start = MonoTime.currTime;
@@ -92,10 +108,9 @@ private:
             if (MonoTime.currTime > start + dur!"msecs"(500)) {
                 throw new Exception("Timeout during: " ~ testName);
             }
-            assert (_srv);
             _srv.calc();
-            if (_cliA) { _cliA.calc(); }
-            if (_cliB) { _cliB.calc(); }
+            _cliA.calc();
+            _cliB.calc();
             Thread.sleep(dur!"msecs"(1));
         }
     }
