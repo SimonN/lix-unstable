@@ -6,6 +6,8 @@ module net.client;
  * This receives data from a NetServer and caches it for the gameplay.
  */
 
+import std.algorithm;
+import std.array;
 import std.string;
 import std.exception;
 import derelict.enet.enet;
@@ -35,7 +37,8 @@ private:
     ENetHost* _ourClient;
     ENetPeer* _serverPeer;
     PlNr _ourPlNr;
-    Profile[PlNr] _profilesInOurRoom;
+    Room _ourRoom = Room(0);
+    Profile2022[PlNr] _profilesInOurRoom;
 
     NetClientCfg _cfg;
 
@@ -45,12 +48,12 @@ private:
     void delegate() _onConnectionLost;
     void delegate(string name, string chat) _onChatMessage;
     void delegate(string name) _onPeerDisconnect;
-    void delegate(const(Profile*)) _onPeerJoinsRoom;
+    void delegate(in Profile2022) _onPeerJoinsRoom;
     void delegate(string name, Room toRoom) _onPeerLeavesRoomTo;
-    void delegate(const(Profile*)) _onPeerChangesProfile;
+    void delegate(in Profile2022) _onPeerChangesProfile;
     void delegate(Room toRoom) _onWeChangeRoom;
-    void delegate(const(Room[]), const(Profile[])) _onListOfExistingRooms;
-    void delegate(string name, const(ubyte[]) data) _onLevelSelect;
+    void delegate(in Room[], in Profile2022[]) _onListOfExistingRooms;
+    void delegate(string name, in ubyte[] data) _onLevelSelect;
     void delegate(Permu) _onGameStart;
     void delegate(Ply) _onPeerSendsPly;
     void delegate(int) _onMillisecondsSinceGameStart;
@@ -149,25 +152,37 @@ public:
         return _ourPlNr;
     }
 
-    @property const(Profile) ourProfile() const
+    @property Room ourRoom() const
+    {
+        assert (connected, "call this function only when you're connected");
+        return _ourRoom;
+    }
+
+    @property const(Profile2022) ourProfile() const
     {
         assert (connected, "call this function only when you're connected");
         return _profilesInOurRoom[_ourPlNr];
     }
 
-    @property const(Profile[PlNr]) profilesInOurRoom() const
+    @property const(Profile2022[PlNr]) profilesInOurRoom() const
     {
         return _profilesInOurRoom;
     }
 
     @property bool mayWeDeclareReady() const
     {
-        if (! connected || ! mayRoomDeclareReady(_profilesInOurRoom.byValue))
+        if (! connected
+            || _ourRoom == Room(0)
+            || _profilesInOurRoom.length < 2
+            || _profilesInOurRoom.byValue.all!(pro
+                => pro.feeling == Profile2022.Feeling.observing)
+        ) {
             return false;
+        }
         final switch (ourProfile.feeling) {
-            case Profile.Feeling.thinking:
-            case Profile.Feeling.ready: return true;
-            case Profile.Feeling.observing: return false;
+            case Profile2022.Feeling.thinking: return true;
+            case Profile2022.Feeling.ready: return true;
+            case Profile2022.Feeling.observing: return false;
         }
     }
 
@@ -176,16 +191,16 @@ public:
     @property void ourStyle(Style sty)
     {
         _cfg.ourStyle = sty;
-        sendPhyudProfile((ref Profile p) {
+        sendOurUpdatedProfile((ref Profile2016 p) {
             p.style = sty;
-            p.feeling = Profile.Feeling.thinking; // = not observing
+            p.feeling = Profile2016.Feeling.thinking; // = not observing
         });
     }
 
     // Feeling is readiness, and whether we want to observe.
-    @property void ourFeeling(Profile.Feeling feel)
+    @property void ourFeeling(Profile2022.Feeling feel)
     {
-        sendPhyudProfile((ref Profile p) { p.feeling = feel; });
+        sendOurUpdatedProfile((ref Profile2016 p) { p.feeling = feel; });
     }
 
     void gotoExistingRoom(Room newRoom)
@@ -279,20 +294,20 @@ private:
         HelloPacket hello;
         hello.header.packetID = PacketCtoS.hello;
         hello.fromVersion = _cfg.clientVersion;
-        hello.profile = generateOurProfile();
+        hello.profile = generateOurProfile2016();
         assert (_serverPeer);
         hello.enetSendTo(_serverPeer);
     }
 
-    Profile generateOurProfile()
+    Profile2016 generateOurProfile2016()
     {
-        Profile ret;
+        Profile2016 ret;
         ret.name = _cfg.ourPlayerName;
         ret.style = _cfg.ourStyle;
         return ret;
     }
 
-    void sendPhyudProfile(void delegate(ref Profile) changeTheProfile)
+    void sendOurUpdatedProfile(void delegate(ref Profile2016) howToChange)
     {
         if (! connected)
             return;
@@ -300,19 +315,30 @@ private:
         // to change color over the network and wait for the return packet.
         ProfilePacket2016 newStyle;
         newStyle.header.packetID = PacketCtoS.myProfile;
-        newStyle.profile = _profilesInOurRoom[_ourPlNr];
-        changeTheProfile(newStyle.profile);
+        newStyle.profile = _profilesInOurRoom[_ourPlNr].to2016with(_ourRoom);
+        howToChange(newStyle.profile);
         newStyle.enetSendTo(_serverPeer);
     }
 
-    Profile* receiveProfilePacket(ENetPacket* got)
+    Profile2022* receiveProfilePacket(ENetPacket* got)
     {
         auto updated = ProfilePacket2016(got);
         auto ptr = updated.header.plNr in _profilesInOurRoom;
-        if (ptr is null || ptr.wouldForceAllNotReadyOnReplace(updated.profile))
+        if (ptr is null || ptr.wouldForceAllNotReadyOnReplace(
+            updated.profile.to2022with(_cfg.clientVersion))
+        ) {
             foreach (ref profile; _profilesInOurRoom)
                 profile.setNotReady();
-        _profilesInOurRoom[updated.header.plNr] = updated.profile;
+        }
+        /*
+         * Insert the received profile into our list.
+         * Hack in the 2016 client: We assume that everybody else has our
+         * version because the server doesn't tell us our version.
+         * The server will tell 2022 clients the correct remote client version.
+         */
+        _ourRoom = updated.profile.room;
+        _profilesInOurRoom[updated.header.plNr]
+            = updated.profile.to2022with(_cfg.clientVersion);
         return updated.header.plNr in _profilesInOurRoom;
     }
 
@@ -323,7 +349,8 @@ private:
         else if (got.data[0] == PacketStoC.youGoodHeresPlNr) {
             auto answer = HelloAnswerPacket(got);
             _ourPlNr = answer.header.plNr;
-            _profilesInOurRoom[_ourPlNr] = generateOurProfile();
+            _profilesInOurRoom[_ourPlNr]
+                = generateOurProfile2016().to2022with(_cfg.clientVersion);
             _onConnect && _onConnect();
         }
         else if (got.data[0] == PacketStoC.youTooOld
@@ -334,8 +361,10 @@ private:
             disconnectAndDispose();
         }
         else if (got.data[0] == PacketStoC.peerJoinsYourRoom) {
-            const(Profile*) changed = receiveProfilePacket(got);
-            _onPeerJoinsRoom && _onPeerJoinsRoom(changed);
+            const(Profile2022*) changed = receiveProfilePacket(got);
+            if (_onPeerJoinsRoom && changed !is null) {
+                _onPeerJoinsRoom(*changed);
+            }
         }
         else if (got.data[0] == PacketStoC.peerLeftYourRoom) {
             auto gone = RoomChangePacket(got);
@@ -349,20 +378,27 @@ private:
         else if (got.data[0] == PacketStoC.peersAlreadyInYourNewRoom) {
             auto list = ProfileListPacket2016(got);
             _profilesInOurRoom.clear();
-            foreach (i, const(PlNr) plNr; list.indices)
-                _profilesInOurRoom[plNr] = list.profiles[i];
+            foreach (i, const(PlNr) plNr; list.indices) {
+                _ourRoom = list.profiles[i].room;
+                _profilesInOurRoom[plNr]
+                    = list.profiles[i].to2022with(_cfg.clientVersion);
+            }
             enforce(_ourPlNr in _profilesInOurRoom);
-            _onWeChangeRoom && _onWeChangeRoom(
-                _profilesInOurRoom[_ourPlNr].room);
+            _onWeChangeRoom && _onWeChangeRoom(_ourRoom);
         }
         else if (got.data[0] == PacketStoC.listOfExistingRooms) {
             auto list = RoomListPacket2016(got);
-            if (_onListOfExistingRooms)
-                _onListOfExistingRooms(list.indices, list.profiles);
+            if (_onListOfExistingRooms) {
+                Profile2022[] converted = list.profiles.map!(p
+                    => p.to2022with(_cfg.clientVersion)).array;
+                _onListOfExistingRooms(list.indices, converted);
+            }
         }
         else if (got.data[0] == PacketStoC.peerProfile) {
-            const(Profile*) changed = receiveProfilePacket(got);
-            _onPeerChangesProfile && _onPeerChangesProfile(changed);
+            const(Profile2022*) changed = receiveProfilePacket(got);
+            if (_onPeerChangesProfile && changed !is null) {
+                _onPeerChangesProfile(*changed);
+            }
         }
         else if (got.data[0] == PacketStoC.peerChatMessage) {
             auto chat = ChatPacket(got);

@@ -1,5 +1,11 @@
 module net.profile;
 
+/*
+ * Profile contains all mostly-constant information about a networking player.
+ * The server keeps profiles.
+ * The player sometimes asks the server to use a new profile for that player.
+ */
+
 import std.conv;
 import std.exception;
 import std.encoding;
@@ -9,18 +15,6 @@ import net.handicap;
 import net.plnr;
 import net.style;
 import net.versioning;
-
-/*
- * Profile contains all mostly-constant information about a networking player.
- * The server keeps profiles.
- * The player sometimes asks the server to use a new profile for that player.
- */
-
-alias Profile = Profile2016;
-
-template isProfile(T) {
-    enum bool isProfile = is(T == Profile2016) || is (T == Profile2022);
-}
 
 struct Profile2022 {
 private:
@@ -105,7 +99,6 @@ private:
     mixin NameAsFixStr!31; // Yes, not 32. It's 30 good bytes + 1 nullbyte.
 
 public:
-    static assert (isProfile!(typeof(this)));
     alias Feeling = Profile2022.Feeling;
     enum int len = 3 + _name.len;
 

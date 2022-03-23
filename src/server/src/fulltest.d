@@ -82,16 +82,19 @@ public:
 
     void cliAOpensRoom()
     {
-        assert (_cliA.ourProfile.room == Room(0));
-        assert (_cliB.ourProfile.room == Room(0));
+        assert (_cliA.ourRoom == Room(0));
+        assert (_cliB.ourRoom == Room(0));
         Room seenByB = Room(0);
         _cliB.onListOfExistingRooms =
-            (const(Room[]) rooms, const(Profile2016[]) profs) {
-                auto found = profs.find!(prof => prof.name == "A");
-                seenByB = found.length > 0 ? found[0].room : Room(0);
+            (in Room[] rooms, in Profile2022[] profs) {
+                for (size_t i = 0; i < rooms.length && i < profs.length; ++i) {
+                    if (profs[i].name == "A") {
+                        seenByB = rooms[i];
+                    }
+                }
             };
         _cliA.createRoom();
-        await("A creates room", () => _cliA.ourProfile.room != Room(0));
+        await("A creates room", () => _cliA.ourRoom != Room(0));
         await("B sees A's room", () => seenByB != Room(0));
     }
 

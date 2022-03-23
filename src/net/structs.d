@@ -64,22 +64,11 @@ struct SomeoneDisconnectedPacket {
     }
 }
 
-// Give this function a range with all profiles from the same room
-bool mayRoomDeclareReady(R)(R range)
-    if (isForwardRange!R && is (ElementType!R : const (Profile)))
-{
-    // all must be in same room that isn't the lobby
-    if (range.any!(pro => pro.room != range.front.room || pro.room == 0))
-        return false;
-    return range.walkLength >= 2
-        && range.any!(pro => pro.feeling != Profile.Feeling.observing);
-}
-
 struct HelloPacket {
     enum len = header.len + fromVersion.len + profile.len;
     PacketHeader2016 header;
     Version fromVersion;
-    Profile profile;
+    Profile2016 profile;
 
     ENetPacket* createPacket() const nothrow @nogc
     in { assert (header.packetID == PacketCtoS.hello); }
@@ -100,7 +89,7 @@ struct HelloPacket {
         header = PacketHeader2016(p.data[0 .. header.len]);
         enforce(header.packetID == PacketCtoS.hello);
         fromVersion = Version(p.data[header.len .. header.len + Version.len]);
-        profile = Profile(p.data[len - profile.len .. len]);
+        profile = Profile2016(p.data[len - profile.len .. len]);
         /*
          * If the client sent a longer packet, we ignore what comes at
          * >= HelloPacket.len. Future server versions might interpret it.
@@ -146,7 +135,7 @@ unittest {
 struct ProfilePacket2016 {
     enum len = header.len + profile.len;
     PacketHeader2016 header;
-    Profile profile;
+    Profile2016 profile;
 
     ENetPacket* createPacket() const nothrow @nogc
     {
@@ -160,7 +149,7 @@ struct ProfilePacket2016 {
     {
         enforce(p.dataLength == len);
         header = PacketHeader2016(p.data[0 .. header.len]);
-        profile = Profile(p.data[len - profile.len .. len]);
+        profile = Profile2016(p.data[len - profile.len .. len]);
     }
 }
 
@@ -244,7 +233,7 @@ unittest {
     {
         ProfileListPacket2016 list;
         list.indices = [ PlNr(80), PlNr(81), PlNr(82) ];
-        list.profiles = [ Profile(), Profile(), Profile() ];
+        list.profiles = [ Profile2016(), Profile2016(), Profile2016() ];
         list.profiles[1].name = "Hello";
 
         auto packet = list.createPacket;

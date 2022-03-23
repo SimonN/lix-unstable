@@ -18,16 +18,16 @@ interface INetClient {
 
     @property string enetLinkedVersion() const;
 
-    @property const(Profile[PlNr]) profilesInOurRoom();
+    @property const(Profile2022[PlNr]) profilesInOurRoom();
     @property PlNr ourPlNr() const pure;
-    @property const(Profile) ourProfile() const pure;
+    @property const(Profile2022) ourProfile() const pure;
     @property bool mayWeDeclareReady() const;
 
     // Call this when the GUI has chosen a new Lix style.
     // The GUI may update ahead of time, but what the server knows, decides.
     // Feeling is readiness, and whether we want to observe.
     @property void ourStyle(Style sty);
-    @property void ourFeeling(Profile.Feeling feel);
+    @property void ourFeeling(Profile2022.Feeling feel);
     void gotoExistingRoom(Room);
     void createRoom();
 
@@ -45,16 +45,16 @@ interface INetClient {
     @property void onConnectionLost(void delegate());
     @property void onChatMessage(void delegate(string name, string chat));
     @property void onPeerDisconnect(void delegate(string name));
-    @property void onPeerJoinsRoom(void delegate(const(Profile*)));
+    @property void onPeerJoinsRoom(void delegate(in Profile2022));
     @property void onPeerLeavesRoomTo(void delegate(string name, Room toRoom));
-    @property void onPeerChangesProfile(void delegate(const(Profile*)));
+    @property void onPeerChangesProfile(void delegate(in Profile2022));
     @property void onWeChangeRoom(void delegate(Room toRoom));
 
     // Structure of arrays: The n-th room ID from the first array belongs
     // to the n-th player from the second array.
-    @property void onListOfExistingRooms(void delegate(const(Room[]),
-                                                       const(Profile[])));
-    @property void onLevelSelect(void delegate(string name, const(ubyte[]) data));
+    @property void onListOfExistingRooms(void delegate(in Room[],
+                                                       in Profile2022[]));
+    @property void onLevelSelect(void delegate(string name, in ubyte[] data));
     @property void onGameStart(void delegate(Permu));
     @property void onPeerSendsPly(void delegate(Ply));
 
