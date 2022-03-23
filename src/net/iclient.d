@@ -20,6 +20,7 @@ interface INetClient {
 
     @property const(Profile2022[PlNr]) profilesInOurRoom();
     @property PlNr ourPlNr() const pure;
+    @property Room ourRoom() const pure;
     @property const(Profile2022) ourProfile() const pure;
     @property bool mayWeDeclareReady() const;
 

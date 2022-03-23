@@ -122,14 +122,13 @@ public:
         };
     }
 
-    @property void onPeerJoinsRoom(void delegate(const(Profile*)) f)
+    @property void onPeerJoinsRoom(void delegate(in Profile) f)
     {
-        _inner.onPeerJoinsRoom = delegate void(const(Profile*) prof)
+        _inner.onPeerJoinsRoom = delegate void(in Profile prof)
         {
-            assert (prof, "the network shouldn't send null pointers");
-            _console.add(prof.room == 0
+            _console.add(_inner.ourRoom == Room(0)
                 ? Lang.netChatPlayerInLobby.translf(prof.name)
-                : Lang.netChatPlayerInRoom.translf(prof.name, prof.room));
+                : Lang.netChatPlayerInRoom.translf(prof.name, _inner.ourRoom));
             if (f)
                 f(prof);
         };

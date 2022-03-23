@@ -146,13 +146,13 @@ public:
         return net.enetglob.enetLinkedVersion();
     }
 
-    @property PlNr ourPlNr() const
+    @property PlNr ourPlNr() const pure
     {
         assert (connected, "call this function only when you're connected");
         return _ourPlNr;
     }
 
-    @property Room ourRoom() const
+    @property Room ourRoom() const pure
     {
         assert (connected, "call this function only when you're connected");
         return _ourRoom;

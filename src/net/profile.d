@@ -16,6 +16,8 @@ import net.plnr;
 import net.style;
 import net.versioning;
 
+alias Profile = Profile2022;
+
 struct Profile2022 {
 private:
     mixin StyleSetter;

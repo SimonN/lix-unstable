@@ -246,7 +246,7 @@ private:
     bool connected() const { return _netClient && _netClient.connected; }
     bool connecting() const { return _netClient && _netClient.connecting; }
     bool offline() const { return ! connected && ! connecting; }
-    bool inLobby() const { return connected && _netClient.ourProfile.room ==0;}
+    bool inLobby() const { return connected && _netClient.ourRoom == Room(0); }
 
     void showOrHideGuiBasedOnConnection()
     {
@@ -338,7 +338,7 @@ private:
         _netClient.onCannotConnect = () { _netClient = null; };
         _netClient.onConnectionLost = () { _netClient = null; };
         _netClient.onPeerDisconnect = (string name) { refreshPeerList(); };
-        _netClient.onPeerJoinsRoom = (const(Profile*) profile)
+        _netClient.onPeerJoinsRoom = (in Profile profile)
         {
             refreshPeerList();
             playLoud(Sound.JOIN);
@@ -351,11 +351,7 @@ private:
             // new possible rooms.
         };
 
-        _netClient.onPeerChangesProfile = (const(Profile*))
-        {
-            refreshPeerList();
-        };
-
+        _netClient.onPeerChangesProfile = (in Profile) { refreshPeerList(); };
         _netClient.onWeChangeRoom = (Room toRoom)
         {
             refreshPeerList();
@@ -365,10 +361,9 @@ private:
             _roomList.clearButtons();
         };
 
-        _netClient.onListOfExistingRooms = (const(Room[]) rooms,
-                                            const(Profile[]) profiles
-        ) {
-            _roomList.recreateButtonsFor(rooms, profiles);
+        _netClient.onListOfExistingRooms = (in Room[] rooms, in Profile[] ps)
+        {
+            _roomList.recreateButtonsFor(rooms, ps);
         };
 
         _netClient.onLevelSelect = (string senderName, const(ubyte[]) data)
