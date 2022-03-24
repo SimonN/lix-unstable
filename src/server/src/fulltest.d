@@ -15,9 +15,11 @@ import core.thread;
 import core.time;
 
 import std.algorithm;
+import std.typecons;
 
 import net.server.server;
 import net.client;
+import net.iclient;
 import net.style;
 import net.plnr;
 import net.profile;
@@ -85,17 +87,23 @@ public:
         assert (_cliA.ourRoom == Room(0));
         assert (_cliB.ourRoom == Room(0));
         Room seenByB = Room(0);
-        _cliB.onListOfExistingRooms =
-            (in Room[] rooms, in Profile2022[] profs) {
+        auto obs = new class BlackHole!NetClientObserver {
+            override void onListOfExistingRooms(
+                in Room[] rooms,
+                in Profile2022[] profs
+            ) {
                 for (size_t i = 0; i < rooms.length && i < profs.length; ++i) {
                     if (profs[i].name == "A") {
                         seenByB = rooms[i];
                     }
                 }
-            };
+            }
+        };
+        _cliB.register(obs);
         _cliA.createRoom();
         await("A creates room", () => _cliA.ourRoom != Room(0));
         await("B sees A's room", () => seenByB != Room(0));
+        _cliB.unregister(obs);
     }
 
 private:

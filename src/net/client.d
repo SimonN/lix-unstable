@@ -36,27 +36,12 @@ class NetClient : INetClient {
 private:
     ENetHost* _ourClient;
     ENetPeer* _serverPeer;
+    NetClientObserver[] _observers;
+
+    NetClientCfg _cfg;
     PlNr _ourPlNr;
     Room _ourRoom = Room(0);
     Profile2022[PlNr] _profilesInOurRoom;
-
-    NetClientCfg _cfg;
-
-    void delegate() _onConnect;
-    void delegate() _onCannotConnect;
-    void delegate(Version serverVersion) _onVersionMisfit;
-    void delegate() _onConnectionLost;
-    void delegate(string name, string chat) _onChatMessage;
-    void delegate(string name) _onPeerDisconnect;
-    void delegate(in Profile2022) _onPeerJoinsRoom;
-    void delegate(string name, Room toRoom) _onPeerLeavesRoomTo;
-    void delegate(in Profile2022) _onPeerChangesProfile;
-    void delegate(Room toRoom) _onWeChangeRoom;
-    void delegate(in Room[], in Profile2022[]) _onListOfExistingRooms;
-    void delegate(string name, in ubyte[] data) _onLevelSelect;
-    void delegate(Permu) _onGameStart;
-    void delegate(Ply) _onPeerSendsPly;
-    void delegate(int) _onMillisecondsSinceGameStart;
 
 public:
     /* Immediately tries to connect to hostname:port.
@@ -97,29 +82,23 @@ public:
         }
         _serverPeer = null;
         _profilesInOurRoom.clear();
+        _observers = [];
         deinitializeEnet();
     }
 
     void calc() { implCalc(); }
 
-    // NetClient's caller should register some event callbacks.
-    // It's okay to register not even a single callback, these will always
-    // be tested for existence before the call.
-    @property void onConnect(typeof(_onConnect) dg) { _onConnect = dg; }
-    @property void onCannotConnect(typeof(_onCannotConnect) dg) { _onCannotConnect = dg; }
-    @property void onVersionMisfit(typeof(_onVersionMisfit) dg) { _onVersionMisfit = dg; }
-    @property void onConnectionLost(typeof(_onConnectionLost) dg) { _onConnectionLost = dg; }
-    @property void onChatMessage(typeof(_onChatMessage) dg) { _onChatMessage = dg; }
-    @property void onPeerDisconnect(typeof(_onPeerDisconnect) dg) { _onPeerDisconnect = dg; }
-    @property void onPeerJoinsRoom(typeof(_onPeerJoinsRoom) dg) { _onPeerJoinsRoom = dg; }
-    @property void onPeerLeavesRoomTo(typeof(_onPeerLeavesRoomTo) dg) { _onPeerLeavesRoomTo = dg; }
-    @property void onPeerChangesProfile(typeof(_onPeerChangesProfile) dg) { _onPeerChangesProfile = dg; }
-    @property void onWeChangeRoom(typeof(_onWeChangeRoom) dg) { _onWeChangeRoom = dg; }
-    @property void onListOfExistingRooms(typeof(_onListOfExistingRooms) dg) { _onListOfExistingRooms = dg; }
-    @property void onLevelSelect(typeof(_onLevelSelect) dg) { _onLevelSelect = dg; }
-    @property void onGameStart(typeof(_onGameStart) dg) { _onGameStart = dg; }
-    @property void onPeerSendsPly(typeof(_onPeerSendsPly) dg) { _onPeerSendsPly = dg; }
-    @property void onMillisecondsSinceGameStart(typeof(_onMillisecondsSinceGameStart) dg) { _onMillisecondsSinceGameStart = dg; }
+    void register(NetClientObserver obs)
+    {
+        assert (! _observers.canFind(obs), "Don't add same observer twice");
+        _observers ~= obs;
+    }
+
+    void unregister(NetClientObserver obs)
+    {
+        assert (_observers.canFind(obs), "Can't remove unknown observer");
+        _observers = _observers[].remove!(entry => entry is obs);
+    }
 
     void sendChatMessage(string aText)
     {
@@ -266,10 +245,14 @@ private:
                 enet_packet_destroy(event.packet);
                 break;
             case ENET_EVENT_TYPE_DISCONNECT:
-                if (connected)
-                    _onConnectionLost && _onConnectionLost();
-                else
-                    _onCannotConnect && _onCannotConnect();
+                foreach (obs; _observers) {
+                    if (connected) {
+                        obs.onConnectionLost();
+                    }
+                    else {
+                        obs.onCannotConnect();
+                    }
+                }
                 disconnectAndDispose();
                 break;
             }
@@ -351,19 +334,25 @@ private:
             _ourPlNr = answer.header.plNr;
             _profilesInOurRoom[_ourPlNr]
                 = generateOurProfile2016().to2022with(_cfg.clientVersion);
-            _onConnect && _onConnect();
+            foreach (obs; _observers) {
+                obs.onConnect();
+            }
         }
         else if (got.data[0] == PacketStoC.youTooOld
             ||   got.data[0] == PacketStoC.youTooNew
         ) {
             auto answer = HelloAnswerPacket(got);
-            _onVersionMisfit && _onVersionMisfit(answer.serverVersion);
+            foreach (obs; _observers) {
+                obs.onVersionMisfit(answer.serverVersion);
+            }
             disconnectAndDispose();
         }
         else if (got.data[0] == PacketStoC.peerJoinsYourRoom) {
             const(Profile2022*) changed = receiveProfilePacket(got);
-            if (_onPeerJoinsRoom && changed !is null) {
-                _onPeerJoinsRoom(*changed);
+            if (changed !is null) {
+                foreach (obs; _observers) {
+                    obs.onPeerJoinsRoom(*changed);
+                }
             }
         }
         else if (got.data[0] == PacketStoC.peerLeftYourRoom) {
@@ -373,7 +362,9 @@ private:
             _profilesInOurRoom.remove(gone.header.plNr);
             foreach (ref profile; _profilesInOurRoom)
                 profile.setNotReady();
-            _onPeerLeavesRoomTo && _onPeerLeavesRoomTo(name, gone.room);
+            foreach (obs; _observers) {
+                obs.onPeerLeavesRoomTo(name, gone.room);
+            }
         }
         else if (got.data[0] == PacketStoC.peersAlreadyInYourNewRoom) {
             auto list = ProfileListPacket2016(got);
@@ -384,36 +375,44 @@ private:
                     = list.profiles[i].to2022with(_cfg.clientVersion);
             }
             enforce(_ourPlNr in _profilesInOurRoom);
-            _onWeChangeRoom && _onWeChangeRoom(_ourRoom);
+            foreach (obs; _observers) {
+                obs.onWeChangeRoom(_ourRoom);
+            }
         }
         else if (got.data[0] == PacketStoC.listOfExistingRooms) {
             auto list = RoomListPacket2016(got);
-            if (_onListOfExistingRooms) {
+            if (_observers.length >= 1) {
                 Profile2022[] converted = list.profiles.map!(p
                     => p.to2022with(_cfg.clientVersion)).array;
-                _onListOfExistingRooms(list.indices, converted);
+                foreach (obs; _observers) {
+                    obs.onListOfExistingRooms(list.indices, converted);
+                }
             }
         }
         else if (got.data[0] == PacketStoC.peerProfile) {
             const(Profile2022*) changed = receiveProfilePacket(got);
-            if (_onPeerChangesProfile && changed !is null) {
-                _onPeerChangesProfile(*changed);
+            if (changed !is null) {
+                foreach (obs; _observers) {
+                    obs.onPeerChangesProfile(*changed);
+                }
             }
         }
         else if (got.data[0] == PacketStoC.peerChatMessage) {
             auto chat = ChatPacket(got);
-            // We display our own chat only now.
-            // Users should be able to estimate their ping with a chat echo.
-            if (_onChatMessage)
-                _onChatMessage(playerName(chat.header.plNr), chat.text);
+            foreach (obs; _observers) {
+                obs.onChatMessage(playerName(chat.header.plNr), chat.text);
+            }
         }
         else if (got.data[0] == PacketStoC.peerLevelFile) {
             if (got.dataLength >= 2) {
                 // We only display the level when we get it back from server.
                 foreach (ref profile; _profilesInOurRoom)
                     profile.setNotReady();
-                _onLevelSelect && _onLevelSelect(playerName(PlNr(got.data[1])),
-                                    got.data[2 .. got.dataLength]);
+                foreach (obs; _observers) {
+                    obs.onLevelSelect(
+                        playerName(PlNr(got.data[1])),
+                        got.data[2 .. got.dataLength]);
+                }
             }
         }
         else if (got.data[0] == PacketStoC.gameStartsWithPermu) {
@@ -422,12 +421,17 @@ private:
                     profile.setNotReady();
                 auto pa = StartGameWithPermuPacket(got);
                 Permu permu = new Permu(pa.arr);
-                _onGameStart && _onGameStart(permu);
+                foreach (obs; _observers) {
+                    obs.onGameStart(permu);
+                }
             }
         }
         else if (got.data[0] == PacketStoC.peerPly) {
-            if (got.dataLength == Ply.len && _onPeerSendsPly)
-                _onPeerSendsPly(Ply(got));
+            if (got.dataLength == Ply.len) {
+                foreach (obs; _observers) {
+                    obs.onPeerSendsPly(Ply(got));
+                }
+            }
         }
         else if (got.data[0] == PacketStoC.peerDisconnected) {
             auto discon = SomeoneDisconnectedPacket(got);
@@ -436,14 +440,17 @@ private:
             _profilesInOurRoom.remove(discon.plNr);
             foreach (ref profile; _profilesInOurRoom)
                 profile.setNotReady();
-            _onPeerDisconnect && _onPeerDisconnect(name);
+            foreach (obs; _observers) {
+                obs.onPeerDisconnect(name);
+            }
         }
         else if (got.data[0] == PacketStoC.millisecondsSinceGameStart) {
             assert (_serverPeer);
-            _onMillisecondsSinceGameStart && _onMillisecondsSinceGameStart(
-                MillisecondsSinceGameStartPacket(got).milliseconds
-                + _serverPeer.roundTripTime
-            );
+            foreach (obs; _observers) {
+                obs.onMillisecondsSinceGameStart(
+                    MillisecondsSinceGameStartPacket(got).milliseconds
+                    + _serverPeer.roundTripTime);
+            }
         }
     }
 }

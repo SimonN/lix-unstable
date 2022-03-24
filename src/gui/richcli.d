@@ -1,10 +1,11 @@
 module gui.richcli;
 
-/* A net client wrapper that:
- *  - writes messages to a GUI console,
- *  - remembers the most recently received level and permu.
- *
- * This alias-this'se to INetClient. To send a level, tell it to that class.
+/*
+ * Steward: A brain for a NetClient. This:
+ *  - writes messages to a GUI console, intended for
+ *      those messages that shall appear BOTH in game and in lobby
+ *      (game or lobby would print the remaining messages themselves),
+ *  - remembers the most recently received level and permu for later access.
  */
 
 import std.string;
@@ -14,46 +15,30 @@ import file.language;
 import gui.console;
 import level.level;
 import net.iclient;
-import net.permu;
-import net.phyu;
-import net.plnr;
-import net.profile;
-import net.versioning;
 
-class RichClient {
+class RichClient : INetClient, NetClientObserver {
 private:
-    INetClient _inner; // should be treated as owned, but externally c'tored
+    INetClient _inner; // we own one and expose it for callers' use.
     Console _console; // not owned
-    Level _level;
+    Level _level; // owned, may be null
     Permu _permu;
 
     public string unsentChat; // carry unsent text between Lobby/Game
 
 public:
-    this(INetClient aInner, Console aConsole)
+    this(INetClient anInner, Console aConsole)
     {
-        assert (aInner);
-        _inner = aInner;
+        assert (anInner);
+        assert (aConsole);
+        _inner = anInner;
+        _inner.register(this);
         console = aConsole;
-
-        onCannotConnect(null);
-        onVersionMisfit(null);
-        onConnectionLost(null);
-        onPeerDisconnect(null);
-        onChatMessage(null);
-        onPeerJoinsRoom(null);
-        onPeerLeavesRoomTo(null);
-        onWeChangeRoom(null);
-        onGameStart(null);
     }
 
-    alias inner this;
-    @property inout(INetClient) inner() inout { return _inner; }
-    @property inout(Console) console() inout { return _console; }
-    @property inout(Level) level() inout { return _level; }
-    @property inout(Permu) permu() inout { return _permu; }
-
-    @property void console(Console c)
+    inout(Console) console() inout { return _console; }
+    inout(Level) level() inout { return _level; }
+    inout(Permu) permu() inout { return _permu; }
+    void console(Console c)
     {
         assert (c);
         if (_console)
@@ -61,122 +46,104 @@ public:
         _console = c;
     }
 
+    void disconnectAndDispose()
+    {
+        _inner.unregister(this);
+        _inner.disconnectAndDispose();
+        _level = null;
+        _console = null;
+        _permu = Permu.init;
+    }
+
     bool mayWeDeclareReady() const
     {
         return _inner.mayWeDeclareReady && _level && _level.playable;
     }
 
-    @property void onCannotConnect(void delegate() f)
-    {
-        _inner.onCannotConnect = delegate void()
-        {
-            _console.add(Lang.netChatYouCannotConnect.transl);
-            if (f)
-                f();
-        };
-    };
+// ##### Remaining methods of INetClient that we merely forward ###############
+    override void calc() { _inner.calc(); }
+    void register(NetClientObserver obs) { _inner.register(obs); }
+    void unregister(NetClientObserver obs) { _inner.unregister(obs); }
+    bool connected() const pure { return _inner.connected(); }
+    bool connecting() const pure { return _inner.connecting(); }
 
-    @property void onVersionMisfit(void delegate(Version serverVersion) f)
+    string enetLinkedVersion() const { return _inner.enetLinkedVersion(); }
+    const(Profile2022[PlNr]) profilesInOurRoom() const { return _inner.profilesInOurRoom(); }
+    PlNr ourPlNr() const pure { return _inner.ourPlNr; }
+    Room ourRoom() const pure { return _inner.ourRoom; }
+    const(Profile2022) ourProfile() const pure { return _inner.ourProfile; }
+    void ourStyle(Style sty) { _inner.ourStyle = sty; }
+    void ourFeeling(Profile2022.Feeling feel) { _inner.ourFeeling = feel; }
+    void gotoExistingRoom(Room r) { _inner.gotoExistingRoom(r); }
+    void createRoom() { _inner.createRoom(); }
+
+    void sendChatMessage(string chat) { _inner.sendChatMessage(chat); }
+    void selectLevel(const(void[]) arr) { _inner.selectLevel(arr); }
+    void sendPly(in Ply ply) { _inner.sendPly(ply); }
+
+// ##### Implementation of NetClientObserver ##################################
+    void onConnect() {}
+    void onCannotConnect()
     {
-        _inner.onVersionMisfit = delegate void(Version serverVersion)
-        {
-            _console.add(serverVersion > gameVersion
-                ? Lang.netChatWeTooOld.transl : Lang.netChatWeTooNew.transl);
-            _console.add("%s %s. %s %s.".format(
-                Lang.netChatVersionYours.transl, gameVersion,
-                Lang.netChatVersionServer.transl, serverVersion.compatibles));
-            _console.add("%s %s".format(
-                Lang.netChatPleaseDownload.transl, homepageURL));
-            if (f)
-                f(serverVersion);
-        };
+        _console.add(Lang.netChatYouCannotConnect.transl);
     }
 
-    @property void onConnectionLost(void delegate() f)
+    void onVersionMisfit(in Version serverVersion)
     {
-        _inner.onConnectionLost = delegate void()
-        {
-            _console.add(Lang.netChatYouLostConnection.transl);
-            if (f)
-                f();
-        };
-    };
-
-    @property void onChatMessage(void delegate(string, string) f)
-    {
-        _inner.onChatMessage = delegate void(string name, string chat)
-        {
-            _console.addWhite("%s: %s".format(name, chat));
-            if (f)
-                f(name, chat);
-        };
+        _console.add(serverVersion > gameVersion
+            ? Lang.netChatWeTooOld.transl : Lang.netChatWeTooNew.transl);
+        _console.add("%s %s. %s %s.".format(
+            Lang.netChatVersionYours.transl, gameVersion,
+            Lang.netChatVersionServer.transl, serverVersion.compatibles));
+        _console.add("%s %s".format(
+            Lang.netChatPleaseDownload.transl, homepageURL));
     }
 
-    @property void onPeerDisconnect(void delegate(string) f)
+    void onConnectionLost()
     {
-        _inner.onPeerDisconnect = delegate void(string name)
-        {
-            _console.add(Lang.netChatPeerDisconnected.translf(name));
-            if (f)
-                f(name);
-        };
+        _console.add(Lang.netChatYouLostConnection.transl);
     }
 
-    @property void onPeerJoinsRoom(void delegate(in Profile) f)
+    void onChatMessage(in string peerName, in string chat)
     {
-        _inner.onPeerJoinsRoom = delegate void(in Profile prof)
-        {
-            _console.add(_inner.ourRoom == Room(0)
-                ? Lang.netChatPlayerInLobby.translf(prof.name)
-                : Lang.netChatPlayerInRoom.translf(prof.name, _inner.ourRoom));
-            if (f)
-                f(prof);
-        };
+        _console.addWhite("%s: %s".format(peerName, chat));
     }
 
-    @property void onPeerLeavesRoomTo(void delegate(string, Room) f)
+    void onPeerDisconnect(in string peerName)
     {
-        _inner.onPeerLeavesRoomTo = delegate void(string name, Room toRoom)
-        {
-            _console.add(toRoom == 0
-                ? Lang.netChatPlayerOutLobby.translf(name)
-                : Lang.netChatPlayerOutRoom.translf(name, toRoom));
-            if (f)
-                f(name, toRoom);
-        };
+        _console.add(Lang.netChatPeerDisconnected.translf(peerName));
     }
 
-    @property void onWeChangeRoom(void delegate(Room) f)
+    void onPeerJoinsRoom(in Profile2022 prof)
     {
-        _inner.onWeChangeRoom = delegate void(Room toRoom)
-        {
-            _console.add(toRoom != 0
-                ? Lang.netChatWeInRoom.translf(toRoom)
-                : Lang.netChatWeInLobby.transl);
-            if (f)
-                f(toRoom);
-        };
+        _console.add(_inner.ourRoom == Room(0)
+            ? Lang.netChatPlayerInLobby.translf(prof.name)
+            : Lang.netChatPlayerInRoom.translf(prof.name, _inner.ourRoom));
     }
 
-    @property void onLevelSelect(void delegate(string, const(ubyte[])) f)
+    void onPeerLeavesRoomTo(in string peerName, in Room toRoom)
     {
-        _inner.onLevelSelect = delegate void(string plName, const(ubyte[]) lev)
-        {
-            _level = new Level(cast (immutable(void)[]) lev);
-            // We don't write to console, the lobby will do that.
-            // Reason: We don't want to write this during play.
-            if (f)
-                f(plName, lev);
-        };
+        _console.add(toRoom == 0
+            ? Lang.netChatPlayerOutLobby.translf(peerName)
+            : Lang.netChatPlayerOutRoom.translf(peerName, toRoom));
     }
 
-    @property void onGameStart(void delegate(Permu) f)
+    void onPeerChangesProfile(in Profile2022) {}
+    void onWeChangeRoom(in Room toRoom)
     {
-        _inner.onGameStart = delegate void(Permu pe)
-        {
-            _permu = pe;
-            if (f)
-                f(pe);
-        };
+        _console.add(toRoom != 0
+            ? Lang.netChatWeInRoom.translf(toRoom)
+            : Lang.netChatWeInLobby.transl);
     }
+
+    void onListOfExistingRooms(in Room[], in Profile2022[]) {}
+    void onLevelSelect(in string peerNameOfChooser, in ubyte[] levelRawText) {
+        _level = new Level(cast (immutable(void)[]) levelRawText);
+        // We don't write to console, the lobby will do that.
+        // Reason: We don't want to write this during play.
+    }
+
+    void onGameStart(Permu pe) { _permu = pe; }
+    void onPeerSendsPly(in Ply) {}
+    void onMillisecondsSinceGameStart(in int millis) {}
 }

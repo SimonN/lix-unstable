@@ -50,11 +50,10 @@ import hardware.music;
 import hardware.sound;
 import level.level;
 import lix; // _drawHerHighlit
-import net.profile;
-import net.repdata;
+import net.iclient;
 import physics;
 
-class Game : IRoot {
+class Game : IRoot, NetClientObserver {
 public:
     const(Level) level;
 
@@ -130,19 +129,7 @@ public:
 
         level = client.level;
         _netClient = client;
-        _netClient.onConnectionLost = ()
-        {
-            // Maybe too drastic? Lobby will catch us
-            this._gotoMainMenu = true;
-        };
-        _netClient.onPeerSendsPly = (Ply data)
-        {
-            this.undispatchedAssignments ~= data;
-        };
-        _netClient.onMillisecondsSinceGameStart = (int millis)
-        {
-            this.adjustToMatchMillisecondsSinceGameStart(millis);
-        };
+        _netClient.register(this);
         commonConstructor(generateFreshReplay(no!Filename));
     }
 
@@ -192,9 +179,7 @@ public:
 
         if (_chatArea)
             _chatArea.saveUnsentMessageAndDispose();
-        ret.onConnectionLost = null;
-        ret.onPeerSendsPly = null;
-        ret.onMillisecondsSinceGameStart = null;
+        ret.unregister(this);
         return ret;
     }
 
@@ -265,9 +250,7 @@ package:
     @property View view() const
     {
         assert (nurse && nurse.constReplay, "call view() after replay init");
-        return createView(nurse.constReplay.numPlayers,
-            // need && and ?: due to _netClient's alias inner() this
-            _netClient && _netClient.inner ? _netClient.inner : null);
+        return createView(nurse.constReplay.numPlayers, _netClient);
     }
 
     void setLastPhyuToNow()
@@ -395,4 +378,37 @@ private:
             _netClient);
         gui.addElder(_chatArea);
     }
+
+public: // Implementation of NetClientObserver
+    void onConnectionLost()
+    {
+        // Maybe too drastic? Lobby will catch us.
+        this._gotoMainMenu = true;
+    };
+
+    void onPeerSendsPly(in Ply peersIncomingPly)
+    {
+        this.undispatchedAssignments ~= peersIncomingPly;
+    };
+
+    // The server tells us how many milliseconds have passed.
+    // The client adds his networking lag to that value, then calls the
+    // observer with the thereby-increased value of milliseconds.
+    // Thus, here in GameCallbacks, (millis) is already the added value.
+    void onMillisecondsSinceGameStart(in int millis) {
+        this.adjustToMatchMillisecondsSinceGameStart(millis);
+    }
+
+    void onConnect() {}
+    void onCannotConnect() {}
+    void onVersionMisfit(in Version serverVersion) {}
+    void onChatMessage(in string peerName, in string chat) {}
+    void onPeerDisconnect(in string peerName) {}
+    void onPeerJoinsRoom(in Profile2022) {}
+    void onPeerLeavesRoomTo(in string peerName, in Room toRoom) {}
+    void onPeerChangesProfile(in Profile2022) {}
+    void onWeChangeRoom(in Room toRoom) {}
+    void onListOfExistingRooms(in Room[], in Profile2022[]) {}
+    void onLevelSelect(in string peerNameOfChooser, in ubyte[] data) {}
+    void onGameStart(in Permu) {}
 }
