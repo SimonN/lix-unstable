@@ -1,4 +1,4 @@
-module net.iclient;
+module net.client.client;
 
 public import net.permu;
 public import net.plnr;
@@ -6,6 +6,14 @@ public import net.profile;
 public import net.repdata;
 public import net.style;
 public import net.versioning;
+
+struct NetClientCfg {
+    string hostname;
+    int port;
+    Version clientVersion;
+    string ourPlayerName;
+    Style ourStyle;
+}
 
 /*
  * Register an event callback. The class who implements NetClientObserver

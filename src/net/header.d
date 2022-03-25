@@ -71,10 +71,12 @@ struct PacketHeader2022 {
     short numFields;
     short bytesPerField;
 
-    int offsetOfField(in int index) const pure @safe
-    {
-        enforce(index >= 0);
-        enforce(index <= numFields);
+    int offsetOfField(in int index) const pure nothrow @safe @nogc
+    in {
+        assert (index >= 0);
+        assert (index <= numFields);
+    }
+    do {
         return offsetField0 + index * bytesPerField;
     }
 
@@ -187,9 +189,11 @@ public:
         subjectsRoom = hea.subjectsRoom;
     }
 
-    void serializeTo(ubyte[] buf) const pure
-    {
-        enforce(buf.length >= len);
+    void serializeTo(ubyte[] buf) const pure nothrow @nogc
+    in {
+        assert(buf.length >= len);
+    }
+    do {
         const hea = header();
         hea.serializeTo(buf[0 .. hea.len]);
         static if (hasNeck) {
@@ -206,7 +210,7 @@ public:
         }
     }
 
-    ENetPacket* createPacket() const
+    ENetPacket* createPacket() const nothrow @nogc
     {
         auto ret = .createPacket(len);
         serializeTo(ret.data[0 .. len]);

@@ -1,4 +1,4 @@
-module gui.richcli;
+module net.client.richcli;
 
 /*
  * Steward: A brain for a NetClient. This:
@@ -8,13 +8,16 @@ module gui.richcli;
  *  - remembers the most recently received level and permu for later access.
  */
 
+version (lixDaemon) {}
+else:
+
 import std.string;
 
 import basics.globals : homepageURL;
 import file.language;
 import gui.console;
 import level.level;
-import net.iclient;
+import net.client.client;
 
 class RichClient : INetClient, NetClientObserver {
 private:

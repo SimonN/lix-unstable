@@ -11,5 +11,5 @@ versions "lixDaemon"
 
 dependency "derelict-enet" version=">=4.2.0"
 
-importPaths "src" "../net"
-sourcePaths "src" "../net"
+importPaths "src" "../net" "../client"
+sourcePaths "src" "../net" "../client"

@@ -1,4 +1,4 @@
-module net.client;
+module net.client.impl;
 
 /* Interactive mode runs an instance of this during network games.
  * This is the high-level message API that the game and lobby call when
@@ -12,9 +12,10 @@ import std.string;
 import std.exception;
 import derelict.enet.enet;
 
+import net.client.adapter;
+import net.client.client;
 import net.enetglob;
 import net.header;
-import net.iclient;
 import net.packetid;
 import net.permu;
 import net.plnr;
@@ -24,19 +25,12 @@ import net.structs;
 import net.style;
 import net.versioning;
 
-struct NetClientCfg {
-    string hostname;
-    int port;
-    Version clientVersion;
-    string ourPlayerName;
-    Style ourStyle;
-}
-
 class NetClient : INetClient {
 private:
     ENetHost* _ourClient;
     ENetPeer* _serverPeer;
     NetClientObserver[] _observers;
+    ClientAdapter _adapter;
 
     NetClientCfg _cfg;
     PlNr _ourPlNr;
@@ -62,6 +56,7 @@ public:
         enet_address_set_host(&address, _cfg.hostname.toStringz);
         address.port = _cfg.port & 0xFFFF;
         _serverPeer = enet_host_connect(_ourClient, &address, 2, 0);
+        _adapter = ClientAdapter.factory(_cfg.clientVersion);
         enforce(_serverPeer, "no available peers for an enet connection");
 
         // We display a disconnection to our user when the server hasn't
@@ -169,17 +164,25 @@ public:
     // The GUI may update ahead of time, but what the server knows, decides.
     @property void ourStyle(Style sty)
     {
+        if (! connected)
+            return;
         _cfg.ourStyle = sty;
-        sendOurUpdatedProfile((ref Profile2016 p) {
-            p.style = sty;
-            p.feeling = Profile2016.Feeling.thinking; // = not observing
-        });
+        // Never affect our profiles directly. Always send the desire
+        // to change color over the network and wait for the return packet.
+        Profile2022 wish = _profilesInOurRoom[_ourPlNr];
+        wish.style = sty;
+        wish.feeling = Profile2022.Feeling.thinking; // i.e., not observing
+        _adapter.sendOurUpdatedProfile(_serverPeer, wish, _ourPlNr, _ourRoom);
     }
 
     // Feeling is readiness, and whether we want to observe.
     @property void ourFeeling(Profile2022.Feeling feel)
     {
-        sendOurUpdatedProfile((ref Profile2016 p) { p.feeling = feel; });
+        if (! connected)
+            return;
+        Profile2022 wish = _profilesInOurRoom[_ourPlNr];
+        wish.feeling = feel;
+        _adapter.sendOurUpdatedProfile(_serverPeer, wish, _ourPlNr, _ourRoom);
     }
 
     void gotoExistingRoom(Room newRoom)
@@ -290,25 +293,11 @@ private:
         return ret;
     }
 
-    void sendOurUpdatedProfile(void delegate(ref Profile2016) howToChange)
-    {
-        if (! connected)
-            return;
-        // Never affect our profiles directly. Always send the desire
-        // to change color over the network and wait for the return packet.
-        ProfilePacket2016 newStyle;
-        newStyle.header.packetID = PacketCtoS.myProfile;
-        newStyle.profile = _profilesInOurRoom[_ourPlNr].to2016with(_ourRoom);
-        howToChange(newStyle.profile);
-        newStyle.enetSendTo(_serverPeer);
-    }
-
     Profile2022* receiveProfilePacket(ENetPacket* got)
     {
-        auto updated = ProfilePacket2016(got);
-        auto ptr = updated.header.plNr in _profilesInOurRoom;
-        if (ptr is null || ptr.wouldForceAllNotReadyOnReplace(
-            updated.profile.to2022with(_cfg.clientVersion))
+        const updated = _adapter.receiveProfilePacket(got);
+        auto ptr = updated.header.subject in _profilesInOurRoom;
+        if (ptr is null || ptr.wouldForceAllNotReadyOnReplace(updated.neck)
         ) {
             foreach (ref profile; _profilesInOurRoom)
                 profile.setNotReady();
@@ -319,10 +308,9 @@ private:
          * version because the server doesn't tell us our version.
          * The server will tell 2022 clients the correct remote client version.
          */
-        _ourRoom = updated.profile.room;
-        _profilesInOurRoom[updated.header.plNr]
-            = updated.profile.to2022with(_cfg.clientVersion);
-        return updated.header.plNr in _profilesInOurRoom;
+        _ourRoom = updated.header.subjectsRoom;
+        _profilesInOurRoom[updated.header.subject] = updated.neck;
+        return updated.header.subject in _profilesInOurRoom;
     }
 
     void receivePacket(ENetPacket* got)

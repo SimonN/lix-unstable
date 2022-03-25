@@ -50,7 +50,8 @@ import hardware.music;
 import hardware.sound;
 import level.level;
 import lix; // _drawHerHighlit
-import net.iclient;
+import net.client.client;
+import net.client.richcli;
 import physics;
 
 class Game : IRoot, NetClientObserver {

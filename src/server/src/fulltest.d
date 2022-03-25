@@ -18,8 +18,8 @@ import std.algorithm;
 import std.typecons;
 
 import net.server.server;
-import net.client;
-import net.iclient;
+import net.client.client;
+import net.client.impl;
 import net.style;
 import net.plnr;
 import net.profile;

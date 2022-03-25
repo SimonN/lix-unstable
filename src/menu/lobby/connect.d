@@ -17,9 +17,9 @@ import std.string;
 import gui;
 import file.language;
 import file.option;
-import net.client;
-import net.cliserv;
-import net.iclient;
+import net.client.client;
+import net.client.impl;
+import net.client.withserv;
 import net.versioning;
 
 class ConnectionPicker : Element {
