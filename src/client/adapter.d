@@ -12,7 +12,7 @@ import net.versioning;
 package:
 
 interface ClientAdapter {
-    ProfilePacket2022 receiveProfilePacket(in ENetPacket*) const;
+    ProfilePacket2022 receiveProfilePacket(in ubyte[]) const;
 
     void sendOurUpdatedProfile(ENetPeer* serv, in Profile2022 wish,
         in PlNr ourPlnr, in Room ourRoom) const;
@@ -27,14 +27,20 @@ interface ClientAdapter {
 }
 
 class CliAdp_0_9_x : ClientAdapter {
-    ProfilePacket2022 receiveProfilePacket(in ENetPacket* got) const
+    ProfilePacket2022 receiveProfilePacket(in ubyte[] got) const
     {
         const pkg = ProfilePacket2016(got);
         ProfilePacket2022 ret;
         ret.packetId = pkg.header.packetID;
         ret.subject = pkg.header.plNr;
         ret.subjectsRoom = pkg.profile.room;
-        ret.neck = pkg.profile.to2022with(Version(0, 9, 0));
+        /*
+         * Insert the received profile into our list.
+         * Hack in the 2016 client: We assume that everybody else has our
+         * version because the server doesn't tell us our version.
+         * The server will tell 2022 clients the correct remote client version.
+         */
+        ret.neck = pkg.profile.to2022with(gameVersion);
         return ret;
     }
 
@@ -54,9 +60,9 @@ class CliAdp_0_9_x : ClientAdapter {
 }
 
 class CliAdp_0_10_x : ClientAdapter {
-    ProfilePacket2022 receiveProfilePacket(in ENetPacket* got) const
+    ProfilePacket2022 receiveProfilePacket(in ubyte[] got) const
     {
-        return ProfilePacket2022(got.data[0 .. got.dataLength]);
+        return ProfilePacket2022(got);
     }
 
     void sendOurUpdatedProfile(

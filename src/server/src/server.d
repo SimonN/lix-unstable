@@ -78,7 +78,8 @@ public:
                 // We will do that when the peer sends its hello packet.
                 break;
             case ENET_EVENT_TYPE_RECEIVE:
-                receivePacket(from, event.packet);
+                receivePacket(from,
+                    event.packet.data[0 .. event.packet.dataLength]);
                 enet_packet_destroy(event.packet);
                 break;
             case ENET_EVENT_TYPE_DISCONNECT:
@@ -98,18 +99,18 @@ public:
 
 // ############################################################################
 private:
-    void receivePacket(in PlNr from, ENetPacket* got) nothrow
+    void receivePacket(in PlNr from, in ubyte[] got) nothrow
     {
-        assert (got);
-        if (got.dataLength < 1)
+        if (got.length < 1) {
             return;
+        }
         try {
-            if (got.data[0] == PacketCtoS.hello) {
+            if (got[0] == PacketCtoS.hello) {
                 receiveHello(from, got);
             }
             else {
                 Inbox inbox = _inboxes.protocolOf(from);
-                if (inbox !is null) switch (got.data[0]) {
+                if (inbox !is null) switch (got[0]) {
                 case PacketCtoS.toExistingRoom:
                     inbox.receiveRoomChange(from, got);
                     break;
@@ -136,7 +137,7 @@ private:
         catch (Exception) {}
     }
 
-    void receiveHello(in PlNr from, in ENetPacket* got)
+    void receiveHello(in PlNr from, in ubyte[] got)
     {
         immutable hello = HelloPacket(got);
         auto answer = HelloAnswerPacket();
@@ -146,7 +147,7 @@ private:
                                : hello.fromVersion < gameVersion
                                ? PacketStoC.youTooOld : PacketStoC.youTooNew;
         answer.serverVersion = gameVersion;
-        _sendWithEnet.send(from, answer.createPacket);
+        answer.enetSendTo(_sendWithEnet.getPeer(from));
 
         if (answer.header.packetID == PacketStoC.youGoodHeresPlNr) {
             _inboxes.setProtocol(from, hello.fromVersion);
@@ -262,21 +263,15 @@ private:
      */
     ptrdiff_t sizeOfEnetPeer = ENetPeer.sizeof;
 
-    ENetPeer* plNrToPeer(in PlNr plNr) const pure nothrow @system @nogc
-    {
-        return cast(ENetPeer*)(cast(void*)_host.peers + plNr * sizeOfEnetPeer);
-    }
-
 public:
     this(ENetHost* viaWhichWeSend)
     {
         _host = viaWhichWeSend;
     }
 
-    // Takes ownership of the packet.
-    override void send(in PlNr receiv, ENetPacket* what) @nogc
+    ENetPeer* getPeer(in PlNr plNr) const pure nothrow @system @nogc
     {
-        enetSendTo(what, plNrToPeer(receiv));
+        return cast(ENetPeer*)(cast(void*)_host.peers + plNr * sizeOfEnetPeer);
     }
 
     // Call this at least once before sending anything to that peer.
@@ -292,6 +287,6 @@ public:
 
     override void disconnectLater(in PlNr toDiscon)
     {
-        enet_peer_disconnect_later(plNrToPeer(toDiscon), 0);
+        enet_peer_disconnect_later(getPeer(toDiscon), 0);
     }
 }

@@ -51,24 +51,15 @@ ENetPacket* createPacket(T)(T wantLen) nothrow @nogc
 
 /*
  * enetSendTo:
- * Tries once to send the packet. No retry on failure.
- * Two versions. The template version doesn't modify the source struct.
- * You can send it somewhere else after this, or let it go out of scope.
+ * Takes ownership of the packet.
+ *
+ * Tries once to send the packet, no retry on failure. No memory leak.
  */
-void enetSendTo(Struct, Args...)(
-    in Struct st,
-    ENetPeer* dest,
-    Args args,
-) nothrow @nogc
+void enetSendTo(Struct)(in Struct st, ENetPeer* dest) nothrow @nogc
     if (!is (Struct == ENetPacket*))
 {
-    ENetPacket* packet = st.createPacket(args);
-    enetSendTo(packet, dest);
-}
-
-// Takes ownership of the packet.
-void enetSendTo(ENetPacket* packet, ENetPeer* dest) nothrow @nogc
-{
+    ENetPacket* packet = .createPacket(st.len);
+    st.serializeTo(packet.data[0 .. st.len]);
     immutable err = enet_peer_send(dest, 0, packet);
     // enet_peer_send only takes ownership on success (err == 0).
     if (err < 0) {

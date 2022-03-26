@@ -27,7 +27,6 @@ module net.header;
 
 import std.bitmanip;
 import std.exception;
-import derelict.enet.enet;
 
 import net.enetglob;
 import net.plnr;
@@ -111,13 +110,14 @@ template isSerializable(ElementType) {
         && is(typeof(ElementType.serializeTo));
 }
 
-alias NeckPacket(ElementType) = NeckWithArrayPacket!(ElementType, void);
+alias NeckPacket(NeckType) = NeckWithArrayPacket!(NeckType, void);
 alias ArrayPacket(ElementType) = NeckWithArrayPacket!(void, ElementType);
 
 struct NeckWithArrayPacket(
     NeckType,
     ArrayElemType,
-) if ( (isSerializable!NeckType || is(NeckType == void))
+)
+if ((isSerializable!NeckType || is(NeckType == void))
     && (isSerializable!ArrayElemType || is(ArrayElemType == void))) {
 public:
     ubyte packetId;
@@ -170,7 +170,9 @@ public:
     {
         enforce(buf.length >= PacketHeader2022.len);
         auto hea = PacketHeader2022(buf[0 .. PacketHeader2022.len]);
-        enforce(hea.packetId == packetId);
+        packetId = hea.packetId;
+        subject = hea.subject;
+        subjectsRoom = hea.subjectsRoom;
         static if (hasNeck) {
             enforce(buf.length >= hea.len + NeckType.len);
             enforce(hea.offsetOfField(0) >= buf.length);
@@ -181,12 +183,10 @@ public:
             for (int i = 0; i < hea.numFields
                 && hea.offsetOfField(i+1) <= buf.length; ++i
             ) {
-                arr ~= ArrayElemType(buf[hea.offsetOfField(i)
-                                         .. hea.offsetOfField(i+1)]);
+                arr ~= ArrayElemType(
+                    buf[hea.offsetOfField(i) .. hea.offsetOfField(i+1)]);
             }
         }
-        subject = hea.subject;
-        subjectsRoom = hea.subjectsRoom;
     }
 
     void serializeTo(ubyte[] buf) const pure nothrow @nogc
@@ -208,13 +208,6 @@ public:
                 buf[hea.offsetOfField(i) .. hea.offsetOfField(i+1)] = temp;
             }
         }
-    }
-
-    ENetPacket* createPacket() const nothrow @nogc
-    {
-        auto ret = .createPacket(len);
-        serializeTo(ret.data[0 .. len]);
-        return ret;
     }
 
 private:

@@ -29,14 +29,17 @@ package:
  * Inbox don't have receiveHello.
  * Reason: The server should handle Hello and, based on that, choose the
  * correct Inbox (adapter) for all future packets after Hello.
+ *
+ * in ubyte[] got is the full payload of the ENetPacket that we received.
+ * Caller calls these interface functions with: pkg.data[0 .. pkg.dataLength]
  */
 interface Inbox {
-    void receiveRoomChange(in PlNr from, in ENetPacket* got);
-    void receiveCreateRoom(in PlNr from, in ENetPacket* got);
-    void receiveProfileChange(in PlNr from, in ENetPacket* got);
-    void receiveChat(in PlNr from, in ENetPacket* got);
-    void receiveLevel(in PlNr from, in ENetPacket* got);
-    void receivePly(in PlNr from, in ENetPacket* got);
+    void receiveRoomChange(in PlNr from, in ubyte[] got);
+    void receiveCreateRoom(in PlNr from, in ubyte[] got);
+    void receiveProfileChange(in PlNr from, in ubyte[] got);
+    void receiveChat(in PlNr from, in ubyte[] got);
+    void receiveLevel(in PlNr from, in ubyte[] got);
+    void receivePly(in PlNr from, in ubyte[] got);
 }
 
 /*
@@ -52,11 +55,10 @@ public:
     this(Hotel* thatWeShallForwardTo) { _hotel = thatWeShallForwardTo; }
     mixin commonInboxMethods;
 
-    void receiveProfileChange(in PlNr from, in ENetPacket* got)
+    void receiveProfileChange(in PlNr from, in ubyte[] got)
     {
-        import net.versioning;
         _hotel.changeProfileButKeepVersion(from, ProfilePacket2016(got)
-            .profile.to2022with(Version(0, 7, 77)) // We ignore 2016 versions.
+            .profile.to2022with(Version(0, 7, 77)) // Hotel ignores version.
         );
     }
 }
@@ -69,44 +71,39 @@ public:
     this(Hotel* thatWeShallForwardTo) { _hotel = thatWeShallForwardTo; }
     mixin commonInboxMethods;
 
-    void receiveProfileChange(in PlNr from, in ENetPacket* got)
+    void receiveProfileChange(in PlNr from, in ubyte[] got)
     {
-        import net.versioning;
-        _hotel.changeProfileButKeepVersion(from,
-            ProfilePacket2022(got.data[0 .. got.dataLength]).neck);
+        _hotel.changeProfileButKeepVersion(from, ProfilePacket2022(got).neck);
     }
 }
 
 private mixin template commonInboxMethods() {
-    void receiveRoomChange(in PlNr from, in ENetPacket* got)
+    void receiveRoomChange(in PlNr from, in ubyte[] got)
     {
         _hotel.movePlayer(from, RoomChangePacket(got).room);
     }
 
-    void receiveCreateRoom(in PlNr from, in ENetPacket* got)
+    void receiveCreateRoom(in PlNr from, in ubyte[] got)
     {
         _hotel.movePlayer(from, _hotel.firstFreeRoomElseLobby());
     }
 
-    void receiveChat(in PlNr from, in ENetPacket* got)
+    void receiveChat(in PlNr from, in ubyte[] got)
     {
         _hotel.broadcastChat(from, ChatPacket(got).text);
     }
 
-    void receiveLevel(in PlNr from, in ENetPacket* got)
+    void receiveLevel(in PlNr from, in ubyte[] got)
     {
-        if (got.dataLength < 2) {
+        if (got.length < 2) {
             return; // Too short for even an empty level.
         }
-        _hotel.receiveLevel(from, got.data[2 .. got.dataLength]);
+        _hotel.receiveLevel(from, got[2 .. $]);
     }
 
-    void receivePly(in PlNr from, in ENetPacket* got)
+    void receivePly(in PlNr from, in ubyte[] got)
     {
-        if (got.dataLength != Ply.len) {
-            return;
-        }
-        auto ply = Ply(got);
+        auto ply = PlyPacket(got).ply;
         ply.player = from; // Don't trust. The server decides who sent it!
         _hotel.receivePly(ply);
     }
@@ -117,7 +114,7 @@ private mixin template commonInboxMethods() {
 // ############################################################################
 
 interface SendWithEnet {
-    void send(in PlNr receiv, ENetPacket* what) @nogc; // Then owns the packet.
+    ENetPeer* getPeer(in PlNr plNr) const pure nothrow @system @nogc;
     void disconnectLater(in PlNr toDiscon);
 }
 
@@ -154,7 +151,7 @@ private mixin template commonOutboxMethods() {
         chat.header.packetID = PacketStoC.peerChatMessage;
         chat.header.plNr = fromChatter;
         chat.text = text;
-        _out.send(receiv, chat.createPacket);
+        chat.enetSendTo(_out.getPeer(receiv));
     }
 
     void sendPeerLeftYourRoom(PlNr receiv, PlNr mover, in Room toWhere)
@@ -163,7 +160,7 @@ private mixin template commonOutboxMethods() {
         pa.header.packetID = PacketStoC.peerLeftYourRoom;
         pa.header.plNr = mover;
         pa.room = toWhere;
-        _out.send(receiv, pa.createPacket);
+        pa.enetSendTo(_out.getPeer(receiv));
     }
 
     void sendPeerDisconnected(in PlNr receiv, in PlNr disconnected)
@@ -171,7 +168,7 @@ private mixin template commonOutboxMethods() {
         auto discon = SomeoneDisconnectedPacket();
         discon.packetID = PacketStoC.peerDisconnected;
         discon.plNr = disconnected;
-        _out.send(receiv, discon.createPacket);
+        discon.enetSendTo(_out.getPeer(receiv));
     }
 
     void sendLevelByChooser(PlNr receiv, const(ubyte[]) level, PlNr from) @nogc
@@ -179,17 +176,21 @@ private mixin template commonOutboxMethods() {
         struct LevelPacket {
             const(ubyte[]) _level;
             PlNr _from;
-            ENetPacket* createPacket() const nothrow @nogc {
+            int len() const pure nothrow @safe @nogc
+            {
+                return (2 + _level.length) & 0x7FFF_FFFF;
+            }
+            void serializeTo(ubyte[] buf) const nothrow @nogc {
+                assert (buf.length >= len);
                 PacketHeader2016 header;
                 header.packetID = PacketStoC.peerLevelFile;
                 header.plNr = _from;
-                auto ret = .createPacket(header.len + _level.length);
-                header.serializeTo(ret.data[0 .. header.len]);
-                ret.data[header.len .. ret.dataLength] = _level[0 .. $];
-                return ret;
+                header.serializeTo(buf[0 .. header.len]);
+                buf[header.len .. $] = _level[0 .. $];
             }
         }
-        _out.send(receiv, LevelPacket(level, from).createPacket);
+        auto levpkg = LevelPacket(level, from);
+        levpkg.enetSendTo(_out.getPeer(receiv));
     }
 
     void startGame(in PlNr receiv, in PlNr roomOwner, in int permuLength)
@@ -197,12 +198,13 @@ private mixin template commonOutboxMethods() {
         auto pa = StartGameWithPermuPacket(permuLength);
         pa.header.packetID = PacketStoC.gameStartsWithPermu;
         pa.header.plNr = roomOwner;
-        _out.send(receiv, pa.createPacket);
+        pa.enetSendTo(_out.getPeer(receiv));
     }
 
-    void sendPly(PlNr receiv, Ply data)
+    void sendPly(PlNr receiv, Ply ply)
     {
-        _out.send(receiv, data.createPacket(PacketStoC.peerPly));
+        auto pp = PlyPacket(PacketStoC.peerPly, ply);
+        pp.enetSendTo(_out.getPeer(receiv));
     }
 
     void sendMillisecondsSinceGameStart(PlNr receiv, int millis)
@@ -211,7 +213,7 @@ private mixin template commonOutboxMethods() {
         pa.header.packetID = PacketStoC.millisecondsSinceGameStart;
         pa.header.plNr = receiv; // doesn't matter
         pa.milliseconds = millis;
-        _out.send(receiv, pa.createPacket);
+        pa.enetSendTo(_out.getPeer(receiv));
     }
 }
 
@@ -235,7 +237,7 @@ private mixin template informLobbyist2016() {
             old.indices ~= e.room;
             old.profiles ~= e.owner.to2016with(e.room);
         }
-        _out.send(receiv, old.createPacket);
+        old.enetSendTo(_out.getPeer(receiv));
     }
 }
 
@@ -245,7 +247,7 @@ private mixin template informLobbyist2022() {
         in Version ofReceiver_LegacyFor2016toFilterIncompatibleRooms,
         in RoomListPacket2022 rlp)
     {
-        _out.send(receiv, rlp.createPacket);
+        rlp.enetSendTo(_out.getPeer(receiv));
     }
 }
 
@@ -270,7 +272,7 @@ private mixin template describePeers2016() {
             informMover.indices ~= key;
             informMover.profiles ~= prof.to2016with(here);
         }
-        _out.send(receiv, informMover.createPacket);
+        informMover.enetSendTo(_out.getPeer(receiv));
     }
 }
 
@@ -289,7 +291,7 @@ private mixin template describePeers2022() {
             entry.profile = prof;
             informMover.arr ~= entry;
         }
-        _out.send(receiv, informMover.createPacket);
+        informMover.enetSendTo(_out.getPeer(receiv));
     }
 
     void describePeersInRoom(
@@ -308,7 +310,7 @@ private mixin template describePeers2022() {
             entry.profile = prof;
             informMover.arr ~= entry;
         }
-        _out.send(receiv, informMover.createPacket);
+        informMover.enetSendTo(_out.getPeer(receiv));
     }
 }
 
@@ -323,7 +325,7 @@ private mixin template sendPeerEnteredYourRoom2016() {
         pa.header.packetID = PacketStoC.peerJoinsYourRoom;
         pa.header.plNr = mover;
         pa.profile = ofMover.to2016with(here);
-        _out.send(receiv, pa.createPacket);
+        pa.enetSendTo(_out.getPeer(receiv));
     }
 }
 
@@ -337,7 +339,7 @@ private mixin template sendPeerEnteredYourRoom2022() {
         auto pa = ProfilePacket2022();
         pa.setHeader(PacketStoC.peerJoinsYourRoom, here, mover);
         pa.neck = ofMover;
-        _out.send(receiv, pa.createPacket);
+        pa.enetSendTo(_out.getPeer(receiv));
     }
 }
 
@@ -352,7 +354,7 @@ private mixin template sendProfile2016() {
         pa.header.packetID = PacketStoC.peerProfile;
         pa.header.plNr = ofWhom;
         pa.profile = full.to2016with(here);
-        _out.send(receiv, pa.createPacket);
+        pa.enetSendTo(_out.getPeer(receiv));
     }
 }
 
@@ -366,6 +368,6 @@ private mixin template sendProfile2022() {
         ProfilePacket2022 pa;
         pa.setHeader(PacketStoC.peerProfile, here, ofWhom);
         pa.neck = full;
-        _out.send(receiv, pa.createPacket);
+        pa.enetSendTo(_out.getPeer(receiv));
     }
 }

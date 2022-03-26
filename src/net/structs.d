@@ -18,9 +18,6 @@ import std.exception;
 import std.range;
 import std.string;
 
-import derelict.enet.enet;
-
-import net.enetglob;
 import net.header;
 import net.packetid;
 import net.style;
@@ -44,23 +41,16 @@ struct PacketHeader2016 {
         buf[0] = packetID;
         buf[1] = plNr;
     }
-
-    ENetPacket* createPacket() const nothrow @nogc
-    {
-        auto ret = .createPacket(len);
-        serializeTo(ret.data[0 .. len]);
-        return ret;
-    }
 }
 
 struct SomeoneDisconnectedPacket {
     PacketHeader2016 header;
     alias header this;
 
-    this(const(ENetPacket*) p)
+    this(in ubyte[] buf)
     {
-        enforce(p.dataLength >= PacketHeader2016.len);
-        header = PacketHeader2016(p.data[0 .. PacketHeader2016.len]);
+        enforce(buf.length >= PacketHeader2016.len);
+        header = PacketHeader2016(buf[0 .. PacketHeader2016.len]);
     }
 }
 
@@ -70,26 +60,25 @@ struct HelloPacket {
     Version fromVersion;
     Profile2016 profile;
 
-    ENetPacket* createPacket() const nothrow @nogc
-    in { assert (header.packetID == PacketCtoS.hello); }
-    out (ret) { assert (ret.data[0] == PacketCtoS.hello); }
+    void serializeTo(ubyte[] buf) const nothrow @nogc
+    in {
+        assert (buf.length >= len);
+        assert (header.packetID == PacketCtoS.hello);
+    }
     do {
-        auto ret = .createPacket(len);
-        header.serializeTo(ret.data[0 .. header.len]);
-        fromVersion.serializeTo(ret.data[header.len
-                                      .. header.len + fromVersion.len]);
-        profile.serializeTo(ret.data[len - profile.len .. len]);
-        return ret;
+        header.serializeTo(buf[0 .. header.len]);
+        fromVersion.serializeTo(buf[header.len .. header.len+fromVersion.len]);
+        profile.serializeTo(buf[len - profile.len .. len]);
     }
 
-    this(const(ENetPacket*) p)
+    this(in ubyte[] buf)
     {
         // In <= 0.9.42, we had here: enforce(p.dataLength == len), not >=
-        enforce(p.dataLength >= len);
-        header = PacketHeader2016(p.data[0 .. header.len]);
+        enforce(buf.length >= len);
+        header = PacketHeader2016(buf[0 .. header.len]);
         enforce(header.packetID == PacketCtoS.hello);
-        fromVersion = Version(p.data[header.len .. header.len + Version.len]);
-        profile = Profile2016(p.data[len - profile.len .. len]);
+        fromVersion = Version(buf[header.len .. header.len + Version.len]);
+        profile = Profile2016(buf[len - profile.len .. len]);
         /*
          * If the client sent a longer packet, we ignore what comes at
          * >= HelloPacket.len. Future server versions might interpret it.
@@ -102,32 +91,29 @@ struct HelloAnswerPacket {
     PacketHeader2016 header;
     Version serverVersion;
 
-    ENetPacket* createPacket() const nothrow @nogc
-    {
-        auto ret = .createPacket(len);
-        header.serializeTo(ret.data[0 .. header.len]);
-        serverVersion.serializeTo(ret.data[len - serverVersion.len .. len]);
-        return ret;
+    void serializeTo(ubyte[] buf) const nothrow @nogc
+    in {
+        assert (buf.length >= len);
+    }
+    do {
+        header.serializeTo(buf[0 .. header.len]);
+        serverVersion.serializeTo(buf[len - serverVersion.len .. len]);
     }
 
-    this(const(ENetPacket*) p)
+    this(in ubyte[] buf)
     {
-        enforce(p.dataLength == len);
-        header = PacketHeader2016(p.data[0 .. header.len]);
-        serverVersion = Version(p.data[len - serverVersion.len .. len]);
+        enforce(buf.length == len);
+        header = PacketHeader2016(buf[0 .. header.len]);
+        serverVersion = Version(buf[len - serverVersion.len .. len]);
     }
 }
 
 unittest {
-    import net.enetglob;
-    initializeEnet();
-    scope (exit)
-        deinitializeEnet();
-
     HelloAnswerPacket a;
     a.serverVersion = Version(1, 23, 456);
-    ENetPacket* p = a.createPacket;
-    auto b = HelloAnswerPacket(p);
+    ubyte[HelloAnswerPacket.len] buf;
+    a.serializeTo(buf);
+    auto b = HelloAnswerPacket(buf);
     assert (b.serverVersion == a.serverVersion);
     assert (b.serverVersion.minor == 23);
 }
@@ -137,19 +123,25 @@ struct ProfilePacket2016 {
     PacketHeader2016 header;
     Profile2016 profile;
 
-    ENetPacket* createPacket() const nothrow @nogc
-    {
-        auto ret = .createPacket(len);
-        header.serializeTo(ret.data[0 .. header.len]);
-        profile.serializeTo(ret.data[len - profile.len .. len]);
-        return ret;
+    void serializeTo(ubyte[] buf) const nothrow @nogc
+    in {
+        assert (buf.length == len);
+        /*
+         * Not >=. I don't dare touching 2016 logic because I want the assert
+         * to fire on inadvertent changes where 2016 clients/servers behave
+         * any different than in 2016.
+         */
+    }
+    do {
+        header.serializeTo(buf[0 .. header.len]);
+        profile.serializeTo(buf[len - profile.len .. len]);
     }
 
-    this(const(ENetPacket*) p)
+    this(in ubyte[] buf)
     {
-        enforce(p.dataLength == len);
-        header = PacketHeader2016(p.data[0 .. header.len]);
-        profile = Profile2016(p.data[len - profile.len .. len]);
+        enforce(buf.length == len);
+        header = PacketHeader2016(buf[0 .. header.len]);
+        profile = Profile2016(buf[len - profile.len .. len]);
     }
 }
 
@@ -178,95 +170,92 @@ struct ListPacket2016(Index)
         return header.len + Index.len * (indices.length & 0x7FFF);
     }
 
-    ENetPacket* createPacket() const nothrow @nogc
-    out (ret) {
-        assert (indices.length == 0 || ret.data[header.len] == indices[0]);
+    void serializeTo(ubyte[] buf) const nothrow @nogc
+    in {
+        assert (buf.length >= len);
+    }
+    out {
+        assert (indices.length == 0 || buf[header.len] == indices[0]);
     }
     do {
-        auto ret = .createPacket(len);
-        header.serializeTo(ret.data[0 .. header.len]);
+        header.serializeTo(buf[0 .. header.len]);
 
-        foreach (i, Index; indices) {
+        foreach (i, anIndex; indices) {
             static assert (Index.len == 1);
-            ret.data[header.len + i] = Index;
+            buf[header.len + i] = anIndex;
         }
-        assert (indices.length == 0 || ret.data[header.len] == indices[0]);
+        assert (indices.length == 0 || buf[header.len] == indices[0]);
         foreach (i, profile; profiles) {
             // profile.serializeTo expects the slice length at compile-time.
             // I don't know how to create a fixed-length D array from a pointer
             // and the length, so I do it with this otherwise-unecessary copy.
             ubyte[Profile2016.len] temp;
             profile.serializeTo(temp);
-            ret.data[mid + Profile2016.len * i
-                ..   mid + Profile2016.len * (i+1)] = temp[];
+            buf[mid + Profile2016.len * i .. mid + Profile2016.len * (i+1)]
+                = temp[];
         }
-        return ret;
     }
 
-    this(const(ENetPacket*) p)
+    this(in ubyte[] buf)
     out { assert (indices.length == profiles.length); }
     do {
-        enforce((p.dataLength - header.len) % (Profile2016.len + Index.len) == 0);
-        header = PacketHeader2016(p.data[0 .. header.len]);
-        indices.length = (p.dataLength - header.len)
-                        / (Profile2016.len + Index.len);
+        enforce((buf.length - header.len) % (Profile2016.len + Index.len) == 0);
+        header = PacketHeader2016(buf[0 .. header.len]);
+        indices.length = (buf.length - header.len)
+                       / (Profile2016.len + Index.len);
         foreach (i, ref oneIndex; indices) {
             static assert (oneIndex.len == 1);
-            oneIndex = Index(p.data[header.len + i]);
+            oneIndex = Index(buf[header.len + i]);
         }
         profiles.length = indices.length;
         foreach (i, ref profile; profiles) {
-            ubyte[Profile2016.len] temp = p.data[mid + Profile2016.len * i
-                                              .. mid + Profile2016.len * (i+1)];
+            ubyte[Profile2016.len] temp = buf[mid + Profile2016.len * i
+                                           .. mid + Profile2016.len * (i+1)];
             profile = Profile2016(temp);
         }
     }
 }
 
-unittest {
-    import net.enetglob;
-    initializeEnet();
-    scope (exit)
-        deinitializeEnet();
+unittest { // 2016
+    ProfileListPacket2016 list;
+    list.indices = [ PlNr(80), PlNr(81), PlNr(82) ];
+    list.profiles = [ Profile2016(), Profile2016(), Profile2016() ];
+    list.profiles[1].name = "Hello";
 
-    // 2016
-    {
-        ProfileListPacket2016 list;
-        list.indices = [ PlNr(80), PlNr(81), PlNr(82) ];
-        list.profiles = [ Profile2016(), Profile2016(), Profile2016() ];
-        list.profiles[1].name = "Hello";
+    assert(list.len == 107);
+    assert(list.len == 2 + 3 * (1 + 34));
+    ubyte[107] buf;
+    list.serializeTo(buf);
+    assert (buf[list.header.len + 0] == 80);
+    assert (buf[list.header.len + 1] == 81);
 
-        auto packet = list.createPacket;
-        assert (packet.data[list.header.len + 0] == 80);
-        assert (packet.data[list.header.len + 1] == 81);
+    auto anotherList = ProfileListPacket2016(buf);
+    assert (anotherList.profiles.length == 3);
+    assert (anotherList.indices[1] == 81);
+    assert (anotherList.profiles[1].name == "Hello");
+}
 
-        auto anotherList = ProfileListPacket2016(packet);
-        assert (anotherList.profiles.length == 3);
-        assert (anotherList.indices[1] == 81);
-        assert (anotherList.profiles[1].name == "Hello");
+unittest { // 2022
+    RoomListEntry2022 createEntry(in Room r, in int i, in string name) {
+        RoomListEntry2022 ret;
+        ret.room = r;
+        ret.numInhabitants = i;
+        ret.owner = Profile2022();
+        ret.owner.name = name;
+        return ret;
     }
-    // 2022
-    {
-        RoomListEntry2022 createEntry(in Room r, in int i, in string name) {
-            RoomListEntry2022 ret;
-            ret.room = r;
-            ret.numInhabitants = i;
-            ret.owner = Profile2022();
-            ret.owner.name = name;
-            return ret;
-        }
-        RoomListPacket2022 before;
-        before.arr ~= createEntry(Room(3), 33, "Hello");
-        before.arr ~= createEntry(Room(5), 55, "World");
+    RoomListPacket2022 before;
+    before.arr ~= createEntry(Room(3), 33, "Hello");
+    before.arr ~= createEntry(Room(5), 55, "World");
 
-        auto packet = before.createPacket;
-        auto after = RoomListPacket2022(packet.data[0 .. packet.dataLength]);
-        assert (after.arr.length == 2);
-        assert (after.arr[0].owner.name == "Hello");
-        assert (after.arr[1].owner.name == "World");
-        assert (after.arr[1].room == Room(5));
-        assert (after.arr[1].numInhabitants == 55);
-    }
+    ubyte[2 * (64 + 32) + 16] buf;
+    before.serializeTo(buf);
+    auto after = RoomListPacket2022(buf);
+    assert (after.arr.length == 2);
+    assert (after.arr[0].owner.name == "Hello");
+    assert (after.arr[1].owner.name == "World");
+    assert (after.arr[1].room == Room(5));
+    assert (after.arr[1].numInhabitants == 55);
 }
 
 alias RoomListPacket2022 = ArrayPacket!(RoomListEntry2022);
@@ -327,20 +316,21 @@ struct RoomChangePacket {
     PacketHeader2016 header;
     Room room;
 
-    ENetPacket* createPacket() const nothrow @nogc
-    {
-        auto ret = .createPacket(len);
-        header.serializeTo(ret.data[0 .. header.len]);
+    void serializeTo(ubyte[] buf) const nothrow @nogc
+    in {
+        assert (buf.length == len);
+    }
+    do {
+        header.serializeTo(buf[0 .. header.len]);
         static assert (room.sizeof == 1);
-        ret.data[header.len] = room;
-        return ret;
+        buf[header.len] = room;
     }
 
-    this(const(ENetPacket*) p)
+    this(in ubyte[] buf)
     {
-        enforce(p.dataLength == len);
-        header = PacketHeader2016(p.data[0 .. header.len]);
-        room = Room(p.data[header.len]);
+        enforce(buf.length == len);
+        header = PacketHeader2016(buf[0 .. header.len]);
+        room = Room(buf[header.len]);
     }
 }
 
@@ -356,24 +346,26 @@ struct ChatPacket {
             + 1; // Terminating nullbyte
     }
 
-    ENetPacket* createPacket() const nothrow @nogc
-    {
-        auto ret = .createPacket(len);
-        header.serializeTo(ret.data[0 .. header.len]);
-        ret.data[header.len .. len] = '\0';
+    void serializeTo(ubyte[] buf) const nothrow @nogc
+    in {
+        assert (buf.length >= len);
+    }
+    do {
+        header.serializeTo(buf[0 .. header.len]);
+        buf[header.len .. len] = '\0';
         foreach (int i; 0 .. (len - header.len - 1)) {
-            ret.data[header.len + i] = text[i];
+            buf[header.len + i] = text[i];
         }
-        ret.data[len - 1] = '\0';
-        return ret;
+        buf[len - 1] = '\0';
     }
 
-    this(const(ENetPacket*) p)
+    this(in ubyte[] buf)
     {
-        enforce(p.dataLength >= 3);
-        header = PacketHeader2016(p.data[0 .. header.len]);
-        if (p.data[p.dataLength - 1] == '\0')
-            text = fromStringz(cast (char*) (p.data + header.len)).idup;
+        enforce(buf.length >= 3);
+        header = PacketHeader2016(buf[0 .. header.len]);
+        if (buf[$ - 1] == '\0') {
+            text = fromStringz(cast (char*) (buf.ptr + header.len)).idup;
+        }
     }
 }
 
@@ -387,11 +379,10 @@ unittest {
     chat.text = "Hello";
     assert (chat.len == 2 + 5 + 1);
 
-    auto p = chat.createPacket();
-    assert (p.dataLength == chat.len);
+    ubyte[20] buf;
+    chat.serializeTo(buf);
 
-    const decoded = ChatPacket(p);
-    enet_packet_destroy(p);
+    const decoded = ChatPacket(buf);
     assert (decoded.text == chat.text);
     assert (decoded.len == chat.len);
 }
@@ -402,20 +393,21 @@ struct MillisecondsSinceGameStartPacket {
 
     enum len = header.len + milliseconds.sizeof;
 
-    ENetPacket* createPacket() const nothrow @nogc
-    {
-        auto ret = .createPacket(len);
-        header.serializeTo(ret.data[0 .. header.len]);
-        ret.data[header.len .. header.len + milliseconds.sizeof]
+    void serializeTo(ubyte[] buf) const nothrow @nogc
+    in {
+        assert (buf.length >= len);
+    }
+    do {
+        header.serializeTo(buf[0 .. header.len]);
+        buf[header.len .. header.len + milliseconds.sizeof]
             = nativeToBigEndian!int(milliseconds);
-        return ret;
     }
 
-    this(const(ENetPacket*) p)
+    this(in ubyte[] buf)
     {
-        enforce(p.dataLength >= len);
-        header = PacketHeader2016(p.data[0 .. header.len]);
+        enforce(buf.length >= len);
+        header = PacketHeader2016(buf[0 .. header.len]);
         milliseconds = bigEndianToNative!int(
-            p.data[header.len .. header.len + milliseconds.sizeof]);
+            buf[header.len .. header.len + milliseconds.sizeof]);
     }
 }

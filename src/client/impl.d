@@ -204,17 +204,20 @@ public:
         wish.enetSendTo(_serverPeer);
     }
 
-    void selectLevel(const(void[]) buffer)
+    void selectLevel(const(void[]) levelAsRawBytes)
     {
         if (! connected)
             return;
         struct LevelPacket {
-            ENetPacket* createPacket() const nothrow @nogc {
-                ENetPacket* ret = .createPacket(buffer.length + 2);
-                ret.data[0] = PacketCtoS.levelFile;
-                ret.data[2 .. ret.dataLength]
-                    = (cast (const(ubyte[])) buffer)[0 .. $];
-                return ret;
+            int len() const nothrow @nogc
+            {
+                return (2 + levelAsRawBytes.length) & 0x7FFF_FFFF;
+            }
+            void serializeTo(ubyte[] buf) const nothrow @nogc
+            {
+                assert (buf.length >= len);
+                buf[0] = PacketCtoS.levelFile;
+                buf[2 .. $] = (cast (const(ubyte[])) levelAsRawBytes)[0 .. $];
             }
         }
         LevelPacket().enetSendTo(_serverPeer);
@@ -224,7 +227,7 @@ public:
     {
         if (! connected)
             return;
-        data.enetSendTo(_serverPeer, PacketCtoS.myPly);
+        PlyPacket(PacketCtoS.myPly, data).enetSendTo(_serverPeer);
     }
 
 private:
@@ -244,7 +247,7 @@ private:
                 sayHello();
                 break;
             case ENET_EVENT_TYPE_RECEIVE:
-                receivePacket(event.packet);
+                receivePacket(event.packet.data[0 .. event.packet.dataLength]);
                 enet_packet_destroy(event.packet);
                 break;
             case ENET_EVENT_TYPE_DISCONNECT:
@@ -293,7 +296,7 @@ private:
         return ret;
     }
 
-    Profile2022* receiveProfilePacket(ENetPacket* got)
+    Profile2022* receiveProfilePacket(in ubyte[] got)
     {
         const updated = _adapter.receiveProfilePacket(got);
         auto ptr = updated.header.subject in _profilesInOurRoom;
@@ -302,22 +305,18 @@ private:
             foreach (ref profile; _profilesInOurRoom)
                 profile.setNotReady();
         }
-        /*
-         * Insert the received profile into our list.
-         * Hack in the 2016 client: We assume that everybody else has our
-         * version because the server doesn't tell us our version.
-         * The server will tell 2022 clients the correct remote client version.
-         */
         _ourRoom = updated.header.subjectsRoom;
         _profilesInOurRoom[updated.header.subject] = updated.neck;
         return updated.header.subject in _profilesInOurRoom;
     }
 
-    void receivePacket(ENetPacket* got)
+    // Call with: got = packet.data[0 .. dataLength]
+    void receivePacket(in ubyte[] got)
     {
-        if (got.dataLength < 1)
+        if (got.length < 1) {
             return;
-        else if (got.data[0] == PacketStoC.youGoodHeresPlNr) {
+        }
+        else if (got[0] == PacketStoC.youGoodHeresPlNr) {
             auto answer = HelloAnswerPacket(got);
             _ourPlNr = answer.header.plNr;
             _profilesInOurRoom[_ourPlNr]
@@ -326,8 +325,8 @@ private:
                 obs.onConnect();
             }
         }
-        else if (got.data[0] == PacketStoC.youTooOld
-            ||   got.data[0] == PacketStoC.youTooNew
+        else if (got[0] == PacketStoC.youTooOld
+            ||   got[0] == PacketStoC.youTooNew
         ) {
             auto answer = HelloAnswerPacket(got);
             foreach (obs; _observers) {
@@ -335,15 +334,16 @@ private:
             }
             disconnectAndDispose();
         }
-        else if (got.data[0] == PacketStoC.peerJoinsYourRoom) {
-            const(Profile2022*) changed = receiveProfilePacket(got);
+        else if (got[0] == PacketStoC.peerJoinsYourRoom) {
+            const(Profile2022*) changed
+                = receiveProfilePacket(got);
             if (changed !is null) {
                 foreach (obs; _observers) {
                     obs.onPeerJoinsRoom(*changed);
                 }
             }
         }
-        else if (got.data[0] == PacketStoC.peerLeftYourRoom) {
+        else if (got[0] == PacketStoC.peerLeftYourRoom) {
             auto gone = RoomChangePacket(got);
             auto ptr = gone.header.plNr in _profilesInOurRoom;
             auto name = ptr ? ptr.name : "?";
@@ -354,7 +354,7 @@ private:
                 obs.onPeerLeavesRoomTo(name, gone.room);
             }
         }
-        else if (got.data[0] == PacketStoC.peersAlreadyInYourNewRoom) {
+        else if (got[0] == PacketStoC.peersAlreadyInYourNewRoom) {
             auto list = ProfileListPacket2016(got);
             _profilesInOurRoom.clear();
             foreach (i, const(PlNr) plNr; list.indices) {
@@ -367,7 +367,7 @@ private:
                 obs.onWeChangeRoom(_ourRoom);
             }
         }
-        else if (got.data[0] == PacketStoC.listOfExistingRooms) {
+        else if (got[0] == PacketStoC.listOfExistingRooms) {
             auto list = RoomListPacket2016(got);
             if (_observers.length >= 1) {
                 Profile2022[] converted = list.profiles.map!(p
@@ -377,34 +377,35 @@ private:
                 }
             }
         }
-        else if (got.data[0] == PacketStoC.peerProfile) {
-            const(Profile2022*) changed = receiveProfilePacket(got);
+        else if (got[0] == PacketStoC.peerProfile) {
+            const(Profile2022*) changed
+                = receiveProfilePacket(got);
             if (changed !is null) {
                 foreach (obs; _observers) {
                     obs.onPeerChangesProfile(*changed);
                 }
             }
         }
-        else if (got.data[0] == PacketStoC.peerChatMessage) {
+        else if (got[0] == PacketStoC.peerChatMessage) {
             auto chat = ChatPacket(got);
             foreach (obs; _observers) {
                 obs.onChatMessage(playerName(chat.header.plNr), chat.text);
             }
         }
-        else if (got.data[0] == PacketStoC.peerLevelFile) {
-            if (got.dataLength >= 2) {
+        else if (got[0] == PacketStoC.peerLevelFile) {
+            if (got.length >= 2) {
                 // We only display the level when we get it back from server.
                 foreach (ref profile; _profilesInOurRoom)
                     profile.setNotReady();
                 foreach (obs; _observers) {
                     obs.onLevelSelect(
-                        playerName(PlNr(got.data[1])),
-                        got.data[2 .. got.dataLength]);
+                        playerName(PlNr(got[1])),
+                        got[2 .. $]);
                 }
             }
         }
-        else if (got.data[0] == PacketStoC.gameStartsWithPermu) {
-            if (got.dataLength >= 3) {
+        else if (got[0] == PacketStoC.gameStartsWithPermu) {
+            if (got.length >= 3) {
                 foreach (ref profile; _profilesInOurRoom)
                     profile.setNotReady();
                 auto pa = StartGameWithPermuPacket(got);
@@ -414,14 +415,13 @@ private:
                 }
             }
         }
-        else if (got.data[0] == PacketStoC.peerPly) {
-            if (got.dataLength == Ply.len) {
-                foreach (obs; _observers) {
-                    obs.onPeerSendsPly(Ply(got));
-                }
+        else if (got[0] == PacketStoC.peerPly) {
+            const Ply peerPly = PlyPacket(got).ply;
+            foreach (obs; _observers) {
+                obs.onPeerSendsPly(peerPly);
             }
         }
-        else if (got.data[0] == PacketStoC.peerDisconnected) {
+        else if (got[0] == PacketStoC.peerDisconnected) {
             auto discon = SomeoneDisconnectedPacket(got);
             auto ptr = discon.header.plNr in _profilesInOurRoom;
             auto name = ptr ? ptr.name : "?";
@@ -432,12 +432,12 @@ private:
                 obs.onPeerDisconnect(name);
             }
         }
-        else if (got.data[0] == PacketStoC.millisecondsSinceGameStart) {
+        else if (got[0] == PacketStoC.millisecondsSinceGameStart) {
             assert (_serverPeer);
+            auto pkg = MillisecondsSinceGameStartPacket(got);
             foreach (obs; _observers) {
                 obs.onMillisecondsSinceGameStart(
-                    MillisecondsSinceGameStartPacket(got).milliseconds
-                    + _serverPeer.roundTripTime);
+                    pkg.milliseconds + _serverPeer.roundTripTime);
             }
         }
     }
