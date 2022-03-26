@@ -17,9 +17,9 @@ import net.server.hotel;
 import net.server.outbox;
 import net.enetglob;
 import net.packetid;
+import net.plnr;
 import net.profile;
 import net.structs;
-import net.repdata;
 import net.versioning;
 
 class NetServer {
@@ -227,6 +227,8 @@ public:
      * Look up the recipient's Outbox (e.g., Outbox_0_10_x) in the array,
      * then forward the method call there, with identical arguments.
      */
+    import net.permu;
+    import net.repdata;
     static foreach (func; __traits(allMembers, Outbox)) {
         import net.server.meta;
         import net.header;

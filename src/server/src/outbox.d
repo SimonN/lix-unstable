@@ -13,6 +13,7 @@ module net.server.outbox;
  */
 
 import net.repdata;
+import net.permu;
 import net.plnr;
 import net.profile;
 import net.structs;
@@ -52,7 +53,7 @@ interface Outbox {
 
     void sendLevelByChooser(PlNr receiv, const(ubyte[]) level, PlNr from);
 
-    void startGame(in PlNr receiv, in PlNr roomOwner, in int permuLength);
+    void startGame(in PlNr receiv, in StartGameWithPermuPacket wellShuffled);
 
     void sendPly(PlNr receiv, Ply data);
 

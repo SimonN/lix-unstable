@@ -193,11 +193,8 @@ private mixin template commonOutboxMethods() {
         levpkg.enetSendTo(_out.getPeer(receiv));
     }
 
-    void startGame(in PlNr receiv, in PlNr roomOwner, in int permuLength)
+    void startGame(in PlNr receiv, in StartGameWithPermuPacket pa)
     {
-        auto pa = StartGameWithPermuPacket(permuLength);
-        pa.header.packetID = PacketStoC.gameStartsWithPermu;
-        pa.header.plNr = roomOwner;
         pa.enetSendTo(_out.getPeer(receiv));
     }
 
