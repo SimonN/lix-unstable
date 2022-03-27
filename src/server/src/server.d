@@ -9,6 +9,7 @@ module net.server.server;
  */
 
 import std.exception;
+import std.format;
 
 import derelict.enet.enet;
 
@@ -33,7 +34,12 @@ private:
 public:
     this(in int port)
     {
+        enforce(port >= 0 && port <= 0xFFFF, format("Invalid UPD port: %d"
+            ~ "\nPlease choose a UPD port >= 0 and <= 65535.", port));
         initializeEnet();
+        scope (failure) {
+            deinitializeEnet();
+        }
         ENetAddress address;
         address.host = ENET_HOST_ANY;
         address.port = port & 0xFFFF;
@@ -42,7 +48,9 @@ public:
             2, // allow up to 2 channels to be used, 0 and 1
             0, // assume any amount of incoming bandwidth
             0); // assume any amount of outgoing bandwidth
-        enforce(_host, "error creating enet server host");
+        enforce(_host, format("Can't create enet server on UPD port %d."
+            ~ "\nIs UDP port %d free for listening?"
+            ~ "\nIs another Lix server already listening there?", port, port));
 
         _sendWithEnet = new SendViaEnetHost(_host);
         _outbox = new DispatchingOutbox(_sendWithEnet);
@@ -52,12 +60,12 @@ public:
 
     void dispose()
     {
+        _hotel.dispose();
         if (_host) {
             enet_host_destroy(_host);
             _host = null;
+            deinitializeEnet();
         }
-        _hotel.dispose();
-        deinitializeEnet();
     }
 
     bool anyoneConnected() const { return ! _hotel.empty; }
@@ -97,7 +105,6 @@ public:
         enet_host_flush(_host);
     }
 
-// ############################################################################
 private:
     void receivePacket(in PlNr from, in ubyte[] got) nothrow
     {
@@ -160,10 +167,6 @@ private:
         }
     }
 }
-
-// ############################################################################
-// ############################################################################
-// ############################################################################
 
 private struct Inboxes {
 private:
