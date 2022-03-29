@@ -44,7 +44,7 @@ public:
         if (stylesToMake.empty)
             stylesToMake = [ Style.garden ];
         _replay = rp;
-        _model = new GameModel(lev, stylesToMake, rp.permu, ef);
+        _model = new GameModel(newZeroState(lev, stylesToMake, rp.permu), ef);
         assert (_replay);
     }
 

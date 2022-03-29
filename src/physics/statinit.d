@@ -7,7 +7,6 @@ import std.typecons;
 
 import basics.alleg5;
 import basics.help; // len
-import file.option;
 import graphic.gadget;
 import graphic.torbit;
 import game.core.game : Game; // phyusPerSecond
@@ -19,8 +18,6 @@ import physics.state;
 import physics.tribe;
 import tile.phymap;
 import tile.gadtile;
-
-package:
 
 GameState newZeroState(in Level level, in Style[] tribesToMake, in Permu permu)
 in {

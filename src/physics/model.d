@@ -28,7 +28,6 @@ import net.permu;
 import physics.effect;
 import physics.physdraw;
 import physics.state;
-import physics.statinit;
 import physics.tribe;
 import tile.phymap;
 
@@ -52,13 +51,12 @@ public:
 
     // Add players to the replay before you pass the replay to Nurse.ctor!
     // This remembers the effect manager, but not anything else.
+    // We take ownership of the GameState.
     // We don't own the effect manager.
-    this(in Level level, in Style[] tribesToMake,
-         in Permu permu, EffectSink ef)
-    in { assert (tribesToMake.len >= 1); }
-    do {
+    this(GameState toOwn, EffectSink ef)
+    {
         _effect = ef;
-        _cs = newZeroState(level, tribesToMake, permu);
+        _cs = toOwn;
         _physicsDrawer = new PhysicsDrawer(_cs.land, _cs.lookup);
         finalizePhyuAnimateGadgets();
     }

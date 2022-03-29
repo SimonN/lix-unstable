@@ -26,7 +26,7 @@ package:
 struct Festival {
 @nogc:
 private:
-    ubyte[] _level; // send this data to new-joiners. Manually memory-managed.
+    ubyte[] _level = null; // Send this to joiners. Manually memory-managed.
     MonoTime _gameStart;
     MonoTime _recentSync;
 
