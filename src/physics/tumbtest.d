@@ -17,11 +17,16 @@ import level.level;
 import net.style;
 import net.permu;
 
+unittest {
+    auto sta = createTumblerTestState();
+    sta.drawEnclosingSolidFrame();
+    assert (sta.lookup.getSolidEven(Point(0, 0)));
+}
+
 GameState createTumblerTestState() {
     Level l = new Level();
     l.topology.resize(100, 100);
     auto sta = newZeroStateForPhysicsUnittest(l);
-    sta.drawEnclosingSolidFrame();
     return sta;
 }
 
@@ -37,7 +42,10 @@ void drawEnclosingSolidFrame(ref GameState sta)
     }
 }
 
-unittest {
-    auto sta = createTumblerTestState();
-    assert (sta.lookup.getSolidEven(Point(0, 0)));
+void addJumpingLix(ref GameState sta)
+{
+    Tribe* tr = Style.garden in sta.tribes;
+    assert(tr !is null && *tr !is null);
+    ####
 }
+
