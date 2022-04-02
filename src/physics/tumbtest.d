@@ -20,7 +20,7 @@ import net.permu;
 GameState createTumblerTestState() {
     Level l = new Level();
     l.topology.resize(100, 100);
-    auto sta = newZeroState(l, [Style.garden], new Permu("0"));
+    auto sta = newZeroStateForPhysicsUnittest(l);
     sta.drawEnclosingSolidFrame();
     return sta;
 }

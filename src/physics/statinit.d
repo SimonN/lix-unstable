@@ -19,19 +19,16 @@ import physics.tribe;
 import tile.phymap;
 import tile.gadtile;
 
-GameState newZeroState(in Level level, in Style[] tribesToMake, in Permu permu)
+GameState newZeroStateForPlayableLevel(
+    in Level level,
+    in Style[] tribesToMake,
+    in Permu permu)
 in {
     assert (tribesToMake.len >= 1);
 }
 do {
-    GameState s;
-    s.refCountedStore.ensureInitialized();
-    with (level) {
-        s.land   = new Torbit(Torbit.Cfg(level.topology));
-        s.lookup = new Phymap(level.topology);
-        drawTerrainTo(s.land, s.lookup);
-    }
-    s.preparePlayers(level, tribesToMake, permu);
+    GameState s = newZeroStateCommon(level);
+    s.preparePlayers(level, tribesToMake);
     s.prepareGadgets(level);
     s.assignTribesToGoals(permu);
     s.foreachGadget((Gadget g) {
@@ -43,10 +40,28 @@ do {
     return s;
 }
 
+GameState newZeroStateForPhysicsUnittest(in Level level)
+{
+    GameState s = newZeroStateCommon(level);
+    s.preparePlayers(level, [Style.garden]);
+    return s;
+}
+
 private:
 
-void preparePlayers(GameState state, in Level level,
-                    in Style[] tribesToMake, in Permu permu)
+GameState newZeroStateCommon(in Level level)
+{
+    GameState s;
+    s.refCountedStore.ensureInitialized();
+    with (level) {
+        s.land   = new Torbit(Torbit.Cfg(level.topology));
+        s.lookup = new Phymap(level.topology);
+        drawTerrainTo(s.land, s.lookup);
+    }
+    return s;
+}
+
+void preparePlayers(GameState state, in Level level, in Style[] tribesToMake)
 in {
     assert (state.tribes == null);
     assert (tribesToMake.len >= 1);
