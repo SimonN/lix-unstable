@@ -261,7 +261,8 @@ package:
             _effect.deleteAfter(nurse.upd);
         if (pan)
             pan.setLikeTribe(localTribe, level.ploder,
-                             cs.overtimeRunning, cs.overtimeRemainingInPhyus);
+                cs.overtimeRemainingInPhyus,
+                cs.nukeIsAssigningExploders);
         if (nurse.updatesSinceZero == 0 && _setLastPhyuToNowLastCalled != 0) {
             hardware.sound.playLoud(Sound.LETS_GO);
         }

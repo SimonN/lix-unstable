@@ -14,7 +14,6 @@ class NukeButton : Button, TooltipSuggester {
 private:
     bool _doubleclicked;
     typeof(timerTicks) _lastExecute;
-    bool _overtimeRunning;
     int _overtimeRemainingInPhyus;
 
     CutbitElement _icon; // Reimplement this part of BitmapButton to move it
@@ -53,15 +52,6 @@ public:
     }
 
     @property bool doubleclicked() const { return _doubleclicked; }
-
-    @property overtimeRunning(in bool ru)
-    {
-        if (ru == _overtimeRunning || ! _label)
-            return;
-        _overtimeRunning = ru;
-        _label.color = _overtimeRunning ? color.guiTextOn : color.guiText;
-        reqDraw();
-    }
 
     @property overtimeRemainingInPhyus(in int re)
     in { assert (re >= 0); }

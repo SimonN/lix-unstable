@@ -11,6 +11,8 @@ import std.conv;
 import std.range;
 import std.typecons;
 
+import optional;
+
 import basics.help; // clone(T[]), a deep copy for arrays
 import basics.topology;
 import graphic.torbit;
@@ -80,70 +82,54 @@ public:
         chain(hatches, goals, waters, traps, flingPerms, flingTrigs).each!func;
     }
 
-    @property bool multiplayer() const @nogc
+    bool multiplayer() const @nogc
     {
         assert (numTribes > 0);
         return numTribes > 1;
     }
 
-    @property Style singleplayerStyle() const @nogc nothrow
+    Style singleplayerStyle() const @nogc nothrow
     in { assert (! multiplayer, "call this only in singleplayer"); }
     do { return tribes.byKey.front; }
 
-    @property bool singleplayerHasSavedAtLeast(in int lixRequired) const @nogc
+    bool singleplayerHasSavedAtLeast(in int lixRequired) const @nogc
     {
         return ! multiplayer
             && tribes.byValue.front.score.lixSaved >= lixRequired;
     }
 
-    @property bool singleplayerHasNuked() const @nogc
+    bool singleplayerHasNuked() const @nogc
     {
         return ! multiplayer && tribes.byValue.front.hasNuked;
     }
 
-    @property bool overtimeRunning() const
-    in { assert (tribes.length > 0); }
-    do {
-        return tribes.byValue.all!(tr => tr.prefersGameToEnd)
-            || tribes.byValue.any!(tr => tr.triggersOvertime);
-    }
-
-    // Call this only if overtimeRunning.
     // Use this only for effect handling. For nuking or exit locking,
     // use nukeIsAssigningExploders or lixMayUseGoals.
-    Phyu overtimeRunningSince() const
-    in {
-        assert (overtimeRunning);
-        assert (tribes.length > 0);
-    }
+    // If returns no!Phyu, then overtime is not running.
+    Optional!Phyu overtimeRunningSince() const
+    in { assert (tribes.length > 0); }
     do {
         if (tribes.byValue.all!(tr => tr.prefersGameToEnd)) {
-            return tribes.byValue.map!(tr => tr.prefersGameToEndSince.front)
-                .reduce!max;
+            return tribes.byValue.map!(tr => tr.prefersGameToEndSince).optmax;
         }
-        else {
-            assert (tribes.byValue.any!(tr => tr.triggersOvertime));
-            return tribes.byValue
-                .filter!(tr => tr.triggersOvertime)
-                .map!(tr => tr.triggersOvertimeSince.front)
-                .reduce!min;
-        }
+        return tribes.byValue.map!(tr => tr.triggersOvertimeSince).optmin;
     }
 
     // This doesn't return Phyu because Phyu is a point in time, not a duration
-    @property int overtimeRemainingInPhyus() const
+    int overtimeRemainingInPhyus() const
     {
-        if (! overtimeRunning)
-            return overtimeAtStartInPhyus;
-        if (tribes.byValue.all!(tr => tr.prefersGameToEnd))
-            return 0;
-        return clamp(overtimeAtStartInPhyus + overtimeRunningSince - update,
+        foreach (runningSince; overtimeRunningSince) {
+            return tribes.byValue.all!(tr => tr.prefersGameToEnd)
+                ? 0
+                : (overtimeAtStartInPhyus + runningSince - update).clamp(
                     0, overtimeAtStartInPhyus);
+        }
+        return overtimeAtStartInPhyus;
     }
 
-    @property bool nukeIsAssigningExploders() const
+    bool nukeIsAssigningExploders() const
     {
-        return overtimeRunning() && overtimeRemainingInPhyus == 0;
+        return ! overtimeRunningSince.empty && overtimeRemainingInPhyus == 0;
     }
 
     // Extra check (other than nukeIsAssigningExploders) for edge case during
@@ -153,7 +139,7 @@ public:
     // the next comparison, change the nuke status before processing
     // the next player. The nuke prevents lixes from exiting.
     // Solution: In race maps, allow that one update to finish with scoring.
-    @property bool lixMayUseGoals() const
+    bool lixMayUseGoals() const
     {
         return ! nukeIsAssigningExploders || overtimeRunningSince == update;
     }

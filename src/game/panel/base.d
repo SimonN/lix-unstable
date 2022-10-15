@@ -75,12 +75,13 @@ public:
 
     // call this from the Game
     void setLikeTribe(in Tribe tr, in Ac ploderToDisplay,
-                      in bool overtimeRunning, in int overtimeRemainingInPhyus
+        in int overtimeRemainingInPhyus,
+        in bool nukeIsAssigningExploders,
     ) {
         if (tr is null)
             return;
         immutable bool multiNuking = tr.style != Style.garden
-            && overtimeRunning && overtimeRemainingInPhyus == 0;
+            && nukeIsAssigningExploders;
         foreach (b; _skills) {
             b.style = tr.style;
             if (b.skill.isPloder)
@@ -90,7 +91,6 @@ public:
             b.number = tr.hasNuked || multiNuking ? 0 : tr.usesLeft(b.skill);
         }
         nuke.on = tr.hasNuked || multiNuking;
-        nuke.overtimeRunning = overtimeRunning;
         nuke.overtimeRemainingInPhyus = overtimeRemainingInPhyus;
         _rb.ourStyle = tr.style;
         makeCurrent(lastOnForRestoringAfterStateLoad);

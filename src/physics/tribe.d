@@ -277,31 +277,34 @@ public:
     }
 }
 
-private:
-
 /*
- * optmin(x, y) == the usual min(x, y).
- * optmin(x, none) == x: We discard (none) before applying min to the rest.
- * optmin(none, none) == none.
+ * optmin(x,  y)  == min(x, y).
+ * optmin(x,  no) == x.
+ * optmin(no, no) == no.
  */
-Optional!Phyu optreduce(alias pairingFunc)(Optional!Phyu[] nrs...)
-    pure nothrow @safe @nogc
-{
-    auto usefuls = nrs[].joiner; // Range of Phyus: all nonempty optionals.
-    if (usefuls.empty) {
-        return no!Phyu;
-    }
-    Phyu accum = usefuls.front; // Avoid std.algorithm.reduce, it throws.
-    usefuls.popFront();
-    while (! usefuls.empty) {
-        accum = pairingFunc(accum, usefuls.front);
-        usefuls.popFront;
-    }
-    return accum.some;
-}
-
 alias optmin = optreduce!min;
 alias optmax = optreduce!max;
+
+template optreduce(alias pairingFunc) {
+    Optional!Phyu optreduce(R)(R r) pure nothrow @safe @nogc
+    {
+        return r.fold!optpair(no!Phyu);
+    }
+
+    Optional!Phyu optreduce(Optional!Phyu[] args...) pure nothrow @safe @nogc
+    {
+        return args[].fold!optpair(no!Phyu);
+    }
+
+    private Optional!Phyu optpair(in Optional!Phyu a, in Optional!Phyu b
+    ) pure nothrow @safe @nogc
+    {
+        if (a.empty) return b;
+        if (b.empty) return a;
+        Phyu ret = pairingFunc(a.front, b.front);
+        return ret.some;
+    }
+}
 
 unittest {
     immutable x = Optional!Phyu(Phyu(8));

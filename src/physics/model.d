@@ -84,11 +84,10 @@ public:
         spawnLixxiesFromHatches();
         updateLixxies();
         finalizePhyuAnimateGadgets();
-        if (_cs.overtimeRunning
-            && _cs.tribes.byValue.any!(tr => ! tr.prefersGameToEnd)
-        ) {
-            _effect.announceOvertime(_cs.overtimeRunningSince,
-                _cs.overtimeAtStartInPhyus);
+        if (_cs.multiplayer) {
+            foreach (since; _cs.overtimeRunningSince) {
+                _effect.announceOvertime(since, _cs.overtimeAtStartInPhyus);
+            }
         }
     }
 
