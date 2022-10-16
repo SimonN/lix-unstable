@@ -38,15 +38,16 @@ public:
                 From.RIGHT), InternalImage.gamePanel2.toCutbit);
             _icon.xf = GamePanel2Xf.nuke;
             immutable float x = TextButton.textXFromLeft;
-            _label = new Label(new Geom(x, 0, xlg - 2f*x, 20,
-                From.LEFT), "0:00");
+            _label = new Label(new Geom(x, 0, xlg - 2f*x, 20, From.LEFT));
+            _label.color = color.white;
             addChildren(_icon, _label);
         }
         else {
             _icon = new CutbitElement(new Geom(xlg/6f, 0, xlg*2f/3f, ylg,
                 From.CENTER), InternalImage.gamePanel2.toCutbit);
-            _label = new Label(new Geom(-xlg/6f, 0, xlg*2f/3f, 20,
-                From.CENTER), "0:00");
+            _label = new Label(new Geom(
+                -xlg / 6f, 0, xlg * 2f / 3f, 20, From.CENTER));
+            _label.color = color.white;
             addChildren(_icon, _label);
         }
     }
