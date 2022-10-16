@@ -80,7 +80,7 @@ void drawGadgets(Game game) { with (game)
     cs.foreachConstGadget(delegate void (const(Gadget) g) {
         g.draw(localTribe.style);
     });
-    if (cs.nukeIsAssigningExploders
+    if (cs.nuking.nukeIsAssigningExploders
 		&& ! cs.tribes.byValue.all!(tr => tr.outOfLix)
 	) {
         foreach (g; cs.goals)

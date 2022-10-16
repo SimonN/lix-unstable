@@ -21,6 +21,7 @@ import hardware.tharsis;
 import net.repdata;
 import net.style;
 import physics.tribe;
+import physics.nuking;
 import tile.phymap;
 
 alias GameState = RefCounted!(RawGameState, RefCountedAutoInitialize.no);
@@ -69,8 +70,6 @@ public:
         lookup = null;
     }
 
-    int numTribes() const @nogc { return tribes.length & 0xFFFF; }
-
     // With dmd 2.0715.1, inout doesn't seem to work for this.
     // Let's duplicate the function, once for const, once for mutable.
     void foreachConstGadget(void delegate(const(Gadget)) func) const
@@ -82,66 +81,45 @@ public:
         chain(hatches, goals, waters, traps, flingPerms, flingTrigs).each!func;
     }
 
-    bool multiplayer() const @nogc
-    {
-        assert (numTribes > 0);
-        return numTribes > 1;
-    }
+    const pure nothrow @safe @nogc {
+        int numTribes() { return tribes.length & 0xFFFF; }
 
-    Style singleplayerStyle() const @nogc nothrow
-    in { assert (! multiplayer, "call this only in singleplayer"); }
-    do { return tribes.byKey.front; }
+        bool multiplayer()
+        in { assert (numTribes > 0); }
+        do { return numTribes > 1; }
 
-    bool singleplayerHasSavedAtLeast(in int lixRequired) const @nogc
-    {
-        return ! multiplayer
-            && tribes.byValue.front.score.lixSaved >= lixRequired;
-    }
+        Style singleplayerStyle()
+        in { assert (! multiplayer); }
+        do { return tribes.byKey.front; }
 
-    bool singleplayerHasNuked() const @nogc
-    {
-        return ! multiplayer && tribes.byValue.front.hasNuked;
-    }
-
-    // Use this only for effect handling. For nuking or exit locking,
-    // use nukeIsAssigningExploders or lixMayUseGoals.
-    // If returns no!Phyu, then overtime is not running.
-    Optional!Phyu overtimeRunningSince() const
-    in { assert (tribes.length > 0); }
-    do {
-        if (tribes.byValue.all!(tr => tr.prefersGameToEnd)) {
-            return tribes.byValue.map!(tr => tr.prefersGameToEndSince).optmax;
+        bool singleplayerHasSavedAtLeast(in int lixRequired)
+        {
+            return ! multiplayer
+                && tribes.byValue.front.score.lixSaved >= lixRequired;
         }
-        return tribes.byValue.map!(tr => tr.triggersOvertimeSince).optmin;
-    }
 
-    // This doesn't return Phyu because Phyu is a point in time, not a duration
-    int overtimeRemainingInPhyus() const
-    {
-        foreach (runningSince; overtimeRunningSince) {
-            return tribes.byValue.all!(tr => tr.prefersGameToEnd)
-                ? 0
-                : (overtimeAtStartInPhyus + runningSince - update).clamp(
-                    0, overtimeAtStartInPhyus);
+        bool singleplayerHasNuked() const @nogc
+        {
+            return ! multiplayer && tribes.byValue.front.hasNuked;
         }
-        return overtimeAtStartInPhyus;
-    }
 
-    bool nukeIsAssigningExploders() const
-    {
-        return ! overtimeRunningSince.empty && overtimeRemainingInPhyus == 0;
-    }
-
-    // Extra check (other than nukeIsAssigningExploders) for edge case during
-    // race maps (overtime 0, i.e., terminate on first scoring):
-    // Assume 3 players enter the exit at the same time. Since one
-    // player has to be processed first, that player would, without
-    // the next comparison, change the nuke status before processing
-    // the next player. The nuke prevents lixes from exiting.
-    // Solution: In race maps, allow that one update to finish with scoring.
-    bool lixMayUseGoals() const
-    {
-        return ! nukeIsAssigningExploders || overtimeRunningSince == update;
+        Nuking nuking()
+        {
+            Nuking ret;
+            ret.overtimeAtStartInPhyus = overtimeAtStartInPhyus;
+            ret.allAgreedToAbortAt
+                = tribes.byValue.any!(tr => ! tr.wantsToAbort) ? no!Phyu
+                : tribes.byValue.map!(tr => tr.wantsToAbortAt).optmax;
+            ret.overtimeTriggeredAt
+                = tribes.byValue.map!(tr => tr.triggersOvertimeAt).optmin;
+            ret.overtimeRemainingInPhyus
+                = ret.allAgreedToAbort ? 0
+                : ! ret.overtimeTriggered ? ret.overtimeAtStartInPhyus
+                : clamp(ret.overtimeAtStartInPhyus
+                    + ret.overtimeTriggeredAt.front
+                    - update, 0, overtimeAtStartInPhyus);
+            return ret;
+        }
     }
 
 private:

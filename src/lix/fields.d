@@ -14,6 +14,7 @@ struct OutsideWorld {
     PhysicsDrawer physicsDrawer;
     EffectSink effect;
     Passport passport;
+    bool goalsAreOpen;
 
     inout(Tribe) tribe() inout { return state.tribes[passport.style]; }
 }

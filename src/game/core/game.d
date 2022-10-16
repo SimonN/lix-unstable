@@ -259,10 +259,9 @@ package:
         assert (this.nurse);
         if (_effect)
             _effect.deleteAfter(nurse.upd);
-        if (pan)
-            pan.setLikeTribe(localTribe, level.ploder,
-                cs.overtimeRemainingInPhyus,
-                cs.nukeIsAssigningExploders);
+        if (pan) {
+            pan.setLikeTribe(localTribe, level.ploder, cs.nuking);
+        }
         if (nurse.updatesSinceZero == 0 && _setLastPhyuToNowLastCalled != 0) {
             hardware.sound.playLoud(Sound.LETS_GO);
         }

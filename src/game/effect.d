@@ -30,6 +30,7 @@ import net.repdata;
 import game.debris;
 import gui.console;
 import graphic.torbit;
+import physics.nuking;
 
 private struct Effect {
     Phyu phyu;
@@ -189,14 +190,20 @@ public:
         addPlosion!true(upd, pa, foot);
     }
 
-    void announceOvertime(in Phyu whenOvertimeStarted, in int overtimeInPhyus)
+    void announceOvertime(in Nuking nuking)
     {
-        Effect e = Effect(whenOvertimeStarted, Passport(localTribe, 0),
+        if (! nuking.overtimeTriggered || nuking.allAgreedToAbort) {
+            // Nop'ing on allAgreedToAbort fixes double ding in multiplayer
+            // and prevents the announcement in singleplayer, as desired.
+            return;
+        }
+        Effect e = Effect(nuking.overtimeTriggeredAt.front,
+            Passport(localTribe, 0),
             Sound.OVERTIME, Loudness.loud);
         if (e !in _alreadyPlayed) {
             _alreadyPlayed.insert(e);
             hardware.sound.play(e.sound, e.loudness);
-            _overtimeInPhyusToAnnounce = overtimeInPhyus;
+            _overtimeInPhyusToAnnounce = nuking.overtimeAtStartInPhyus;
         }
     }
 

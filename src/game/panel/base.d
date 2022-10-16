@@ -19,6 +19,7 @@ import hardware.sound;
 import lix; // forward method of InfoBar to our users
 import net.phyu;
 import physics.tribe;
+import physics.nuking;
 
 class Panel : Element {
 private:
@@ -74,14 +75,12 @@ public:
     }
 
     // call this from the Game
-    void setLikeTribe(in Tribe tr, in Ac ploderToDisplay,
-        in int overtimeRemainingInPhyus,
-        in bool nukeIsAssigningExploders,
-    ) {
+    void setLikeTribe(in Tribe tr, in Ac ploderToDisplay, in Nuking nuking)
+    {
         if (tr is null)
             return;
         immutable bool multiNuking = tr.style != Style.garden
-            && nukeIsAssigningExploders;
+            && nuking.nukeIsAssigningExploders;
         foreach (b; _skills) {
             b.style = tr.style;
             if (b.skill.isPloder)
@@ -91,7 +90,7 @@ public:
             b.number = tr.hasNuked || multiNuking ? 0 : tr.usesLeft(b.skill);
         }
         nuke.on = tr.hasNuked || multiNuking;
-        nuke.overtimeRemainingInPhyus = overtimeRemainingInPhyus;
+        nuke.overtimeRemainingInPhyus = nuking.overtimeRemainingInPhyus;
         _rb.ourStyle = tr.style;
         makeCurrent(lastOnForRestoringAfterStateLoad);
     }

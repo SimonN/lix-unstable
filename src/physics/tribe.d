@@ -139,7 +139,7 @@ public:
             ret.style = style;
             ret.lixSaved = FracInt(_lixSaved, rules.handicap.score);
             ret.lixYetUnsavedRaw = _lixOut + lixInHatch;
-            ret.prefersGameToEnd = prefersGameToEnd;
+            ret.prefersGameToEnd = wantsToAbort;
             return ret;
         }
 
@@ -242,13 +242,8 @@ public:
 
     const pure nothrow @safe @nogc {
         bool hasNuked() { return ! _nukePressedAt.empty; }
-        bool prefersGameToEnd() { return ! prefersGameToEndSince.empty; }
-        bool triggersOvertime()
-        {
-            immutable ret = prefersGameToEnd && hasScored;
-            assert (ret == ! triggersOvertimeSince.empty);
-            return ret;
-        }
+        bool wantsToAbort() { return ! wantsToAbortAt.empty; }
+        bool triggersOvertime() { return ! triggersOvertimeAt.empty; }
 
         private Optional!Phyu finishedRaceAt()
         {
@@ -256,16 +251,13 @@ public:
                 ? _firstScoring : no!Phyu;
         }
 
-        Optional!Phyu prefersGameToEndSince()
+        Optional!Phyu wantsToAbortAt()
         {
             return optmin(_nukePressedAt, _outOfLixSince, finishedRaceAt);
         }
 
-        Optional!Phyu triggersOvertimeSince()
-        out (ret) {
-            assert (ret.empty != (prefersGameToEnd && hasScored));
-        }
-        do {
+        Optional!Phyu triggersOvertimeAt()
+        {
             if (! hasScored) {
                 return no!Phyu;
             }

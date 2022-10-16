@@ -14,6 +14,7 @@ public import hardware.sound;
 public import lix.fields;
 public import net.ac;
 public import net.phyu;
+public import physics.nuking;
 
 interface EffectSink {
 public:
@@ -28,7 +29,7 @@ public:
     void addImplosion(in Phyu upd, in Passport pa, in Point foot);
     void addExplosion(in Phyu upd, in Passport pa, in Point foot);
 
-    void announceOvertime(in Phyu upd, in int overtimeInPhyus);
+    void announceOvertime(in Nuking);
 }
 
 alias NullEffectSink = BlackHole!EffectSink;

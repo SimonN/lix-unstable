@@ -28,6 +28,7 @@ import physics.physdraw;
 import physics.state;
 import physics.statinit;
 import physics.tribe;
+import physics.nuking;
 import tile.phymap;
 
 class GameModel {
@@ -59,6 +60,13 @@ public:
         finalizePhyuAnimateGadgets();
     }
 
+    void dispose()
+    {
+        if (_physicsDrawer)
+            _physicsDrawer.dispose();
+        _physicsDrawer = null;
+    }
+
     // Should be accsessible by the Nurse. Shouldn't be accessed straight from
     // the game, but it's the Nurse's task to hide that information.
     @property inout(GameState) cs() inout { return _cs; }
@@ -77,79 +85,160 @@ public:
     void advance(R)(R range)
         if (isInputRange!R && is (ElementType!R : const(ColoredData)))
     {
-        ++_cs.update;
-        range.each!(cd => applyPly(cd));
+        ++_cs.update; // Step 1: Bump only the physics update, do nothing else.
 
-        updateNuke(); // sets lixInHatch = 0, thus affects spawnLixxiesFromHatch
-        spawnLixxiesFromHatches();
-        updateLixxies();
-        finalizePhyuAnimateGadgets();
-        if (_cs.multiplayer) {
-            foreach (since; _cs.overtimeRunningSince) {
-                _effect.announceOvertime(since, _cs.overtimeAtStartInPhyus);
-            }
-        }
-    }
+        applyNukeInputs(range.save); // Step 2. Affects tribes.
+        immutable nuking = _cs.nuking();
 
-    void dispose()
-    {
-        if (_physicsDrawer)
-            _physicsDrawer.dispose();
-        _physicsDrawer = null;
+        applySkillInputsOrPerformNuke(range, nuking); // Step 3. Affects tribes
+        assert (nuking == _cs.nuking()); // but promises at least this.
+        performMostPhysics(nuking); // Step 4.
     }
 
 private:
 
-    lix.OutsideWorld makeGypsyWagon(in Passport pa) pure nothrow @nogc
-    {
-        return OutsideWorld(_cs, _physicsDrawer, _effect, pa);
+///////////////////////////////////////////////////////////////////////////////
+// Step 2 /////////////////////////////////////////////////////////////////////
+
+    enum string wrongUpd = "advance() should ++_cs.update before calling here."
+        ~ " Furthermore, the caller of advance() should filter the"
+        ~ " ColoredData to give us only what matches his _cs.update() + 1,"
+        ~ " which will be == _cs.update() after advance()'s ++_cs.update.";
+    /*
+     * advance(), Step 2: Apply nuke input to tribes.
+     * This affects tribes by setting their hasNuked.
+     * Doesn't set the tribes to 0 lix in hatch, step 3 will do that.
+     * Doesn't affect the lix in the tribes' lix vectors.
+     * This will not yet assign the exploders, that will happen in step 4.
+     *
+     * After step 2, we must be able to compute GameState.nuking() and its
+     * output (so I decree here and will assert at the beginning of step 4)
+     * must remain fixed throughout step 3 and the beginning of step 4.
+     */
+    void applyNukeInputs(R)(R range)
+        if (isInputRange!R && is (ElementType!R : const(ColoredData))
+    ) {
+        foreach (ref const i; range) {
+            assert (i.update == _cs.update, wrongUpd);
+            if (i.action != RepAc.NUKE) {
+                continue;
+            }
+            auto tribe = i.style in _cs.tribes;
+            if (! tribe) {
+                return; // Ignore bogus data that can come from anywhere.
+            }
+            if (tribe.hasNuked) {
+                return; // May not nuke twice.
+            }
+            tribe.recordNukePressedAt(_cs.update);
+            _effect.addSound(_cs.update, Passport(i.style, 0), Sound.NUKE);
+        }
     }
 
-    void applyPly(in ColoredData i)
-    {
-        immutable upd = _cs.update;
-        assert (i.update == upd,
-            "increase update manually before applying replay data");
+///////////////////////////////////////////////////////////////////////////////
+// Step 3 /////////////////////////////////////////////////////////////////////
 
+    /*
+     * advance(), Step 3: Either-or:
+     *      Step 3-N: Apply exploder assignments because we're nuking.
+     *      Step 3-S: Apply non-nuke input, i.e., skills, to tribes.
+     * Either affects tribes and also lix inside the tribes' lix vectors.
+     *
+     * Game rule: We do not process further input during nuke.
+     * A decisive nuke in phyu N (decisive = a nuke input that triggers
+     * nukeIsAssigningExploders) prohibits all skill assignments in
+     * phyu N, even if those assignments come earlier in (range)
+     * within phyu N. Final assignments may be from phyu N-1.
+     */
+    void applySkillInputsOrPerformNuke(R)(R range, in Nuking nuking)
+        if (isInputRange!R && is (ElementType!R : const(ColoredData))
+    ) {
+        if (nuking.nukeIsAssigningExploders) {
+            assignExplodersFromNuke();
+            return;
+        }
+        foreach (ref const cd; range.filter!(cd => cd.isSomeAssignment)) {
+            applyAssignment(cd, nuking);
+        }
+    }
+
+    void assignExplodersFromNuke()
+    {
+        foreach (tribe; _cs.tribes) {
+            tribe.stopSpawningAnyMoreLixBecauseWeAreNuking();
+            foreach (int id, lix; tribe.lixvec.enumerate!int) {
+                if (! lix.healthy || lix.ploderTimer > 0)
+                    continue;
+                auto ow = makeGypsyWagon(Passport(tribe.style, id), false);
+                lix.assignManually(&ow, Ac.exploder);
+                break; // Nuke hits only one lix per tribe, per advance().
+            }
+        }
+    }
+
+    void applyAssignment(in ColoredData i, in Nuking nuking)
+    in {
+        assert (i.isSomeAssignment, "Caller should filter");
+        assert (i.update == _cs.update, wrongUpd);
+    }
+    do {
         auto tribe = i.style in _cs.tribes;
-        if (! tribe)
+        if (! tribe) {
             // Ignore bogus data that can come from anywhere
             return;
-        if (tribe.hasNuked || _cs.nukeIsAssigningExploders) {
+        }
+        if (tribe.hasNuked) {
             // Game rule: After you call for the nuke, you may not assign
             // other things, nuke again, or do whatever we allow in the future.
-            // During the nuke, nobody can assign or save lixes.
+            return;
+        }
+        // never assert based on the content in Ply, which may have
+        // been a maleficious attack from a third party, carrying a lix ID
+        // that is not valid. If bogus data comes, do nothing.
+        if (i.toWhichLix < 0 || i.toWhichLix >= tribe.lixlen) {
             return;
         }
         immutable Passport pa = Passport(i.style, i.toWhichLix);
-        if (i.isSomeAssignment) {
-            // never assert based on the content in Ply, which may have
-            // been a maleficious attack from a third party, carrying a lix ID
-            // that is not valid. If bogus data comes, do nothing.
-            if (i.toWhichLix < 0 || i.toWhichLix >= tribe.lixlen)
-                return;
-            Lixxie lixxie = tribe.lixvec[i.toWhichLix];
-            assert (lixxie);
-            if (lixxie.priorityForNewAc(i.skill) <= 1
-                || ! tribe.canStillUse(i.skill)
-                || (lixxie.facingLeft  && i.action == RepAc.ASSIGN_RIGHT)
-                || (lixxie.facingRight && i.action == RepAc.ASSIGN_LEFT))
-                return;
-            // Physics
-            ++(tribe.skillsUsed[i.skill]);
-            OutsideWorld ow = makeGypsyWagon(pa);
-            lixxie.assignManually(&ow, i.skill);
+        immutable upd = _cs.update;
+        Lixxie lixxie = tribe.lixvec[i.toWhichLix];
+        assert (lixxie !is null);
+        if (lixxie.priorityForNewAc(i.skill) <= 1
+            || ! tribe.canStillUse(i.skill)
+            || (lixxie.facingLeft  && i.action == RepAc.ASSIGN_RIGHT)
+            || (lixxie.facingRight && i.action == RepAc.ASSIGN_LEFT))
+            return;
+        // Physics
+        ++(tribe.skillsUsed[i.skill]);
+        OutsideWorld ow = makeGypsyWagon(pa, nuking.goalsAreOpen);
+        lixxie.assignManually(&ow, i.skill);
 
-            _effect.addSound(upd, pa, Sound.ASSIGN);
-            _effect.addArrow(upd, pa, lixxie.foot, i.skill);
-        }
-        else if (i.action == RepAc.NUKE) {
-            tribe.recordNukePressedAt(upd);
-            _effect.addSound(upd, pa, Sound.NUKE);
-        }
+        _effect.addSound(upd, pa, Sound.ASSIGN);
+        _effect.addArrow(upd, pa, lixxie.foot, i.skill);
     }
 
-    void spawnLixxiesFromHatches()
+    /*
+     * Step 4: Advance remaining physics. All input has been applied.
+     * As many physics aspects as possible should be in this step.
+     */
+    void performMostPhysics(in Nuking nuking)
+    {
+        spawnLixxiesFromHatches(nuking);
+        updateLixxies(nuking);
+        finalizePhyuAnimateGadgets();
+        _effect.announceOvertime(nuking);
+    }
+
+///////////////////////////////////////////////////////////////////////////////
+// Step 4 /////////////////////////////////////////////////////////////////////
+
+    lix.OutsideWorld makeGypsyWagon(
+        in Passport pa, in bool goalsAreOpen
+    ) pure nothrow @nogc
+    {
+        return OutsideWorld(_cs, _physicsDrawer, _effect, pa, goalsAreOpen);
+    }
+
+    void spawnLixxiesFromHatches(in Nuking nuking)
     {
         foreach (int teamNumber, Tribe tribe; _cs.tribes) {
             if (tribe.phyuOfNextSpawn() != _cs.update) {
@@ -158,28 +247,14 @@ private:
             // the only interesting part of OutsideWorld right now is the
             // lookupmap inside the current state. Everything else will be
             // passed anew when the lix are updated.
-            auto ow = makeGypsyWagon(Passport(tribe.style, tribe.lixlen));
+            auto ow = makeGypsyWagon(
+                Passport(tribe.style, tribe.lixlen),
+                nuking.goalsAreOpen);
             tribe.spawnLixxie(&ow);
         }
     }
 
-    void updateNuke()
-    {
-        if (! _cs.nukeIsAssigningExploders)
-            return;
-        foreach (tribe; _cs.tribes) {
-            tribe.stopSpawningAnyMoreLixBecauseWeAreNuking();
-            foreach (int lixID, lix; tribe.lixvec.enumerate!int) {
-                if (! lix.healthy || lix.ploderTimer > 0)
-                    continue;
-                OutsideWorld ow = makeGypsyWagon(Passport(tribe.style, lixID));
-                lix.assignManually(&ow, Ac.exploder);
-                break; // only one lix per tribe is hit by the nuke per update
-            }
-        }
-    }
-
-    void updateLixxies()
+    void updateLixxies(in Nuking nuking)
     {
         version (tharsisprofiling)
             Zone zone = Zone(profiler, "PhysSeq updateLixxies()");
@@ -204,13 +279,15 @@ private:
             foreachLix((Tribe tribe, in int lixID, Lixxie lixxie) {
                 lixxie.setNoEncountersNoBlockerFlags();
                 if (lixxie.ploderTimer != 0) {
-                    auto ow = makeGypsyWagon(Passport(tribe.style, lixID));
+                    auto ow = makeGypsyWagon(Passport(tribe.style, lixID),
+                        nuking.goalsAreOpen);
                     handlePloderTimer(lixxie, &ow);
                 }
                 if (lixxie.updateOrder == PhyuOrder.flinger) {
                     lixxie.marked = true;
                     anyFlingers = true;
-                    auto ow = makeGypsyWagon(Passport(tribe.style, lixID));
+                    auto ow = makeGypsyWagon(Passport(tribe.style, lixID),
+                        nuking.goalsAreOpen);
                     lixxie.perform(&ow);
                 }
                 else
@@ -223,7 +300,8 @@ private:
             if (! anyFlingers)
                 return;
             foreachLix((Tribe tribe, in int lixID, Lixxie lixxie) {
-                auto ow = makeGypsyWagon(Passport(tribe.style, lixID));
+                auto ow = makeGypsyWagon(Passport(tribe.style, lixID),
+                    nuking.goalsAreOpen);
                 lixxie.applyFlingXY(&ow);
             });
         }
@@ -233,7 +311,8 @@ private:
             foreachLix((Tribe tribe, in int lixID, Lixxie lixxie) {
                 if (! lixxie.marked && lixxie.updateOrder == uo) {
                     lixxie.marked = true;
-                    auto ow = makeGypsyWagon(Passport(tribe.style, lixID));
+                    auto ow = makeGypsyWagon(Passport(tribe.style, lixID),
+                        nuking.goalsAreOpen);
                     lixxie.perform(&ow);
                 }
             });
