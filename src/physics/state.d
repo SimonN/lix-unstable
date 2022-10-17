@@ -39,6 +39,20 @@ public:
     Phyu update;
     int overtimeAtStartInPhyus;
 
+    /*
+     * In 0.9 and older, we computed goalsAreOpen from the tribes' nukes states
+     * just-in-time, which led to the Red Will Win bug where the red player
+     * would score, then all goals would immediately close before other tribes'
+     * lix would be able to exit during the same phyu.
+     *
+     * In 0.10, we computed it once at the start of the model's advance()
+     * and passed it around. It really behaves like a global w.r.t. physics.
+     *
+     * From 0.11 on, we're honest enough to just make it a public bool.
+     * Only advance() should toggle it.
+     */
+    bool goalsAreOpen = true;
+
     Tribe[Style] tribes; // update order is garden, red, orange, yellow, ...
 
     Hatch[] hatches;
@@ -147,6 +161,7 @@ private:
     {
         overtimeAtStartInPhyus = rhs.overtimeAtStartInPhyus;
         update   = rhs.update;
+        goalsAreOpen = rhs.goalsAreOpen;
         hatches  = basics.help.clone(rhs.hatches);
         goals    = basics.help.clone(rhs.goals);
         waters   = basics.help.clone(rhs.waters);
