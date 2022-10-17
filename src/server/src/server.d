@@ -27,7 +27,8 @@ enum minAcceptedOnServer = Version(0, 9, 0);
 bool acceptedOnServer(Version ofClient) pure nothrow @safe @nogc
 {
     return ofClient.compatibleWith(Version(0, 9, 0))
-        || ofClient.compatibleWith(Version(0, 10, 0));
+        || ofClient.compatibleWith(Version(0, 10, 0))
+        || ofClient.compatibleWith(Version(0, 11, 0));
 }
 
 static assert(minAcceptedOnServer.acceptedOnServer);
