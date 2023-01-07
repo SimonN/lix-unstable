@@ -1,0 +1,87 @@
+$BUILT 2023-01-07 18:31:09
+$AUTHOR Dragonslover
+$ENGLISH Private Room Without Room
+
+#INTENDED_NUMBER_OF_PLAYERS 1
+#SIZE_X 640
+#SIZE_Y 400
+
+#INITIAL 25
+#REQUIRED 25
+#SPAWN_INTERVAL 30
+
+#CLIMBER 1
+#FLOATER 1
+#BUILDER 2
+#BASHER 1
+#EXPLODER2 0
+
+:amanda/forest/hatch.H: 48 0
+
+:proxima/tile/goal.G: 64 296
+
+:simon/water.W: 176 360
+:simon/water.W: 224 360
+:simon/water.W: 272 360
+:simon/water.W: 320 360
+:simon/water.W: 368 360
+:simon/water.W: 416 360
+:simon/water.W: 464 360
+:simon/water.W: 512 360
+:simon/water.W: 560 360
+:simon/water.W: 608 360
+
+:amanda/forest/leaves_05: 80 84
+:amanda/forest/stone_01: -8 80 fr
+:amanda/forest/stone_00: 104 152
+:amanda/forest/stone_01: 88 96 r
+:amanda/forest/stone_01: 40 144 rr
+:amanda/forest/stone_01: -56 8 rr
+:amanda/forest/moss_00: 16 80
+:amanda/forest/moss_00: 112 96
+:amanda/forest/moss_00: 160 104
+:amanda/forest/stone_01: -40 -64 rr
+:amanda/forest/bark_03: -16 216
+:amanda/forest/stone_01: -16 128 rr
+:amanda/forest/stone_00: 152 144 frr
+:amanda/forest/stone_00: 112 176 frr
+:amanda/forest/stone_00: 72 200 frr
+:amanda/forest/stone_02: 56 216 d
+:amanda/forest/stone_02: 24 208 rd
+:amanda/forest/bark_03: 288 272 r
+:amanda/forest/stone_01: 0 336 fr
+:amanda/forest/stone_00: 243 267 d
+:amanda/forest/stone_02: 96 344
+:amanda/forest/stone_01: 160 96 r
+:amanda/forest/moss_00: 198 102
+:amanda/forest/bark_06: 226 215 f
+:amanda/forest/bark_06: 202 244 f
+:amanda/forest/stone_01: 144 248 r
+:amanda/forest/bark_02: 494 206 r
+:amanda/forest/bark_03: 464 272 r
+:amanda/forest/stone_00: 376 184
+:amanda/forest/stone_02: 384 184 r
+:geoo/steel/32x64o.S: 400 128
+:geoo/steel/32x16o.S: 408 256 d
+:geoo/steel/32x64o.S: 400 64
+:amanda/forest/bark_03: 552 88 rr
+:amanda/forest/leaves_05: 536 8
+:amanda/forest/leaves_03: 530 40
+:geoo/steel/32x16o.S: 536 268
+:amanda/forest/stone_02: 428 184 r
+:geoo/steel/32x16o.S: 464 192
+:amanda/forest/bark_01: 388 244 rd
+:amanda/forest/bark_01: 414 250 rd
+:amanda/forest/leaves_03: 502 22
+:amanda/forest/leaves_05: 576 110
+:amanda/forest/leaves_03: 540 -10
+:geoo/steel/16x32o.S: 496 200
+:amanda/forest/stone_00: 350 202 r
+:geoo/steel/16x32o.S: 496 232
+:amanda/forest/stone_00: 248 128 rrrd
+:amanda/forest/stone_00: 216 152 rrrd
+:geoo/steel/32x16o.S: 400 48
+:geoo/steel/32x16o.S: 345 195 d
+:geoo/steel/32x16o.S: 352 194 d
+:geoo/steel/32x16o.S: 342 196 d
+:amanda/forest/bark_00: 268 195 rd
