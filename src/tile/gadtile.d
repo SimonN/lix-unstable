@@ -48,6 +48,7 @@ public:
         WATER, // subtype true = fire
         FLINGTRIG, // subtype true = always same xdir
         FLINGPERM, // subtype true = always same xdir
+        prePlacedNeutral,
         MAX
     }
 
@@ -139,6 +140,10 @@ private:
                 _triggerY = 0;
                 triggerYl = cb.yl;
             }
+            break;
+        case Type.prePlacedNeutral:
+            _triggerX = cb.xl / 2;
+            _triggerY = cb.yl - 2;
             break;
         default:
             break;

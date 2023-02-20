@@ -50,6 +50,7 @@ immutable preExtGoal                 = 'G';
 immutable preExtTrap                 = 'T';
 immutable preExtFire                 = 'F';
 immutable preExtWater                = 'W';
+immutable preExtPreNeu               = 'P';
 immutable preExtHiddenFile           = 'X';
 
 // keys for saving/loading level files
