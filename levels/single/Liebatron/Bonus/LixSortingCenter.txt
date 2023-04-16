@@ -1,0 +1,60 @@
+$BUILT 2021-07-18 17:41:40
+$AUTHOR Liebatron
+$ENGLISH Lix Sorting Center
+
+#INTENDED_NUMBER_OF_PLAYERS 1
+#SIZE_X 512
+#SIZE_Y 952
+#BACKGROUND_RED 0
+#BACKGROUND_GREEN 112
+#BACKGROUND_BLUE 144
+
+#INITIAL 400
+#REQUIRED 400
+#SPAWN_INTERVAL 2
+
+#EXPLODER2 0
+
+:geoo/construction/Hatch.H: 480 49
+:geoo/construction/Hatch.H: 480 175
+:geoo/construction/Hatch.H: 480 113
+:geoo/construction/Hatch.H: 480 239
+
+:matt/marble/Goal.G: 128 895
+
+:raymanni/lab/launcher_left.T: 480 81
+:raymanni/lab/launcher_right.T: 0 201
+:raymanni/lab/launcher_left.T: 480 321
+:raymanni/lab/launcher_right.T: 0 441
+:raymanni/lab/launcher_left.T: 480 560
+:raymanni/lab/launcher_left.T: 480 783
+:raymanni/lab/launcher_right.T: 0 664
+:raymanni/lab/launcher_left.T: 480 144
+:raymanni/lab/launcher_right.T: 0 264
+:raymanni/lab/launcher_left.T: 480 384
+:raymanni/lab/launcher_right.T: 0 504
+:raymanni/lab/launcher_left.T: 480 623
+:raymanni/lab/launcher_left.T: 480 846
+:raymanni/lab/launcher_right.T: 0 727
+:raymanni/lab/launcher_left.T: 480 207
+:raymanni/lab/launcher_right.T: 0 327
+:raymanni/lab/launcher_left.T: 480 447
+:raymanni/lab/launcher_right.T: 0 567
+:raymanni/lab/launcher_left.T: 480 686
+:raymanni/lab/launcher_left.T: 480 270
+:raymanni/lab/launcher_right.T: 0 390
+:raymanni/lab/launcher_left.T: 480 510
+:raymanni/lab/launcher_right.T: 0 630
+:raymanni/lab/launcher_left.T: 480 749
+:raymanni/lab/launcher_right.T: 0 783
+:raymanni/lab/launcher_left.T: 480 902
+
+:geoo/steel/64x32o.S: 64 815
+:geoo/steel/64x32o.S: 0 815
+:geoo/steel/64x32o.S: 128 879
+:geoo/steel/64x32o.S: 64 879
+:geoo/steel/64x32o.S: 0 879 r
+:geoo/steel/64x32o.S: 128 815
+:geoo/steel/64x32o.S: 64 943
+:geoo/steel/64x32o.S: 0 943
+:geoo/steel/64x32o.S: 128 943

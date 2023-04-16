@@ -1,0 +1,73 @@
+$BUILT 2020-11-26 00:06:25
+$AUTHOR Liebatron
+$ENGLISH Promontory Point
+
+#INTENDED_NUMBER_OF_PLAYERS 1
+#SIZE_X 768
+#SIZE_Y 400
+#BACKGROUND_RED 96
+#BACKGROUND_GREEN 208
+#BACKGROUND_BLUE 240
+
+#INITIAL 40
+#REQUIRED 38
+#SPAWN_INTERVAL 32
+
+#PLATFORMER 1
+#BATTER 2
+#EXPLODER2 0
+
+:geoo/construction/Hatch.H: 0 303
+
+:geoo/construction/Goal2.G: 637 286
+
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x32: 0 363
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x32: 128 363
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x32: 256 363
+$BEGIN_TILE_GROUP 0
+:Liebatron/Chicago/modular/track/track_3: 0 0
+:Liebatron/Chicago/modular/track/track_3: 40 0
+:Liebatron/Chicago/modular/track/track_3: 80 0
+:Liebatron/Chicago/modular/track/track_3: 120 0
+:Liebatron/Chicago/modular/track/track_3: 160 0
+:Liebatron/Chicago/modular/track/track_3: 200 0
+:Liebatron/Chicago/modular/track/track_3: 240 0
+:Liebatron/Chicago/modular/track/track_3: 280 0
+:Liebatron/Chicago/modular/track/track_3: 320 0
+:Liebatron/Chicago/modular/track/track_3: 360 0
+$END_TILE_GROUP
+:Group-0: -8 359
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x32: 0 368
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x32: 128 368
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x32: 256 368
+:Liebatron/Chicago/block/grass/grass_hi_128x: 0 360
+:Liebatron/Chicago/block/grass/grass_hi_128x: 223 360
+:Liebatron/Chicago/block/grass/grass_hi_96x: 128 361
+:Liebatron/Chicago/block/grass/grass_hi_64x: 320 361
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x32: 384 363
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x32: 512 363
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x32: 640 363
+:Group-0: 376 359
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x32: 384 368
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x32: 512 368
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x32: 640 368
+:Liebatron/Chicago/block/grass/grass_hi_128x: 384 360
+:Liebatron/Chicago/block/grass/grass_hi_128x: 607 360
+:Liebatron/Chicago/block/grass/grass_hi_96x: 512 361
+:Liebatron/Chicago/block/grass/grass_hi_64x: 704 361
+:Liebatron/Chicago/railcar/american_4-4-0_4: 280 333
+:Liebatron/Chicago/railcar/american_4-4-0_7: 384 333 frr
+:Liebatron/Chicago/railcar/wood_passenger_car_3: 206 334
+:Liebatron/Chicago/railcar/wood_passenger_car_3: 132 334
+:Liebatron/Chicago/railcar/boxcar_red_3: 58 334
+:Liebatron/Chicago/railcar/boxcar_brown_1: -16 334
+:Liebatron/Chicago/railcar/wood_passenger_car_2: 484 334
+:Liebatron/Chicago/railcar/wood_passenger_car_2: 558 334
+:Liebatron/Chicago/railcar/flatcar_1: 632 333
+:Liebatron/Chicago/railcar/boxcar_brown_1: 706 334
+:Liebatron/Chicago/block/grass/grass_hi_128x: 0 367 rr
+:Liebatron/Chicago/block/grass/grass_hi_128x: 127 367 rr
+:Liebatron/Chicago/block/grass/grass_hi_128x: 255 367 rr
+:Liebatron/Chicago/block/grass/grass_hi_128x: 383 367 rr
+:Liebatron/Chicago/block/grass/grass_hi_128x: 512 367 rr
+:Liebatron/Chicago/block/grass/grass_hi_128x: 640 367 rr

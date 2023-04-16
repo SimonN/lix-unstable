@@ -1,0 +1,125 @@
+$BUILT 2021-05-18 09:02:36
+$AUTHOR Liebatron
+$ENGLISH Cities At Night
+
+#INTENDED_NUMBER_OF_PLAYERS 1
+#SIZE_X 640
+#SIZE_Y 400
+#BACKGROUND_RED 24
+#BACKGROUND_GREEN 12
+#BACKGROUND_BLUE 52
+
+#INITIAL 30
+#REQUIRED 20
+#SPAWN_INTERVAL 32
+
+#CLIMBER 5
+#EXPLODER 1
+#BLOCKER 2
+#BUILDER 3
+#BASHER 5
+#MINER 1
+#DIGGER 3
+#JUMPER 2
+#BATTER 1
+#CUBER 4
+
+:Liebatron/Chicago/active/Hatch_CTA_2400_car_1.H: -26 363
+
+:Liebatron/Chicago/active/Goal_CTA_2400_car_2.G: 527 307
+
+:Liebatron/Chicago/modular/sign/sign_lemfest_1: 138 229
+:Liebatron/Chicago/modular/track/signal_tower_1: 380 285
+:Liebatron/Chicago/building/building_highrise_1: 125 260
+:Liebatron/Chicago/modular/track/track_1: -1 339
+:Liebatron/Chicago/railcar/CTA_2400_car_1: 87 313
+:Liebatron/Chicago/railcar/CTA_2400_car_1: 175 313
+:Liebatron/Chicago/railcar/CTA_2400_car_1: 263 313
+:Liebatron/Chicago/modular/track/platform_section_wood_96x48: -1 349
+:Liebatron/Chicago/modular/track/platform_section_wood_96x48: 63 349
+:Liebatron/Chicago/modular/track/platform_section_wood_96x48: 127 349
+:Liebatron/Chicago/modular/track/platform_section_wood_96x48: 191 349
+:Liebatron/Chicago/modular/track/platform_section_wood_96x48: 255 349
+:Liebatron/Chicago/modular/track/signal_tower_base_1: 379 346
+:Liebatron/Chicago/modular/track/platform_section_wood_96x48: 319 349
+:Liebatron/Chicago/modular/track/platform_section_wood_96x48: 383 349
+:Liebatron/Chicago/modular/track/track_1: 39 339
+:Liebatron/Chicago/modular/track/track_1: 78 339
+:Liebatron/Chicago/modular/track/track_1: 118 339
+:Liebatron/Chicago/modular/track/track_1: 158 339
+:Liebatron/Chicago/modular/track/track_1: 198 339
+:Liebatron/Chicago/modular/track/track_1: 237 339
+:Liebatron/Chicago/modular/track/track_1: 277 339
+:Liebatron/Chicago/modular/track/track_1: 317 339
+:Liebatron/Chicago/modular/track/track_1: 357 339
+:Liebatron/Chicago/modular/track/track_1: 396 339
+:Liebatron/Chicago/modular/track/track_1: 436 339
+:Liebatron/Chicago/modular/track/track_1: 476 339
+:Liebatron/Chicago/modular/track/track_1: 516 339
+:Liebatron/Chicago/modular/track/track_1: 555 339
+:Liebatron/Chicago/modular/track/track_1: 595 339
+:Liebatron/Chicago/modular/track/track_1: 635 339
+:Liebatron/Chicago/modular/track/platform_section_wood_96x48: 447 349
+:Liebatron/Chicago/modular/track/platform_section_wood_96x48: 511 349
+:Liebatron/Chicago/modular/track/platform_section_wood_96x48: 575 349
+:Liebatron/Chicago/railcar/CTA_2400_car_1: 433 313
+:Liebatron/Chicago/small_detail/mailbox_1: 225 382
+:Liebatron/Chicago/small_detail/mechanical_box_1: 625 325
+:Liebatron/Chicago/small_detail/signal_box_2: 366 330
+:Liebatron/Chicago/sky/moon_1: 417 89
+:Liebatron/Chicago/sky/star_2: 141 57
+:Liebatron/Chicago/sky/star_3: 245 79
+:Liebatron/Chicago/sky/star_3: 319 136
+:Liebatron/Chicago/sky/star_3: 102 132
+:Liebatron/Chicago/sky/star_3: 114 137
+:Liebatron/Chicago/sky/star_3: 528 133
+:Liebatron/Chicago/sky/star_3: 562 54
+:Liebatron/Chicago/sky/star_3: 610 125
+:Liebatron/Chicago/sky/star_2: 316 49
+:Liebatron/Chicago/sky/star_2: 220 121
+:Liebatron/Chicago/sky/star_2: 314 215
+:Liebatron/Chicago/sky/star_2: 451 208
+:Liebatron/Chicago/sky/star_2: 539 191
+:Liebatron/Chicago/sky/star_2: 600 80
+:Liebatron/Chicago/sky/star_2: 46 83
+:Liebatron/Chicago/sky/star_2: 24 138
+:Liebatron/Chicago/sky/star_2: 226 32
+:Liebatron/Chicago/sky/star_2: 397 132
+:Liebatron/Chicago/sky/star_3: 203 160
+:Liebatron/Chicago/sky/star_3: 156 195
+:Liebatron/Chicago/sky/star_3: 58 30
+:Liebatron/Chicago/sky/star_3: 21 185
+:Liebatron/Chicago/sky/star_3: 86 172
+:Liebatron/Chicago/sky/star_3: 63 76
+:Liebatron/Chicago/sky/star_3: 103 85
+:Liebatron/Chicago/sky/star_2: 170 169
+:Liebatron/Chicago/sky/star_2: 95 146
+:Liebatron/Chicago/sky/star_2: 544 123
+:Liebatron/Chicago/sky/star_2: 592 147
+:Liebatron/Chicago/sky/star_2: 381 19
+:Liebatron/Chicago/sky/star_2: 413 32
+:Liebatron/Chicago/sky/star_2: 525 18
+:Liebatron/Chicago/sky/star_2: 336 194
+:Liebatron/Chicago/sky/star_2: 369 203
+:Liebatron/Chicago/sky/star_2: 504 251
+:Liebatron/Chicago/sky/star_2: 257 130
+:Liebatron/Chicago/sky/star_2: 13 35
+:Liebatron/Chicago/sky/star_3: 374 185
+:Liebatron/Chicago/railcar/CTA_2400_car_1: -1 313
+:Liebatron/Chicago/modular/station/rail_station_plain_end_1: 0 293 frr
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x4: 0 396
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x4: 125 396
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x4: 245 396
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x4: 373 396
+:Liebatron/Chicago/block/grass/grass_128x: 327 392
+:Liebatron/Chicago/block/grass/grass_64x: 286 392
+:Liebatron/Chicago/block/grass/grass_24x: 288 392
+:Liebatron/Chicago/block/grass/grass_32x: 256 392
+:Liebatron/Chicago/block/grass/grass_64x: 577 392
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x4: 501 396
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x4: 563 396
+:Liebatron/Chicago/block/grass/grass_128x: 450 392
+:Liebatron/Chicago/block/grass/grass_54x_2: 204 392
+:Liebatron/Chicago/block/grass/grass_128x: 76 392
+:Liebatron/Chicago/block/grass/grass_96x: -18 392
+:Liebatron/Chicago/modular/sign/sign_board_here_1: 571 277

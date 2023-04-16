@@ -1,0 +1,223 @@
+$BUILT 2020-12-15 06:07:24
+$AUTHOR Liebatron
+$ENGLISH For Crying Out Loud
+
+#INTENDED_NUMBER_OF_PLAYERS 1
+#SIZE_X 640
+#SIZE_Y 400
+#BACKGROUND_RED 160
+#BACKGROUND_GREEN 176
+#BACKGROUND_BLUE 224
+
+#INITIAL 20
+#REQUIRED 17
+#SPAWN_INTERVAL 32
+
+#WALKER 1
+#CLIMBER 1
+#EXPLODER2 3
+#BUILDER 5
+#MINER 1
+#JUMPER 2
+
+:geoo/construction/Hatch.H: 26 149
+
+:matt/marble/Goal.G: 552 69
+
+:raymanni/lab/launcher_right.T: 117 85
+
+:raymanni/gore/bone_1: 540 149
+:raymanni/gore/bone_1: 129 149
+$BEGIN_TILE_GROUP 0
+:geoo/abstract/pipes/central2: 8 0
+:geoo/abstract/pipes/endr2: 40 0
+:geoo/abstract/pipes/endr2: 0 0 frr
+$END_TILE_GROUP
+$BEGIN_TILE_GROUP 1
+:Group-0: 137 12
+:matt/winter/06: 128 0 r
+:Group-0: 201 12
+:matt/winter/06: 192 0 r
+:Group-0: 265 12
+:matt/winter/06: 256 0 r
+:Group-0: 329 12
+:matt/winter/06: 320 0 r
+:Group-0: 393 12
+:matt/winter/06: 384 0 r
+:Group-0: 457 12
+:matt/winter/06: 448 0 r
+:Group-0: 521 12
+:matt/winter/06: 512 0 r
+:Group-0: 585 12
+:matt/winter/06: 576 0 r
+:Group-0: 9 12
+:matt/winter/06: 0 0 r
+:Group-0: 73 12
+:matt/winter/06: 64 0 r
+$END_TILE_GROUP
+:Group-1: 0 0
+:matt/winter/18: 547 -19
+:matt/winter/10: -75 -89
+:matt/winter/05: 607 -9 rr
+:matt/winter/02: -16 -13
+:matt/winter/15: 408 378
+:raymanni/gore/bone_1: 525 352
+:matt/winter/03: 475 374
+:matt/winter/03: 9 370
+:geoo/steel/16x32o.S: 0 352
+:geoo/steel/16x32o.S: 0 320
+:geoo/steel/16x32o.S: 0 288
+:Liebatron/Chicago/small_detail/fluid_tank_1: 43 354
+:Liebatron/Chicago/small_detail/fluid_tank_1: 24 354
+:Liebatron/Chicago/small_detail/fluid_tank_1: 83 354
+:Liebatron/Chicago/block/light_grey/brick_quad_wide_128x16: 0 384
+:Liebatron/Chicago/block/light_grey/brick_quad_wide_128x16: 128 384
+:Liebatron/Chicago/block/light_grey/brick_quad_wide_128x16: 256 384
+:Liebatron/Chicago/block/light_grey/brick_quad_wide_128x16: 384 384
+:Liebatron/Chicago/block/light_grey/brick_quad_wide_128x16: 512 384
+:geoo/steel/16x32o.S: 0 256
+:geoo/steel/16x32o.S: 0 224
+:geoo/steel/16x32o.S: 0 192
+:geoo/steel/16x32o.S: 0 160
+:geoo/steel/16x32o.S: 0 128
+:geoo/steel/16x32o.S: 0 96
+:geoo/steel/16x32o.S: 0 64
+:geoo/steel/16x32o.S: 0 32
+:geoo/steel/16x32o.S: 0 0
+:geoo/steel/16x32o.S: 624 352
+:geoo/steel/16x32o.S: 624 320
+:geoo/steel/16x32o.S: 624 288
+:geoo/steel/16x32o.S: 624 256
+:geoo/steel/16x32o.S: 624 224
+:geoo/steel/16x32o.S: 624 192
+:geoo/steel/16x32o.S: 624 160
+:geoo/steel/16x32o.S: 624 128
+:geoo/steel/16x32o.S: 624 96
+:geoo/steel/16x32o.S: 624 64
+:geoo/steel/16x32o.S: 624 32
+:geoo/steel/16x32o.S: 624 0
+:Liebatron/Chicago/modular/fence/fence_chainlink_1: 16 310
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 16 308 r
+:Liebatron/Chicago/modular/fence/fence_chainlink_1: 64 310
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 81 308 r
+:Liebatron/Chicago/modular/fence/fence_chainlink_1: 96 310
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 41 308 r
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 145 320
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 145 352
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 145 288
+:Liebatron/Chicago/modular/fence/fence_chainlink_1: 16 246
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 16 244 r
+:Liebatron/Chicago/modular/fence/fence_chainlink_1: 64 246
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 81 244 r
+:Liebatron/Chicago/modular/fence/fence_chainlink_1: 96 246
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 41 244 r
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 145 256
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 145 224
+:Liebatron/Chicago/modular/fence/fence_chainlink_1: 16 183
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 16 181 r
+:Liebatron/Chicago/modular/fence/fence_chainlink_1: 64 183
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 81 181 r
+:Liebatron/Chicago/modular/fence/fence_chainlink_1: 96 183
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 41 181 r
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 145 160
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 145 192
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 145 128
+:Liebatron/Chicago/modular/fence/fence_chainlink_1: 16 119
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 16 117 r
+:Liebatron/Chicago/modular/fence/fence_chainlink_1: 64 119
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 81 117 r
+:Liebatron/Chicago/modular/fence/fence_chainlink_1: 96 119
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 41 117 r
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 145 117
+:Liebatron/Chicago/modular/fence/fence_chainlink_1: 575 310 frr
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 560 308 fr
+:Liebatron/Chicago/modular/fence/fence_chainlink_1: 527 310 frr
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 495 308 fr
+:Liebatron/Chicago/modular/fence/fence_chainlink_1: 495 310 frr
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 535 308 fr
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 491 320 frr
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 491 352 frr
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 491 288 frr
+:Liebatron/Chicago/modular/fence/fence_chainlink_1: 575 246 frr
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 560 244 fr
+:Liebatron/Chicago/modular/fence/fence_chainlink_1: 527 246 frr
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 495 244 fr
+:Liebatron/Chicago/modular/fence/fence_chainlink_1: 495 246 frr
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 535 244 fr
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 491 256 frr
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 491 224 frr
+:Liebatron/Chicago/modular/fence/fence_chainlink_1: 575 183 frr
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 560 181 fr
+:Liebatron/Chicago/modular/fence/fence_chainlink_1: 527 183 frr
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 495 181 fr
+:Liebatron/Chicago/modular/fence/fence_chainlink_1: 495 183 frr
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 535 181 fr
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 491 160 frr
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 491 192 frr
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 491 128 frr
+:Liebatron/Chicago/modular/fence/fence_chainlink_1: 575 119 frr
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 560 117 fr
+:Liebatron/Chicago/modular/fence/fence_chainlink_1: 527 119 frr
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 495 117 fr
+:Liebatron/Chicago/modular/fence/fence_chainlink_1: 495 119 frr
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 535 117 fr
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 491 96 frr
+$BEGIN_TILE_GROUP 2
+:matt/underworld/00: 3 2
+:matt/underworld/thinplatform64: 6 0
+:matt/underworld/thinplatform16: 0 0
+$END_TILE_GROUP
+:Group-2: 70 290 frr
+:Group-2: 22 290
+:Group-2: 60 272
+:Group-2: 29 226
+:Group-2: 70 163 frr
+:matt/winter/15: 22 -21
+:matt/winter/05: 40 -57 rrr
+:matt/winter/03: 251 -26
+:matt/winter/16: 370 -114
+:matt/winter/11: 560 -50
+:matt/winter/16: 461 -112
+:raymanni/gore/bone_1: 604 276
+:raymanni/gore/bone_1: 587 276
+:raymanni/gore/bone_1: 565 276
+:raymanni/gore/bone_1: 547 276
+:raymanni/gore/bone_1: 575 276
+:raymanni/gore/bone_1: 540 276
+:raymanni/gore/bone_1: 522 276
+:raymanni/gore/bone_1: 499 276
+:simon/oriental/fat_end: 527 276
+:simon/oriental/fat_end: 551 276
+:simon/oriental/fat_end: 569 276
+:simon/oriental/fat_end: 594 276
+:raymanni/gore/bone_1: 576 276
+$BEGIN_TILE_GROUP 3
+:matt/underworld/01: 3 2
+:matt/underworld/thinplatform64: 6 16
+:matt/underworld/thinplatform8: 0 16
+:matt/underworld/thinplatform64: 6 0
+:matt/underworld/thinplatform8: 0 0
+$END_TILE_GROUP
+:Group-3: 497 210
+:raymanni/gore/bone_1: 507 352
+:Group-2: 498 366 frr
+:matt/bricks/18: 575 212
+:matt/bricks/18: 591 212
+:matt/bricks/18: 602 212
+:matt/bricks/18: 568 212
+:matt/bricks/18: 547 212
+:matt/bricks/18: 533 212
+:matt/bricks/18: 506 212
+:raymanni/gore/bone_1: 523 212
+:raymanni/gore/bone_1: 583 212
+:matt/bricks/18: 574 212
+:Group-3: 549 147
+:matt/bricks/18: 570 352
+:matt/bricks/18: 589 352
+:matt/bricks/18: 605 352
+:raymanni/gore/bone_1: 535 352
+:geoo/construction/pillar_32: 101 352
+:geoo/construction/pillar_top_shaded: 101 336
+:geoo/construction/pillar_32: 61 352
+:geoo/construction/pillar_top_shaded: 61 336
+:raymanni/gore/bone_1: 524 149

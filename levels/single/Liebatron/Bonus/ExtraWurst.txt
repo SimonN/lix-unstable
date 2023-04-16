@@ -1,0 +1,123 @@
+$BUILT 2021-07-18 23:27:41
+$AUTHOR Liebatron
+$ENGLISH Sie brauchen eine Extrawurst
+
+#INTENDED_NUMBER_OF_PLAYERS 1
+#SIZE_X 672
+#SIZE_Y 384
+
+#INITIAL 30
+#REQUIRED 28
+#SPAWN_INTERVAL 32
+
+#WALKER 1
+#CLIMBER 1
+#BLOCKER 2
+#PLATFORMER 7
+#BASHER 4
+#DIGGER 1
+#CUBER 1
+#EXPLODER2 0
+
+:geoo/construction/Hatch.H: 48 234
+
+:simon/tapir/goal.G: 559 218
+
+:raymanni/gore/eater.T: 378 202
+
+:geoo/sandstone/torch.F: 228 217
+:geoo/sandstone/torch.F: 69 217
+:geoo/sandstone/torch.F: 232 94
+:geoo/sandstone/torch.F: 259 93
+:geoo/sandstone/torch.F: 268 93
+:geoo/sandstone/torch.F: 241 94
+:geoo/sandstone/torch.F: 396 94
+:geoo/sandstone/torch.F: 423 93
+:geoo/sandstone/torch.F: 432 93
+:geoo/sandstone/torch.F: 405 94
+:geoo/sandstone/torch.F: 560 94
+:geoo/sandstone/torch.F: 587 93
+:geoo/sandstone/torch.F: 596 93
+:geoo/sandstone/torch.F: 569 94
+:geoo/sandstone/torch.F: 40 94
+:geoo/sandstone/torch.F: 67 93
+:geoo/sandstone/torch.F: 76 93
+:geoo/sandstone/torch.F: 49 94
+
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 73 63
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 265 63
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 429 63
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 593 63
+:Liebatron/Chicago/small_detail/potted_hedge_1: 212 258
+:Liebatron/Chicago/block/light_grey/brick_quad_wide_128x64: 0 320
+:Liebatron/Chicago/block/light_grey/brick_quad_wide_128x64: 128 320
+:Liebatron/Chicago/block/light_grey/brick_quad_wide_128x64: 256 320
+:Liebatron/Chicago/block/light_grey/brick_quad_wide_128x64: 384 320
+:Liebatron/Chicago/block/light_grey/brick_quad_wide_128x64: 512 320
+:Liebatron/Chicago/modular/track/platform_support_wood_1: 231 272
+:Liebatron/Chicago/modular/building/building_highrise_roof_3: 205 266 rr
+:Liebatron/Chicago/modular/track/platform_support_wood_1: 397 272
+:Liebatron/Chicago/modular/building/building_highrise_roof_3: 371 266 rr
+:Liebatron/Chicago/modular/track/platform_support_wood_1: 72 272
+:Liebatron/Chicago/modular/building/building_highrise_roof_3: 46 266 rr
+$BEGIN_TILE_GROUP 0
+:Liebatron/Chicago/modular/track/platform_top_wood_1: 4 38
+:Liebatron/Chicago/modular/track/platform_column_wood_x32: 13 32
+:Liebatron/Chicago/modular/track/platform_column_wood_x32: 0 32 r
+:Liebatron/Chicago/modular/track/platform_column_wood_x32: 0 0
+:Liebatron/Chicago/modular/track/platform_top_wood_1: 4 54 f
+$END_TILE_GROUP
+:Group-0: 344 256
+:Group-0: 444 256 frr
+:Group-0: 267 256 frr
+:Group-0: 182 256
+:Group-0: 28 256
+:Group-0: 113 256 frr
+:Liebatron/Chicago/block/dark_grey/brick_bevel_8x: 243 258
+:Liebatron/Chicago/block/dark_grey/brick_bevel_8x: 243 250
+:Liebatron/Chicago/block/dark_grey/brick_bevel_8x: 243 242
+:Liebatron/Chicago/block/dark_grey/brick_bevel_8x: 84 258
+:Liebatron/Chicago/block/dark_grey/brick_bevel_8x: 84 250
+:Liebatron/Chicago/block/dark_grey/brick_bevel_8x: 84 242
+:Liebatron/Chicago/modular/track/platform_support_wood_1: 578 272
+:Liebatron/Chicago/modular/building/building_highrise_roof_3: 552 266 rr
+:Group-0: 614 256 frr
+:Group-0: 531 256
+$BEGIN_TILE_GROUP 1
+:geoo/nopales/fruit_06: 2 0
+:geoo/nopales/fruit_04: 6 1
+:simon/oriental/bush7: 10 0
+:Liebatron/Chicago/block/stone/stone_quad_wide_32x4: 0 6
+$END_TILE_GROUP
+:Group-1: 250 256
+:amanda/occult/wax_details_drip: 89 232
+:Liebatron/Chicago/block/light_grey/brick_quad_wide_128x64: 640 320
+:matt/marble/25: -16 192
+:matt/marble/25: -16 64
+:matt/marble/25: 655 192
+:matt/marble/25: 655 64
+:geoo/construction/concrete/064: -16 0
+:geoo/construction/concrete/064: 623 0
+:geoo/construction/pillar_long: 48 0 r
+:geoo/construction/pillar_long: 176 0 r
+:geoo/construction/pillar_long: 304 0 r
+:geoo/construction/pillar_long: 495 0 r
+:geoo/construction/pillar_long: 387 0 r
+:Liebatron/Chicago/modular/track/platform_top_wood_1: 254 126
+:Liebatron/Chicago/modular/track/platform_top_wood_1: 263 117
+:Liebatron/Chicago/modular/track/platform_top_wood_1: 245 117
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 265 32
+:Liebatron/Chicago/modular/track/platform_top_wood_1: 418 126
+:Liebatron/Chicago/modular/track/platform_top_wood_1: 427 117
+:Liebatron/Chicago/modular/track/platform_top_wood_1: 409 117
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 429 32
+:Liebatron/Chicago/modular/track/platform_top_wood_1: 582 126
+:Liebatron/Chicago/modular/track/platform_top_wood_1: 591 117
+:Liebatron/Chicago/modular/track/platform_top_wood_1: 573 117
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 593 32
+:Liebatron/Chicago/modular/track/platform_top_wood_1: 62 126
+:Liebatron/Chicago/modular/track/platform_top_wood_1: 71 117
+:Liebatron/Chicago/modular/track/platform_top_wood_1: 53 117
+:Liebatron/Chicago/block/light_grey/brick_bevel_64x: 73 32
+:geoo/construction/concrete/032hd: 48 32
+:geoo/construction/concrete/032hc: 559 32

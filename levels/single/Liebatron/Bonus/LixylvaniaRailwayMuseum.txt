@@ -1,0 +1,356 @@
+$BUILT 2021-07-18 17:30:44
+$AUTHOR Liebatron
+$ENGLISH Lixylvania Railway Museum
+
+#INTENDED_NUMBER_OF_PLAYERS 1
+#SIZE_X 640
+#SIZE_Y 400
+#BACKGROUND_RED 0
+#BACKGROUND_GREEN 112
+#BACKGROUND_BLUE 192
+
+#INITIAL 20
+#REQUIRED 19
+#SPAWN_INTERVAL 64
+
+#BASHER 2
+#MINER 1
+#DIGGER 5
+#EXPLODER2 0
+
+:Liebatron/Chicago/active/Hatch_CTA_2400_car_2.H: 274 48
+
+:Liebatron/Chicago/active/Goal_CTA_2400_car_2.G: 0 288
+
+:geoo/construction/Laser_hz_64.F: 79 65
+:geoo/construction/Laser_hz_16.F: 355 156
+:geoo/construction/Laser_hz_16.F: 370 156
+:geoo/construction/Laser_hz_64.F: 385 15
+:geoo/construction/Laser_hz_64.F: 390 15
+:geoo/construction/Laser_hz_64.F: 376 108
+:geoo/construction/Laser_hz_64.F: 380 108
+:geoo/construction/Laser_hz_64.F: 450 108
+:geoo/construction/Laser_hz_64.F: 454 108
+:geoo/construction/Laser_hz_64.F: 524 108
+:geoo/construction/Laser_hz_64.F: 528 108
+:geoo/construction/Laser_hz_64.F: 598 108
+:geoo/construction/Laser_hz_64.F: 603 108
+:geoo/construction/Laser_hz_64.F: 393 156
+:geoo/construction/Laser_hz_64.F: 397 156
+:geoo/construction/Laser_hz_64.F: 467 156
+:geoo/construction/Laser_hz_64.F: 471 156
+:geoo/construction/Laser_hz_64.F: 541 156
+:geoo/construction/Laser_hz_64.F: 545 156
+:geoo/construction/Laser_hz_64.F: 615 156
+:geoo/construction/Laser_hz_64.F: 620 156
+:geoo/construction/Laser_hz_64.F: 95 107
+:geoo/construction/Laser_hz_64.F: 159 107
+:geoo/construction/Laser_hz_64.F: 386 62
+:geoo/construction/Laser_hz_64.F: 405 62
+:geoo/construction/Laser_hz_64.F: 474 62
+:geoo/construction/Laser_hz_64.F: 493 62
+:geoo/construction/Laser_hz_64.F: 562 62
+:geoo/construction/Laser_hz_64.F: 581 62
+:geoo/construction/Laser_hz_64.F: 360 207
+:geoo/construction/Laser_hz_64.F: 365 207
+:geoo/construction/Laser_hz_64.F: 434 207
+:geoo/construction/Laser_hz_64.F: 439 207
+:geoo/construction/Laser_hz_64.F: 508 207
+:geoo/construction/Laser_hz_64.F: 513 207
+:geoo/construction/Laser_hz_64.F: 386 303
+:geoo/construction/Laser_hz_64.F: 391 303
+:geoo/construction/Laser_hz_64.F: 460 303
+:geoo/construction/Laser_hz_64.F: 465 303
+:geoo/construction/Laser_hz_64.F: 534 303
+:geoo/construction/Laser_hz_64.F: 539 303
+:geoo/construction/Laser_hz_64.F: 608 303
+:geoo/construction/Laser_hz_64.F: 613 303
+:geoo/construction/Laser_hz_64.F: 306 254
+:geoo/construction/Laser_hz_64.F: 313 254
+:geoo/construction/Laser_hz_64.F: 394 254
+:geoo/construction/Laser_hz_64.F: 402 254
+:geoo/construction/Laser_hz_64.F: 481 254
+:geoo/construction/Laser_hz_64.F: 490 254
+:geoo/construction/Laser_hz_64.F: 569 254
+:geoo/construction/Laser_hz_64.F: 584 254
+:geoo/construction/Laser_hz_64.F: 31 107
+:geoo/construction/Laser_hz_64.F: 310 346
+:geoo/construction/Laser_hz_64.F: 459 15
+:geoo/construction/Laser_hz_64.F: 464 15
+:geoo/construction/Laser_hz_64.F: 533 15
+:geoo/construction/Laser_hz_64.F: 538 15
+:geoo/construction/Laser_hz_64.F: 607 15
+:geoo/construction/Laser_hz_64.F: 612 15
+:geoo/construction/Laser_hz_64.F: 283 346
+:geoo/construction/Laser_hz_64.F: 382 345
+:geoo/construction/Laser_hz_64.F: 388 345
+:geoo/construction/Laser_hz_64.F: 456 345
+:geoo/construction/Laser_hz_64.F: 462 345
+:geoo/construction/Laser_hz_64.F: 530 345
+:geoo/construction/Laser_hz_64.F: 536 345
+:geoo/construction/Laser_hz_64.F: 603 345
+:geoo/construction/Laser_hz_64.F: 610 345
+:geoo/construction/Laser_hz_16.F: 15 107
+:geoo/construction/Laser_hz_16.F: 2 107
+:geoo/construction/Laser_hz_16.F: 321 206
+:geoo/construction/Laser_hz_16.F: 340 206
+:geoo/construction/Laser_hz_16.F: 319 206
+:geoo/construction/Laser_hz_16.F: 599 206
+:geoo/construction/Laser_hz_16.F: 601 206
+:geoo/construction/Laser_hz_16.F: 620 206
+:geoo/construction/Laser_hz_16.F: 295 301
+:geoo/construction/Laser_hz_16.F: 311 301
+:geoo/construction/Laser_hz_16.F: 323 301
+:geoo/construction/Laser_hz_16.F: 348 301
+:geoo/construction/Laser_hz_16.F: 364 301
+:geoo/construction/Laser_hz_16.F: 327 156
+:geoo/construction/Laser_hz_16.F: 314 156
+:geoo/construction/Laser_hz_16.F: 301 156
+:geoo/construction/Laser_hz_16.F: 285 108
+:geoo/construction/Laser_hz_16.F: 298 108
+:geoo/construction/Laser_hz_16.F: 311 108
+:geoo/construction/Laser_hz_16.F: 339 108
+:geoo/construction/Laser_hz_16.F: 354 108
+:geoo/construction/Laser_hz_16.F: 246 267
+
+:Liebatron/Chicago/block/dark_grey/brick_bevel_8x: 346 168 r
+:Liebatron/Chicago/block/dark_grey/brick_bevel_8x: 329 120 r
+$BEGIN_TILE_GROUP 0
+:Liebatron/Chicago/modular/track/platform_section_metal_96x48: 288 288
+:Liebatron/Chicago/modular/track/platform_section_metal_96x48: 192 288
+:Liebatron/Chicago/modular/track/platform_section_metal_96x48: 288 240
+:Liebatron/Chicago/modular/track/platform_section_metal_96x48: 192 240
+:Liebatron/Chicago/modular/track/platform_section_metal_96x48: 96 288
+:Liebatron/Chicago/modular/track/platform_section_metal_96x48: 96 240
+:Liebatron/Chicago/modular/track/platform_section_metal_96x48: 288 192
+:Liebatron/Chicago/modular/track/platform_section_metal_96x48: 192 192
+:Liebatron/Chicago/modular/track/platform_section_metal_96x48: 288 144
+:Liebatron/Chicago/modular/track/platform_section_metal_96x48: 192 144
+:Liebatron/Chicago/modular/track/platform_section_metal_96x48: 96 192
+:Liebatron/Chicago/modular/track/platform_section_metal_96x48: 96 144
+:Liebatron/Chicago/modular/track/platform_section_metal_96x48: 288 96
+:Liebatron/Chicago/modular/track/platform_section_metal_96x48: 192 96
+:Liebatron/Chicago/modular/track/platform_section_metal_96x48: 96 96
+:Liebatron/Chicago/modular/track/platform_section_metal_96x48: 288 48
+:Liebatron/Chicago/modular/track/platform_section_metal_96x48: 192 48
+:Liebatron/Chicago/modular/track/platform_section_metal_96x48: 288 0
+:Liebatron/Chicago/modular/track/platform_section_metal_96x48: 192 0
+:Liebatron/Chicago/modular/track/platform_section_metal_96x48: 96 48
+:Liebatron/Chicago/modular/track/platform_section_metal_96x48: 96 0
+:Liebatron/Chicago/modular/track/platform_section_metal_96x48: 0 288
+:Liebatron/Chicago/modular/track/platform_section_metal_96x48: 0 240
+:Liebatron/Chicago/modular/track/platform_section_metal_96x48: 0 192
+:Liebatron/Chicago/modular/track/platform_section_metal_96x48: 0 144
+:Liebatron/Chicago/modular/track/platform_section_metal_96x48: 0 96
+:Liebatron/Chicago/modular/track/platform_section_metal_96x48: 0 48
+:Liebatron/Chicago/modular/track/platform_section_metal_96x48: 0 0
+$END_TILE_GROUP
+:Group-0: 256 32
+:Liebatron/Chicago/railcar/0-4-4_Forney_4: 172 220
+:Liebatron/Chicago/small_detail/water_tower_1: 179 156
+:Liebatron/Chicago/block/light_grey/brick_quad_wide_128x64: 0 320
+:Liebatron/Chicago/block/light_grey/brick_quad_wide_128x64: 128 320
+:Liebatron/Chicago/block/light_grey/brick_quad_wide_128x32: 256 368
+:Liebatron/Chicago/block/light_grey/brick_quad_wide_128x32: 384 368
+:Liebatron/Chicago/block/light_grey/brick_quad_wide_128x32: 512 368
+:Liebatron/Chicago/block/light_grey/brick_quad_wide_128x16: 128 384
+:Liebatron/Chicago/block/light_grey/brick_quad_wide_128x16: 0 384
+$BEGIN_TILE_GROUP 1
+:Liebatron/Chicago/railcar/tank_car_1: 103 3
+:Liebatron/Chicago/railcar/tank_car_1: 177 3
+:Liebatron/Chicago/railcar/tank_car_1: 251 3
+:Liebatron/Chicago/railcar/tank_car_1: 324 3
+:Liebatron/Chicago/railcar/alco_rs3_1: 0 0
+$END_TILE_GROUP
+:Group-1: 277 340
+$BEGIN_TILE_GROUP 2
+:Liebatron/Chicago/block/grass/grass_hi_128x: 0 0 frr
+:Liebatron/Chicago/block/grass/grass_hi_128x: 128 0 frr
+:Liebatron/Chicago/block/grass/grass_hi_128x: 256 0 frr
+$END_TILE_GROUP
+:Group-2: 256 361
+$BEGIN_TILE_GROUP 3
+:Liebatron/Chicago/railcar/american_4-4-0_2: 0 0 frr
+:Liebatron/Chicago/railcar/wood_passenger_car_2: 100 1
+:Liebatron/Chicago/railcar/wood_passenger_car_2: 174 1
+:Liebatron/Chicago/railcar/wood_passenger_car_2: 248 1
+:Liebatron/Chicago/railcar/wood_passenger_car_2: 322 1
+$END_TILE_GROUP
+:Group-3: 284 295
+$BEGIN_TILE_GROUP 4
+:Liebatron/Chicago/railcar/CTA_4000_car_1: 0 0
+:Liebatron/Chicago/railcar/CTA_4000_car_1: 88 0
+:Liebatron/Chicago/railcar/CTA_4000_car_1: 176 0
+:Liebatron/Chicago/railcar/CTA_4000_car_1: 264 0
+$END_TILE_GROUP
+:Group-4: 297 247
+$BEGIN_TILE_GROUP 5
+:Liebatron/Chicago/railcar/boxcar_brown_1: 248 1
+:Liebatron/Chicago/railcar/boxcar_red_3: 322 1
+:Liebatron/Chicago/railcar/american_4-4-0_9: 0 0 frr
+:Liebatron/Chicago/railcar/boxcar_red_2: 100 1
+:Liebatron/Chicago/railcar/boxcar_red_1: 174 1
+$END_TILE_GROUP
+:Group-5: 290 151
+$BEGIN_TILE_GROUP 6
+:Liebatron/Chicago/railcar/boxcar_green_1: 100 1
+:Liebatron/Chicago/railcar/boxcar_green_2: 174 1
+:Liebatron/Chicago/railcar/boxcar_green_1: 248 1
+:Liebatron/Chicago/railcar/boxcar_green_2: 322 1
+:Liebatron/Chicago/railcar/american_4-4-0_7: 0 0 frr
+$END_TILE_GROUP
+:Group-6: 273 103
+$BEGIN_TILE_GROUP 7
+:Liebatron/Chicago/railcar/american_4-4-0_4: 0 0 frr
+:Liebatron/Chicago/railcar/wood_passenger_car_3: 100 1
+:Liebatron/Chicago/railcar/wood_passenger_car_3: 174 1
+:Liebatron/Chicago/railcar/wood_passenger_car_3: 248 1
+:Liebatron/Chicago/railcar/wood_passenger_car_3: 322 1
+$END_TILE_GROUP
+:Group-7: 283 7
+$BEGIN_TILE_GROUP 8
+:Liebatron/Chicago/railcar/CTA_2400_car_1: 0 0
+:Liebatron/Chicago/railcar/CTA_2400_car_1: 88 0
+:Liebatron/Chicago/railcar/CTA_2400_car_1: 176 0
+$END_TILE_GROUP
+:Group-8: 383 55
+:Liebatron/Chicago/railcar/0-4-4_Forney_2: 583 200 frr
+$BEGIN_TILE_GROUP 9
+:Liebatron/Chicago/block/grass/grass_hi_128x: 128 0
+:Liebatron/Chicago/block/grass/grass_hi_128x: 0 0
+$END_TILE_GROUP
+:Group-9: 0 313
+:Liebatron/Chicago/block/grass/grass_54x_1: 256 314 r
+:Liebatron/Chicago/block/grass/grass_16x: 253 319 rrr
+:Liebatron/Chicago/block/grass/grass_24x: 254 334 rrr
+:Liebatron/Chicago/block/grass/grass_24x: 254 344 rrr
+$BEGIN_TILE_GROUP 10
+:geoo/sandstone/16x32: 0 0
+:geoo/sandstone/16x32: 5 0 d
+$END_TILE_GROUP
+:Group-10: 218 78
+$BEGIN_TILE_GROUP 11
+:geoo/sandstone/16x8: 0 0
+:geoo/sandstone/16x8: 0 4 d
+$END_TILE_GROUP
+:Group-11: 216 101 d
+$BEGIN_TILE_GROUP 12
+:geoo/sandstone/slopes/32x64lt: 1 10 frr
+:geoo/sandstone/slopes/32x64lt: 1 0 frrd
+:geoo/sandstone/64x32_blank: 0 10 d
+$END_TILE_GROUP
+$BEGIN_TILE_GROUP 13
+:Group-12: 0 0
+:Group-10: 16 0
+:Group-10: 0 0
+$END_TILE_GROUP
+:Group-13: 59 78
+$BEGIN_TILE_GROUP 14
+:matt/winter/09b: 4 0
+:matt/winter/09b: 0 0 d
+$END_TILE_GROUP
+$BEGIN_TILE_GROUP 15
+:geoo/sandstone/64x32_blank: 22 0
+:Group-14: 70 0 d
+:Group-14: 72 0 d
+:Group-14: 73 0 d
+:Group-14: 76 0 d
+:Group-14: 79 0 d
+:Group-14: 83 0 d
+:geoo/sandstone/64x32: 0 0 d
+:geoo/sandstone/8x16: 67 8 d
+:geoo/sandstone/smaragd: 63 15 d
+:geoo/sandstone/smaragd: 63 1 d
+:simon/oriental/culm_open: 66 4 d
+:geoo/sandstone/8x16: 68 8 d
+$END_TILE_GROUP
+:Group-15: 83 78
+:Group-10: 151 78
+$BEGIN_TILE_GROUP 16
+:geoo/nopales/fruit_01: 1 22
+:geoo/nopales/fruit_01: 4 24
+:geoo/nopales/fruit_01: 7 24
+:geoo/nopales/fruit_01: 11 21
+:geoo/nopales/fruit_01: 12 17
+:geoo/nopales/fruit_01: 11 2 rr
+:geoo/nopales/fruit_01: 8 0 r
+:geoo/nopales/fruit_01: 5 0 rr
+:geoo/nopales/fruit_01: 2 2 rr
+:geoo/nopales/fruit_01: 0 5 rr
+:geoo/nopales/fruit_01: 1 9 rr
+:geoo/nopales/fruit_01: 5 12 rr
+:geoo/nopales/fruit_01: 9 14 rr
+$END_TILE_GROUP
+$BEGIN_TILE_GROUP 17
+:Liebatron/Chicago/block/dark_grey/brick_square_32x: 0 0
+:Group-16: 6 0 d
+$END_TILE_GROUP
+$BEGIN_TILE_GROUP 18
+:geoo/sandstone/64x32_blank: 0 0
+:Group-17: 0 0 d
+:geoo/sandstone/32x32: 32 0 d
+$END_TILE_GROUP
+:Group-18: 159 78
+$BEGIN_TILE_GROUP 19
+:Group-12: 1 0
+:Group-12: 16 0 frr
+:Group-10: 0 0
+:Group-10: 28 0
+$END_TILE_GROUP
+:Group-19: 180 78
+$BEGIN_TILE_GROUP 20
+:Group-10: 0 0
+:Group-11: 0 28
+$END_TILE_GROUP
+:Group-20: 132 78
+$BEGIN_TILE_GROUP 21
+:Group-11: 8 20
+:Group-12: 15 0 rr
+:Group-12: 0 0 f
+$END_TILE_GROUP
+:Group-21: 99 78
+:Group-21: 27 78
+$BEGIN_TILE_GROUP 22
+:Group-12: 0 0
+:Group-12: 15 0 frr
+$END_TILE_GROUP
+:Group-22: 2 78
+:Group-13: 83 37
+$BEGIN_TILE_GROUP 23
+:Group-15: 12 0
+:Group-15: 0 0 frr
+:geoo/sandstone/ebony/h8l: 11 20 d
+:geoo/sandstone/ebony/h8l: 11 4 d
+:geoo/sandstone/ebony/h8l: 11 12 d
+$END_TILE_GROUP
+:Group-23: 111 37
+$BEGIN_TILE_GROUP 24
+:Liebatron/Chicago/railcar/0-4-4_Forney_1: 0 1 frr
+:Liebatron/Chicago/railcar/wood_passenger_car_1: 56 0
+:Liebatron/Chicago/railcar/wood_passenger_car_1: 130 0
+:Liebatron/Chicago/railcar/wood_passenger_car_1: 204 0
+$END_TILE_GROUP
+:Group-24: 309 200
+:Liebatron/Chicago/steel/steel_truss_vertical_1.S: 267 130
+:Liebatron/Chicago/steel/steel_truss_vertical_1.S: 267 102
+:Liebatron/Chicago/steel/steel_truss_vertical_1.S: 267 74
+:Liebatron/Chicago/steel/steel_truss_vertical_1.S: 267 46
+:Liebatron/Chicago/steel/steel_truss_vertical_1.S: 267 32
+:Liebatron/Chicago/steel/steel_truss_vertical_1.S: 267 186
+:Liebatron/Chicago/steel/steel_truss_vertical_1.S: 267 158
+:Liebatron/Chicago/building/building_highrise_4: 172 188
+:Liebatron/Chicago/steel/steel_truss_vertical_1.S: 267 214
+:Liebatron/Chicago/steel/steel_truss_vertical_1.S: 267 270
+:Liebatron/Chicago/steel/steel_truss_vertical_1.S: 267 242
+:Liebatron/Chicago/steel/steel_truss_node_1.S: 266 294
+$BEGIN_TILE_GROUP 25
+:Liebatron/Chicago/small_detail/potted_hedge_1: 0 336
+:Liebatron/Chicago/small_detail/potted_hedge_1: 0 288
+:Liebatron/Chicago/small_detail/potted_hedge_1: 0 240
+:Liebatron/Chicago/small_detail/potted_hedge_1: 0 192
+:Liebatron/Chicago/small_detail/potted_hedge_1: 0 144
+:Liebatron/Chicago/small_detail/potted_hedge_1: 0 96
+:Liebatron/Chicago/small_detail/potted_hedge_1: 0 48
+:Liebatron/Chicago/small_detail/potted_hedge_1: 0 0
+$END_TILE_GROUP
+:Group-25: 262 22

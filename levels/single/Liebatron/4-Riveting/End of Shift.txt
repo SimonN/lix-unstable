@@ -1,0 +1,392 @@
+$BUILT 2021-07-19 00:13:28
+$AUTHOR Liebatron
+$ENGLISH End of Shift
+
+#INTENDED_NUMBER_OF_PLAYERS 1
+#SIZE_X 1152
+#SIZE_Y 400
+#BACKGROUND_RED 0
+#BACKGROUND_GREEN 32
+#BACKGROUND_BLUE 64
+
+#INITIAL 40
+#REQUIRED 39
+#SPAWN_INTERVAL 32
+
+#CLIMBER 1
+#EXPLODER2 1
+#PLATFORMER 15
+#MINER 1
+#DIGGER 1
+#JUMPER 5
+
+:Liebatron/Chicago/active/Hatch_CTA_2400_car_1.H: 1003 213
+
+:Liebatron/Chicago/active/Goal_CTA_2400_car_2.G: 151 163
+
+:simon/water_main.W: 1001 258
+:simon/water_main.W: 1040 258
+:simon/water.W: 590 268
+:simon/water.W: 638 268
+:simon/water.W: 686 268
+:Liebatron/Chicago/active/Water_CTA_2400_car_1.W: 67 343
+:Liebatron/Chicago/active/Water_CTA_2400_car_1.W: 155 343
+:Liebatron/Chicago/active/Water_CTA_2400_car_1.W: 243 343
+:Liebatron/Chicago/active/Water_CTA_2400_car_1.W: 331 343
+:geoo/construction/Laseremit_vrb_16.F: 1128 48
+
+:Liebatron/Chicago/railcar/CTA_2400_car_2: -25 169
+:Liebatron/Chicago/railcar/CTA_2400_car_2: 63 169
+:Liebatron/Chicago/modular/sign/sign_swim_lessons_1: 44 91
+:Liebatron/Chicago/modular/sign/sign_bail_bonds_1: 122 82
+$BEGIN_TILE_GROUP 0
+:Liebatron/Chicago/modular/track/track_2: 0 0
+:Liebatron/Chicago/modular/track/track_2: 40 0
+:Liebatron/Chicago/modular/track/track_2: 80 0
+:Liebatron/Chicago/modular/track/track_2: 120 0
+:Liebatron/Chicago/modular/track/track_2: 160 0
+:Liebatron/Chicago/modular/track/track_2: 200 0
+:Liebatron/Chicago/modular/track/track_2: 240 0
+:Liebatron/Chicago/modular/track/track_2: 280 0
+:Liebatron/Chicago/modular/track/track_2: 320 0
+:Liebatron/Chicago/modular/track/track_2: 360 0
+:Liebatron/Chicago/modular/track/track_2: 400 0
+:Liebatron/Chicago/modular/track/track_2: 440 0
+:Liebatron/Chicago/modular/track/track_2: 480 0
+:Liebatron/Chicago/modular/track/track_2: 520 0
+:Liebatron/Chicago/modular/track/track_2: 560 0
+:Liebatron/Chicago/modular/track/track_2: 600 0
+$END_TILE_GROUP
+:Group-0: -41 245
+$BEGIN_TILE_GROUP 1
+:Liebatron/Chicago/modular/building/fire_escape_1: 77 52 frr
+:Liebatron/Chicago/modular/building/fire_escape_1: 77 84 frr
+:Liebatron/Chicago/modular/building/fire_escape_1: 77 116 frr
+:Liebatron/Chicago/small_detail/water_tower_1: 9 0
+:Liebatron/Chicago/building/building_highrise_3: 0 35
+$END_TILE_GROUP
+:Group-1: 372 74
+$BEGIN_TILE_GROUP 2
+:Liebatron/Chicago/modular/track/platform_section_wood_96x48: 150 0 frr
+:Liebatron/Chicago/modular/track/platform_section_wood_96x48: 109 0
+:Liebatron/Chicago/modular/track/platform_section_wood_96x48: 0 0
+:Liebatron/Chicago/modular/track/platform_section_wood_96x48: 41 0 frr
+$END_TILE_GROUP
+:Group-2: -7 202
+:Liebatron/Chicago/block/light_grey/brick_square_16x: 956 248
+:Liebatron/Chicago/building/building_factory_1: 831 194
+:Liebatron/Chicago/block/grass/grass_128x: 819 247
+:Liebatron/Chicago/small_detail/phone_booth_1: 763 223
+:Liebatron/Chicago/block/light_grey/brick_square_16x: 1091 254
+:Liebatron/Chicago/block/light_grey/brick_square_32x: 972 247
+$BEGIN_TILE_GROUP 3
+:Liebatron/Chicago/modular/track/track_2: 0 0
+:Liebatron/Chicago/modular/track/track_2: 40 0
+:Liebatron/Chicago/modular/track/track_2: 80 0
+:Liebatron/Chicago/modular/track/track_2: 120 0
+:Liebatron/Chicago/modular/track/track_2: 160 0
+:Liebatron/Chicago/modular/track/track_2: 200 0
+$END_TILE_GROUP
+:Group-3: 959 245
+:Liebatron/Chicago/small_detail/fluid_tank_1: 962 207
+:Liebatron/Chicago/small_detail/fluid_tank_1: 982 207
+:Group-3: -1 195
+:Liebatron/Chicago/modular/pipe/pipe_straight_32x: 796 232 r
+:Liebatron/Chicago/block/grass/grass_hi_96x: 724 246
+:Liebatron/Chicago/modular/pipe/pipe_straight_32x: 800 240
+:Liebatron/Chicago/modular/pipe/pipe_straight_32x: 788 240
+:Liebatron/Chicago/modular/pipe/pipe_bend_1: 788 232
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x64: 471 250
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x64: 0 250
+$BEGIN_TILE_GROUP 4
+:Liebatron/Chicago/modular/building/building_highrise_door_2: 0 52
+:Liebatron/Chicago/modular/building/building_highrise_extension_2: 0 12
+:Liebatron/Chicago/modular/building/building_highrise_roof_2: 0 0
+$END_TILE_GROUP
+:Group-4: 285 174
+:Liebatron/Chicago/small_detail/shrub_1: 284 242
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x64: 128 250
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x64: 975 267
+:Liebatron/Chicago/sky/moon_1: 546 26
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x64: 724 250
+:Liebatron/Chicago/small_detail/fluid_tank_narrow_1: 819 212
+:Liebatron/Chicago/modular/pipe/pipe_split_1: 800 232 fr
+$BEGIN_TILE_GROUP 5
+:Liebatron/Chicago/building/building_highrise_2: 0 0
+:Liebatron/Chicago/modular/building/fire_escape_1: 78 17 frr
+:Liebatron/Chicago/modular/building/fire_escape_1: 78 49 frr
+:Liebatron/Chicago/modular/building/fire_escape_1: 78 81 frr
+$END_TILE_GROUP
+:Group-5: 118 108
+:Liebatron/Chicago/small_detail/streetlight_broken_1: 6 213 frr
+:Liebatron/Chicago/small_detail/streetlight_1: 206 214
+$BEGIN_TILE_GROUP 6
+:Liebatron/Chicago/building/building_highrise_4: 10 0
+:Liebatron/Chicago/modular/building/fire_escape_2: 0 16
+:Liebatron/Chicago/modular/building/fire_escape_2: 0 48
+:Liebatron/Chicago/modular/building/fire_escape_2: 0 80
+$END_TILE_GROUP
+:Group-6: 21 118
+$BEGIN_TILE_GROUP 7
+:Liebatron/Chicago/building/building_highrise_1: 0 0
+:Liebatron/Chicago/modular/building/fire_escape_2: 78 17 frr
+:Liebatron/Chicago/modular/building/fire_escape_2: 78 49 frr
+:Liebatron/Chicago/modular/building/fire_escape_2: 78 81 frr
+$END_TILE_GROUP
+:Group-7: 458 117
+:Liebatron/Chicago/sky/star_1: 937 150
+:Liebatron/Chicago/sky/star_1: 751 172
+:Liebatron/Chicago/sky/star_1: 859 68
+:Liebatron/Chicago/sky/star_1: 683 56
+:Liebatron/Chicago/sky/star_1: 1025 29
+:Liebatron/Chicago/sky/star_1: 1102 60
+:Liebatron/Chicago/modular/fence/fence_hairpin_diagonal_1: 723 219
+:Liebatron/Chicago/modular/fence/fence_hairpin_diagonal_1: 702 198
+:Liebatron/Chicago/modular/fence/fence_hairpin_diagonal_1: 681 177
+:Liebatron/Chicago/block/light_grey/brick_slope_16x: 580 234
+:Liebatron/Chicago/block/light_grey/brick_slope_16x: 596 235 rr
+:Liebatron/Chicago/block/light_grey/brick_slope_16x: 592 222
+:Liebatron/Chicago/block/light_grey/brick_slope_16x: 608 223 rr
+:Liebatron/Chicago/block/light_grey/brick_slope_16x: 604 210
+:Liebatron/Chicago/block/light_grey/brick_slope_16x: 620 211 rr
+:Liebatron/Chicago/modular/track/track_rail_x24: 642 178 d
+:Liebatron/Chicago/modular/fence/fence_hairpin_diagonal_1: 579 219 frr
+:Liebatron/Chicago/modular/fence/fence_hairpin_diagonal_1: 600 198 frr
+:Liebatron/Chicago/modular/fence/fence_hairpin_diagonal_1: 621 177 frr
+:Liebatron/Chicago/modular/fence/fence_hairpin_diagonal_1: 627 171 frr
+:Liebatron/Chicago/modular/fence/fence_hairpin_1: 648 172
+:Liebatron/Chicago/modular/fence/fence_hairpin_1: 675 172 d
+:Liebatron/Chicago/block/light_grey/brick_slope_16x: 668 191 f
+:Liebatron/Chicago/modular/fence/fence_hairpin_diagonal_1: 675 171
+:Liebatron/Chicago/sky/star_1: 815 147
+:Liebatron/Chicago/sky/star_2: 875 106
+:Liebatron/Chicago/sky/star_2: 750 73
+:Liebatron/Chicago/sky/star_2: 1025 89
+:Liebatron/Chicago/sky/star_2: 992 134
+:Liebatron/Chicago/sky/star_2: 578 122
+:Liebatron/Chicago/sky/star_2: 680 101
+:Liebatron/Chicago/sky/star_3: 1053 147
+:Liebatron/Chicago/sky/star_3: 954 52
+:Liebatron/Chicago/sky/star_3: 930 84
+:Liebatron/Chicago/sky/star_3: 802 41
+:Liebatron/Chicago/sky/star_3: 792 92
+:Liebatron/Chicago/sky/star_3: 599 55
+:Liebatron/Chicago/sky/star_3: 636 129
+:Liebatron/Chicago/sky/star_1: 204 39
+:Liebatron/Chicago/sky/star_2: 271 56
+:Liebatron/Chicago/sky/star_2: 134 81
+:Liebatron/Chicago/sky/star_3: 150 58
+:Liebatron/Chicago/sky/star_3: 24 24
+:Liebatron/Chicago/sky/star_3: 312 31
+:Liebatron/Chicago/sky/star_1: 409 43
+:Liebatron/Chicago/sky/star_2: 310 110
+:Liebatron/Chicago/sky/star_2: 73 30
+:Liebatron/Chicago/sky/star_3: 278 133
+:Liebatron/Chicago/sky/star_1: 66 83
+:Liebatron/Chicago/sky/star_3: 441 31
+:Liebatron/Chicago/sky/star_2: 522 53
+:Liebatron/Chicago/sky/star_3: 477 82
+:Liebatron/Chicago/modular/pipe/pipe_straight_32x: 1107 230
+:Liebatron/Chicago/block/light_grey/brick_square_32x: 1088 250
+:Liebatron/Chicago/modular/pipe/pipe_straight_32x: 1107 134
+:Liebatron/Chicago/modular/pipe/pipe_straight_32x: 1107 190
+:Liebatron/Chicago/modular/pipe/pipe_straight_32x: 1107 158
+:Liebatron/Chicago/modular/truss/truss_lattice_single_1: 1136 214 r
+:Liebatron/Chicago/modular/truss/truss_lattice_single_1: 1136 190 r
+:Liebatron/Chicago/modular/truss/truss_lattice_single_1: 1136 166 r
+:Liebatron/Chicago/modular/truss/truss_lattice_single_1: 1124 214 fr
+:Liebatron/Chicago/modular/truss/truss_lattice_single_1: 1124 190 fr
+:Liebatron/Chicago/modular/truss/truss_lattice_single_1: 1124 166 fr
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 1120 218
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 1120 186
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 1120 154
+:Liebatron/Chicago/modular/truss/truss_lattice_single_1: 1136 142 r
+:Liebatron/Chicago/modular/truss/truss_lattice_single_1: 1124 142 fr
+:Liebatron/Chicago/modular/pipe/pipe_split_1: 1107 222
+:Liebatron/Chicago/modular/pipe/pipe_end_1: 1115 222 r
+:Liebatron/Chicago/modular/pipe/pipe_split_1: 1107 198
+:Liebatron/Chicago/modular/pipe/pipe_end_1: 1115 198 r
+:Liebatron/Chicago/modular/pipe/pipe_split_1: 1107 174
+:Liebatron/Chicago/modular/pipe/pipe_end_1: 1115 174 r
+:Liebatron/Chicago/modular/pipe/pipe_split_1: 1107 150
+:Liebatron/Chicago/modular/pipe/pipe_end_1: 1115 150 r
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 1120 127
+:Liebatron/Chicago/modular/truss/truss_lattice_single_1: 1136 118 r
+:Liebatron/Chicago/modular/truss/truss_lattice_single_1: 1124 118 fr
+:Liebatron/Chicago/modular/pipe/pipe_end_1: 1115 126 r
+:Liebatron/Chicago/modular/pipe/pipe_bend_1: 1107 126
+:Liebatron/Chicago/steel/steel_truss_vertical_1.S: 1100 218
+:Liebatron/Chicago/steel/steel_truss_vertical_1.S: 1100 190
+:Liebatron/Chicago/steel/steel_truss_vertical_1.S: 1100 162
+:Liebatron/Chicago/steel/steel_truss_vertical_1.S: 1100 134
+:Liebatron/Chicago/steel/steel_truss_vertical_1.S: 1100 127
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 1120 103
+:Liebatron/Chicago/modular/truss/truss_lattice_single_1: 1136 94 r
+:Liebatron/Chicago/modular/truss/truss_lattice_single_1: 1124 94 fr
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 1148 218
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 1148 186
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 1148 154
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 1148 127
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 1148 103
+:Liebatron/Chicago/block/light_grey/brick_square_32x: 1120 250
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x64: 1088 267
+:Liebatron/Chicago/block/stone/stone_quad_wide_64x16: 1097 254
+:Liebatron/Chicago/small_detail/mailbox_1: 548 236
+:Liebatron/Chicago/modular/building/factory_window_lit_1: 841 222
+:Liebatron/Chicago/modular/building/factory_window_lit_1: 865 222
+:Liebatron/Chicago/modular/building/factory_window_lit_1: 889 222
+:Liebatron/Chicago/modular/building/factory_window_lit_1: 913 222
+:Liebatron/Chicago/modular/building/factory_window_lit_1: 937 222
+:Liebatron/Chicago/modular/building/fire_escape_2: 363 182 frr
+:Liebatron/Chicago/small_detail/tree_2: 474 228
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x64: 256 250
+:Liebatron/Chicago/modular/building/building_highrise_door_4: 776 373 d
+:Liebatron/Chicago/block/light_grey/brick_quad_wide_128x64: 1024 341
+:Liebatron/Chicago/block/light_grey/brick_quad_wide_128x64: 768 341
+:Liebatron/Chicago/block/stone/stone_slope_16x: 599 299 r
+:Liebatron/Chicago/block/stone/stone_slope_16x: 708 299
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x64: 599 315
+:Liebatron/Chicago/block/light_grey/brick_quad_wide_128x64: 640 341
+:Liebatron/Chicago/small_detail/tree_6: 524 226
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x64: 384 250
+:Liebatron/Chicago/modular/track/track_rail_x48: 554 375
+:Liebatron/Chicago/block/light_grey/brick_quad_wide_128x64: 512 341
+:Liebatron/Chicago/modular/building/building_highrise_door_4: 586 346 d
+:Liebatron/Chicago/block/light_grey/brick_quad_wide_128x64: 384 341
+:Liebatron/Chicago/block/light_grey/brick_quad_wide_128x64: 256 341
+:Liebatron/Chicago/block/light_grey/brick_quad_wide_128x64: 128 341
+:Liebatron/Chicago/block/light_grey/brick_quad_wide_128x64: 0 341
+:Liebatron/Chicago/modular/building/building_highrise_door_4: 1055 346 d
+:Liebatron/Chicago/block/light_grey/brick_quad_wide_128x64: 896 341
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x64: 848 386
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x64: 720 386
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x64: 592 386
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x64: 464 386
+:Liebatron/Chicago/modular/building/building_highrise_door_4: 662 346 d
+:Liebatron/Chicago/modular/building/building_highrise_door_4: 148 346 d
+:Liebatron/Chicago/modular/building/building_highrise_door_4: 72 346 d
+:Liebatron/Chicago/modular/building/building_highrise_door_4: 984 346 d
+:Liebatron/Chicago/modular/building/building_highrise_door_4: 908 346 d
+:Liebatron/Chicago/railcar/CTA_2400_car_1: 912 352
+:Liebatron/Chicago/modular/pipe/pipe_straight_32x: 943 346
+:Liebatron/Chicago/modular/fence/fence_low_spike_diagonal_1: 960 342
+:Liebatron/Chicago/block/light_grey/brick_slope_32x: 949 341 frr
+:Liebatron/Chicago/modular/building/building_highrise_door_4: 300 346 d
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x64: 336 386
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x64: 208 386
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x64: 80 386
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x64: -48 386
+:Liebatron/Chicago/block/light_grey/brick_square_32x: 940 313
+:Liebatron/Chicago/modular/building/building_highrise_door_4: 832 346 d
+:Liebatron/Chicago/railcar/CTA_2400_car_1: 1001 352
+:Liebatron/Chicago/modular/pipe/pipe_straight_32x: 1020 346
+:Liebatron/Chicago/modular/station/rail_station_base_1: 1005 373
+:Liebatron/Chicago/modular/pipe/pipe_straight_32x: 1097 346
+:Liebatron/Chicago/modular/station/rail_station_base_1: 1085 373
+:Liebatron/Chicago/modular/building/building_highrise_door_4: 823 346 d
+:Liebatron/Chicago/railcar/CTA_2400_car_1: 823 352
+:Liebatron/Chicago/modular/pipe/pipe_straight_32x: 866 346
+:Liebatron/Chicago/modular/station/rail_station_base_1: 823 373
+:Liebatron/Chicago/small_detail/bench_1: 916 365
+:Liebatron/Chicago/small_detail/bench_1: 902 365
+:Liebatron/Chicago/small_detail/bench_1: 888 365
+:Liebatron/Chicago/small_detail/bench_1: 930 365
+:Liebatron/Chicago/small_detail/bench_1: 874 365
+:Liebatron/Chicago/small_detail/bench_1: 853 365
+:Liebatron/Chicago/small_detail/bench_1: 839 365
+:Liebatron/Chicago/small_detail/bench_1: 825 365
+:Liebatron/Chicago/modular/station/rail_station_base_1: 880 373
+:Liebatron/Chicago/small_detail/bench_1: 1028 365
+:Liebatron/Chicago/small_detail/bench_1: 1042 365
+:Liebatron/Chicago/small_detail/bench_1: 1056 365
+:Liebatron/Chicago/small_detail/bench_1: 1070 365
+:Liebatron/Chicago/small_detail/bench_1: 1084 365
+:Liebatron/Chicago/small_detail/bench_1: 1105 365
+:Liebatron/Chicago/small_detail/bench_1: 1119 365
+:Liebatron/Chicago/small_detail/potted_hedge_3: 982 363
+:Liebatron/Chicago/small_detail/tree_1: 31 227
+:Liebatron/Chicago/modular/track/track_rail_x48: 597 375
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 639 345
+:Liebatron/Chicago/modular/track/track_rail_x48: 693 375
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 727 345
+:Liebatron/Chicago/modular/track/track_rail_x48: 645 375
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 684 345
+:Liebatron/Chicago/modular/track/track_rail_x48: 330 375
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 356 345
+:Liebatron/Chicago/modular/track/track_rail_x48: 300 375
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 313 345
+:Liebatron/Chicago/modular/track/track_rail_x48: 82 375
+:Liebatron/Chicago/modular/track/track_rail_x48: 72 375
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 80 345
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 123 345
+:Liebatron/Chicago/modular/track/track_rail_x48: 130 375
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 168 345
+:Liebatron/Chicago/modular/track/track_rail_x48: 178 375
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 211 345
+:Liebatron/Chicago/small_detail/tree_3: 352 229
+:Liebatron/Chicago/small_detail/tree_2: 187 229
+:Liebatron/Chicago/small_detail/potted_hedge_1: 297 240
+:Liebatron/Chicago/small_detail/potted_hedge_1: 335 240
+:Liebatron/Chicago/small_detail/shrub_3: 80 240
+:Liebatron/Chicago/small_detail/shrub_4: 808 240
+:Liebatron/Chicago/modular/station/rail_station_base_1: 950 373
+:Liebatron/Chicago/small_detail/potted_hedge_1: 1005 363
+:Liebatron/Chicago/block/stone/stone_quad_wide_64x16: 1093 254
+:Liebatron/Chicago/block/light_grey/brick_slope_16x: 616 198
+:Liebatron/Chicago/block/light_grey/brick_bevel_16x: 648 181 rrr
+:Liebatron/Chicago/block/light_grey/brick_bevel_16x: 660 181 rrr
+:Liebatron/Chicago/block/light_grey/brick_slope_16x: 632 199 rr
+:Liebatron/Chicago/block/light_grey/brick_slope_16x: 636 195 rr
+:Liebatron/Chicago/block/light_grey/brick_slope_16x: 644 187 rr
+:Liebatron/Chicago/block/light_grey/brick_square_16x: 647 183 rr
+:Liebatron/Chicago/block/light_grey/brick_slope_16x: 632 182
+:Liebatron/Chicago/block/light_grey/brick_slope_16x: 628 186
+:Liebatron/Chicago/block/light_grey/brick_square_16x: 663 183 rr
+:Liebatron/Chicago/block/light_grey/brick_slope_16x: 676 182 frr
+:Liebatron/Chicago/block/light_grey/brick_slope_16x: 728 234 frr
+:Liebatron/Chicago/block/light_grey/brick_slope_16x: 712 235 f
+:Liebatron/Chicago/block/light_grey/brick_slope_16x: 716 222 frr
+:Liebatron/Chicago/block/light_grey/brick_slope_16x: 700 223 f
+:Liebatron/Chicago/block/light_grey/brick_slope_16x: 704 210 frr
+:Liebatron/Chicago/block/light_grey/brick_slope_16x: 688 211 f
+:Liebatron/Chicago/block/light_grey/brick_slope_16x: 692 198 frr
+:Liebatron/Chicago/block/light_grey/brick_slope_16x: 676 199 f
+:Liebatron/Chicago/block/light_grey/brick_slope_16x: 680 186 frr
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x32: 847 309
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x16: 1095 386
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x16: 976 386
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x32: 471 309
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x32: 343 309
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x32: 215 309
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x32: 87 309
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x32: -41 309
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x32: 726 309
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x16: 936 325
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x16: 1053 325
+:Liebatron/Chicago/block/stone/stone_square_32x: 966 250
+:Liebatron/Chicago/modular/track/track_rail_x48: 586 375
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 596 345
+:Liebatron/Chicago/block/grass/grass_32x: 549 246
+:Liebatron/Chicago/steel/steel_truss_node_1.S: 449 244
+:Liebatron/Chicago/block/grass/grass_128x: 423 246
+:Liebatron/Chicago/block/grass/grass_16x: 371 246
+:Liebatron/Chicago/block/grass/grass_32x: 186 246
+:Liebatron/Chicago/block/grass/grass_54x_1: 92 246
+:Liebatron/Chicago/block/grass/grass_54x_2: 1 246
+:Liebatron/Chicago/block/grass/grass_16x: 941 247
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x64: 852 250
+:Liebatron/Chicago/small_detail/planter_base_1: 1100 123 frr
+$BEGIN_TILE_GROUP 8
+:Liebatron/Chicago/steel/steel_truss_vertical_1.S: 0 56
+:Liebatron/Chicago/steel/steel_truss_vertical_1.S: 0 84
+:Liebatron/Chicago/steel/steel_truss_vertical_1.S: 0 0
+:Liebatron/Chicago/steel/steel_truss_vertical_1.S: 0 28
+$END_TILE_GROUP
+:Group-8: 450 129
+:Liebatron/Chicago/small_detail/planter_base_1: 1099 123
+:Liebatron/Chicago/modular/pipe/pipe_end_1: 1132 64
+:Liebatron/Chicago/modular/pipe/pipe_end_1: 1133 64
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 1120 79
+:Liebatron/Chicago/modular/truss/truss_lattice_single_1: 1136 70 r
+:Liebatron/Chicago/modular/truss/truss_lattice_single_1: 1124 70 fr
+:Liebatron/Chicago/modular/truss/truss_vertical_1: 1148 79

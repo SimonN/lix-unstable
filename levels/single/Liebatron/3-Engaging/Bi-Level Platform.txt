@@ -1,0 +1,139 @@
+$BUILT 2021-07-18 16:16:11
+$AUTHOR Liebatron
+$ENGLISH Bi-Level Platform
+
+#INTENDED_NUMBER_OF_PLAYERS 1
+#SIZE_X 656
+#SIZE_Y 400
+#BACKGROUND_RED 128
+#BACKGROUND_GREEN 208
+#BACKGROUND_BLUE 255
+
+#INITIAL 20
+#REQUIRED 19
+#SPAWN_INTERVAL 32
+
+#WALKER 2
+#RUNNER 2
+#CLIMBER 1
+#FLOATER 1
+#PLATFORMER 3
+#BASHER 5
+#DIGGER 1
+#JUMPER 2
+#EXPLODER2 0
+
+:Liebatron/Chicago/active/Hatch_CTA_2400_car_1.H: 33 138
+:Liebatron/Chicago/active/Hatch_CTA_2400_car_1.H: 33 362
+
+:Liebatron/Chicago/active/Goal_CTA_4000_car_1.G: 568 362
+
+:Liebatron/Chicago/railcar/boxcar_brown_1: 191 241
+:Liebatron/Chicago/modular/track/platform_small_square_truss_wood_1: 503 275
+:Liebatron/Chicago/modular/track/platform_small_square_truss_wood_1: 495 275
+:Liebatron/Chicago/modular/track/platform_small_square_truss_wood_1: 519 275
+:Liebatron/Chicago/modular/track/platform_small_square_truss_wood_1: 511 275
+:Liebatron/Chicago/modular/track/platform_small_square_truss_wood_1: 535 275
+:Liebatron/Chicago/modular/track/platform_small_square_truss_wood_1: 527 275
+:Liebatron/Chicago/modular/track/platform_small_square_truss_wood_1: 551 275
+:Liebatron/Chicago/modular/track/platform_small_square_truss_wood_1: 543 275
+:Liebatron/Chicago/modular/track/platform_small_square_truss_wood_1: 567 275
+:Liebatron/Chicago/modular/track/platform_small_square_truss_wood_1: 559 275
+:Liebatron/Chicago/modular/track/platform_small_square_truss_wood_1: 583 275
+:Liebatron/Chicago/modular/track/platform_small_square_truss_wood_1: 575 275
+:Liebatron/Chicago/modular/track/platform_small_square_truss_wood_1: 599 275
+:Liebatron/Chicago/modular/track/platform_small_square_truss_wood_1: 591 275
+:Liebatron/Chicago/modular/track/platform_small_square_truss_wood_1: 615 275
+:Liebatron/Chicago/modular/track/platform_small_square_truss_wood_1: 607 275
+:Liebatron/Chicago/modular/track/platform_small_square_truss_wood_1: 631 275
+:Liebatron/Chicago/modular/track/platform_small_square_truss_wood_1: 623 275
+:Liebatron/Chicago/modular/track/platform_small_square_truss_wood_1: 479 283
+:Liebatron/Chicago/modular/track/platform_small_square_truss_wood_1: 487 283
+:Liebatron/Chicago/modular/track/platform_small_square_truss_wood_1: 487 275
+:Liebatron/Chicago/modular/track/platform_small_square_truss_wood_1: 479 275
+:Liebatron/Chicago/small_detail/mailbox_1: 577 214
+:Liebatron/Chicago/modular/track/track_rail_x48: 10 394
+:Liebatron/Chicago/modular/track/track_rail_x48: 89 170
+:Liebatron/Chicago/modular/track/track_rail_x48: 10 170
+:Liebatron/Chicago/modular/track/track_rail_x48: 58 170
+:Liebatron/Chicago/block/dark_grey/brick_quad_wide_64x16: 176 276
+:Liebatron/Chicago/block/dark_grey/brick_quad_wide_64x16: 256 276
+:Liebatron/Chicago/block/dark_grey/brick_quad_wide_64x16: 336 276
+:Liebatron/Chicago/block/dark_grey/brick_quad_wide_64x16: 416 276
+:Liebatron/Chicago/block/dark_grey/brick_quad_tall_16x64: 240 332
+:Liebatron/Chicago/block/dark_grey/brick_quad_tall_16x64: 160 332
+:Liebatron/Chicago/block/dark_grey/brick_quad_tall_16x64: 320 332
+:Liebatron/Chicago/block/dark_grey/brick_quad_tall_16x64: 400 332
+:Liebatron/Chicago/block/dark_grey/brick_quad_tall_16x64: 480 332
+:Liebatron/Chicago/block/dark_grey/brick_quad_wide_128x16: 16 172
+:Liebatron/Chicago/block/dark_grey/brick_quad_wide_128x16: 16 396
+:Liebatron/Chicago/block/dark_grey/brick_quad_wide_128x16: 160 396
+:Liebatron/Chicago/block/dark_grey/brick_quad_wide_128x16: 288 396
+:Liebatron/Chicago/block/dark_grey/brick_quad_wide_128x16: 368 396
+:Liebatron/Chicago/block/dark_grey/brick_quad_tall_16x64: 240 292
+:Liebatron/Chicago/block/dark_grey/brick_quad_tall_16x64: 160 292
+:Liebatron/Chicago/block/dark_grey/brick_quad_tall_16x64: 320 292
+:Liebatron/Chicago/block/dark_grey/brick_quad_tall_16x64: 400 292
+:Liebatron/Chicago/block/dark_grey/brick_quad_tall_16x64: 480 292
+:Liebatron/Chicago/railcar/CTA_2400_car_1: -55 368
+:Liebatron/Chicago/railcar/CTA_2400_car_1: -55 144
+:Liebatron/Chicago/modular/track/track_rail_x48: 89 394
+:Liebatron/Chicago/modular/track/track_rail_x48: 58 394
+:Liebatron/Chicago/block/dark_grey/brick_quad_wide_128x16: 528 396 frr
+:Liebatron/Chicago/modular/track/track_rail_x48: 548 394 frr
+:Liebatron/Chicago/modular/track/track_rail_x48: 608 394 frr
+:Liebatron/Chicago/modular/track/track_rail_x48: 560 394 frr
+:Liebatron/Chicago/block/dark_grey/brick_quad_tall_8x32: 0 364
+:Liebatron/Chicago/block/dark_grey/brick_quad_tall_8x32: 0 140
+:Liebatron/Chicago/block/dark_grey/brick_bevel_32x: 8 140 frr
+:Liebatron/Chicago/block/dark_grey/brick_bevel_32x: 8 364 frr
+:Liebatron/Chicago/modular/track/track_2: 160 266
+:Liebatron/Chicago/modular/track/track_2: 200 266
+:Liebatron/Chicago/modular/track/track_2: 240 266
+:Liebatron/Chicago/modular/track/track_2: 280 266
+:Liebatron/Chicago/modular/track/track_2: 320 266
+:Liebatron/Chicago/modular/track/track_2: 360 266
+:Liebatron/Chicago/modular/track/track_2: 400 266
+:Liebatron/Chicago/modular/track/track_2: 440 266
+:Liebatron/Chicago/modular/track/track_2: 456 266
+:Liebatron/Chicago/railcar/flatcar_1: 377 240
+:Liebatron/Chicago/railcar/flatcar_1: 303 240
+:Liebatron/Chicago/modular/building/floating_foundation_3: 620 228
+:Liebatron/Chicago/modular/building/floating_foundation_2: 570 227
+:Liebatron/Chicago/block/stone/stone_quad_wide_128x4: 572 227
+:Liebatron/Chicago/modular/building/building_highrise_door_1: 591 203
+:Liebatron/Chicago/modular/building/building_highrise_extension_1: 591 179
+:Liebatron/Chicago/modular/building/building_highrise_roof_1: 591 170
+:Liebatron/Chicago/block/grass/grass_128x: 572 223
+:Liebatron/Chicago/modular/track/track_2: 536 266
+:Liebatron/Chicago/modular/track/track_2: 576 266
+:Liebatron/Chicago/modular/track/track_2: 616 266
+:Liebatron/Chicago/modular/track/track_2: 656 267
+:Liebatron/Chicago/modular/track/platform_stair_wood_1: 556 242
+:Liebatron/Chicago/modular/track/platform_stair_wood_1: 571 227
+:Liebatron/Chicago/modular/fence/fence_low_spike_diagonal_1: 551 238 frr
+:Liebatron/Chicago/modular/fence/fence_low_spike_diagonal_1: 572 217 frr
+:Liebatron/Chicago/modular/track/track_2: 496 266
+:Liebatron/Chicago/modular/fence/fence_low_spike_1: 572 218
+:Liebatron/Chicago/modular/fence/fence_low_spike_1: 623 218
+:Liebatron/Chicago/modular/fence/fence_low_spike_1: 650 218
+:Liebatron/Chicago/block/dark_grey/brick_quad_tall_8x32: -8 364
+:Liebatron/Chicago/block/dark_grey/brick_quad_tall_8x32: -8 396
+:Liebatron/Chicago/block/dark_grey/brick_quad_tall_8x32: -8 124
+:Liebatron/Chicago/block/dark_grey/brick_quad_tall_8x32: -8 140
+:Liebatron/Chicago/modular/track/platform_small_square_truss_wood_1: 647 275
+:Liebatron/Chicago/modular/track/platform_small_square_truss_wood_1: 639 275
+:Liebatron/Chicago/block/dark_grey/brick_quad_wide_64x16: -48 172
+:Liebatron/Chicago/block/dark_grey/brick_quad_wide_64x16: -48 396
+:Liebatron/Chicago/steel/steel_truss_square_1_8.S: 160 228
+:Liebatron/Chicago/steel/steel_truss_square_1_8.S: 160 188
+:Liebatron/Chicago/steel/steel_truss_square_1_8.S: 160 148
+:Liebatron/Chicago/steel/steel_truss_square_1_8.S: 160 108
+:Liebatron/Chicago/steel/steel_truss_square_1_8.S: 160 68
+:Liebatron/Chicago/steel/steel_truss_square_1_8.S: 160 28
+:Liebatron/Chicago/steel/steel_truss_square_1_8.S: 448 228
+:Liebatron/Chicago/steel/steel_truss_square_1_8.S: 448 188
+:Liebatron/Chicago/steel/steel_truss_square_1_8.S: 448 148
+:Liebatron/Chicago/steel/steel_truss_square_1_8.S: 448 108
+:Liebatron/Chicago/steel/steel_truss_square_1_8.S: 448 68
+:Liebatron/Chicago/steel/steel_truss_square_1_8.S: 448 28
