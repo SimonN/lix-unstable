@@ -1,4 +1,4 @@
-$BUILT 2017-06-28 14:11:39
+$BUILT 2023-07-16 19:26:29
 $AUTHOR Nepster
 $ENGLISH House of the Mad Trickster
 
@@ -179,10 +179,6 @@ $END_TILE_GROUP
 :simon/tapir/032va: 608 96
 :simon/tapir/032vb: 496 82
 :simon/tapir/032vc: 336 0
-:matt/steel/16x8.S: 448 50
-:matt/steel/16x8.S: 432 50 frr
-:matt/steel/16x8.S: 400 88 frr
-:matt/steel/16x8.S: 416 88
 :simon/tapir/008v: 12 368
 :simon/tapir/008v: 12 384
 :simon/tapir/008v: 620 368
@@ -206,9 +202,9 @@ $END_TILE_GROUP
 :simon/tapir/032h: 80 146
 :simon/tapir/008h: 536 242
 :simon/tapir/008h: 120 242
-:matt/steel/32x32.S: 464 50
+:amanda/steel/steel32x32.S: 464 50
 :simon/tapir/032c: 464 50 d
-:matt/steel/32x32.S: 368 64
+:amanda/steel/steel32x32.S: 368 64
 :simon/tapir/032b: 368 64 d
 :simon/tapir/032v: 368 0
 $BEGIN_TILE_GROUP 1
@@ -233,3 +229,7 @@ $END_TILE_GROUP
 :geoo/construction/stairsbrick_ru_8: 380 360 d
 :geoo/construction/stairsbrick_rd_8: 260 360 d
 :geoo/construction/stairsbrick_rd_8: 252 356 d
+:amanda/steel/steel8x16.S: 400 88 fr
+:amanda/steel/steel8x16.S: 416 88 fr
+:amanda/steel/steel8x16.S: 448 50 fr
+:amanda/steel/steel8x16.S: 432 50 fr
