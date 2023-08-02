@@ -122,6 +122,12 @@ final class Phymap : Topology {
         lt = cropped;
     }
 
+    bool isInbounds(in Point p) const pure nothrow @safe @nogc
+    {
+        return (torusX || (p.x >= 0 && p.x < xl))
+            && (torusY || (p.y >= 0 && p.y < yl));
+    }
+
     /*
      * get(p): return physics at the pixel p.
      * Desired change in Lix 0.10.0: Clamp only horizontally to force

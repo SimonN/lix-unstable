@@ -59,13 +59,13 @@ private:
     };
 
 public:
-    inout(Phymap) lookup() inout
+    inout(Phymap) lookup() inout nothrow @safe @nogc
     {
         assert (_outsideWorld, "need outsideWorld for ex/ey movement");
         return outsideWorld.state.lookup;
     }
 
-    const(Topology) env() const
+    const(Topology) env() const nothrow @safe @nogc
     {
         assert (_outsideWorld, "need outsideWorld for ex/ey movement");
         return outsideWorld.state.lookup;
@@ -90,7 +90,7 @@ public:
     Ac ac() const { return job.ac; }
     PhyuOrder updateOrder() const { return job.updateOrder; }
 
-    inout(OutsideWorld*) outsideWorld() inout pure nothrow @nogc
+    inout(OutsideWorld*) outsideWorld() inout nothrow @nogc @safe
     {
         assert (_outsideWorld !is null, "can't access _outsideWorld here");
         return _outsideWorld;
@@ -274,6 +274,12 @@ void resetFlingNew()
 bool getSteel(in int px, in int py) const
 {
     return lookup.getSteel(Point(_ex + px * dir, _ey + py));
+}
+
+// Measures from the 2025 foot, not from the 2006 pin.
+bool isInbounds(in int px = 0, in int py = 0) const nothrow @safe @nogc
+{
+    return lookup.isInbounds(Point(_ex + px * dir, _ey + 1 + py));
 }
 
 bool isSolid(in int px = 0, in int py = 2) const

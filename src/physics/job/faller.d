@@ -15,18 +15,12 @@ public:
 
     int pixelsFallen() const pure nothrow @safe @nogc { return _pixelsFallen; }
 
-    static void becomeAndFallPixels(Lixxie lixxie, in int fallY)
-    {
-        lixxie.moveDown(fallY);
-        becomeWithAlreadyFallenPixels(lixxie, fallY);
-    }
-
-    static void becomeWithAlreadyFallenPixels(Lixxie lixxie, int alreadyFallen)
+    static void becomeAndFallPixels(Lixxie lixxie, in int pixelsToFall)
     {
         lixxie.become(Ac.faller);
         Faller fa = cast (Faller) lixxie.job;
         assert (fa);
-        fa._pixelsFallen = alreadyFallen;
+        fa.fallBy(pixelsToFall);
     }
 
     override void
