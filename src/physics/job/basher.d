@@ -35,7 +35,9 @@ public:
             lixxie.become(Ac.walker);
             return;
         }
-        else if (frame >= 11 && frame < 16) {
+        else if (frame >= 11 && frame < 16
+            && ! lixxie.isSolid(2, 1) // Lix 0.11: Don't walk through terrain.
+        ) {
             // This happens on 5 frames.
             lixxie.moveAhead();
         }
