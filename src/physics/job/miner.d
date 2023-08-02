@@ -131,6 +131,12 @@ private:
         immutable bool downTooFar = movedDownSinceSwing > maxGapDepth;
         immutable bool solid = lixxie.isSolid(0, 2)
             || futureGroundIsSolid[future];
+        /*
+         * When the miner walks down a builder's bridge, the bridge
+         * has slope 4x2 and is coarser than the miner's slope of 2x1,
+         * even though both have identical angles of 2:1. (leeway) makes
+         * the coarse bridge feel like the fine slope.
+         */
         immutable bool leeway
             = (frame == 7 || frame == 10) && lixxie.isSolid(0, 3);
         if (downTooFar || (! solid && ! leeway))
