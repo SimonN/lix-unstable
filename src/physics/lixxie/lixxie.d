@@ -68,7 +68,7 @@ public:
         return outsideWorld.state.lookup;
     }
 
-    const(Topology) env() const
+    const(Phymap) env() const
     {
         assert (_outsideWorld, "need outsideWorld for ex/ey movement");
         return outsideWorld.state.lookup;
@@ -109,7 +109,6 @@ public:
     int yf() const { return this.ac; }
 
     auto footEncounters() const { return _encFoot; }
-    void forceFootEncounters(Phybitset ft) { _encFoot = ft; }
     void setNoEncountersNoBlockerFlags()
     {
         _encFoot = 0;

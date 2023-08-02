@@ -1,6 +1,8 @@
 module physics.job;
 
 public import physics.job.ascender;
+public import physics.job.ballifly;
+public import physics.job.balliran;
 public import physics.job.basher;
 public import physics.job.batter;
 public import physics.job.blocker;
@@ -13,6 +15,7 @@ public import physics.job.exploder;
 public import physics.job.faller;
 public import physics.job.floater;
 public import physics.job.job;
+public import physics.job.jumper;
 public import physics.job.leaver;
 public import physics.job.miner;
 public import physics.job.stunner;
