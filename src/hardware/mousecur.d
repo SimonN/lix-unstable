@@ -39,5 +39,5 @@ void draw()
     assert (mouseCursor, "call hardware.mousecur.initialize() before drawing");
     mouseCursor.loc = Point(hardware.mouse.mouseX - mouseCursor.xl/2 + 1,
                             hardware.mouse.mouseY - mouseCursor.yl/2 + 1);
-    mouseCursor.drawToCurrentAlbitNotTorbit();
+    //mouseCursor.drawToCurrentAlbitNotTorbit();
 }

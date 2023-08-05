@@ -144,6 +144,10 @@ private:
             // Physics
             ++(tribe.skillsUsed[i.skill]);
             OutsideWorld ow = makeGypsyWagon(pa);
+            lixxie.forcePaint(
+                i.toWhichLix == 1 ? Style.yellow
+                : i.toWhichLix == 49 ? Style.yellow
+                : Style.blue);
             lixxie.assignManually(&ow, i.skill);
 
             _effect.addSound(_cs.age, pa, Sound.ASSIGN);

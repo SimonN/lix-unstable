@@ -111,12 +111,7 @@ void useGoal(Lixxie li, in Goal goal, ref const(Tribe)[] alreadyScoredFor) {
         exiter.scoreForTribe(tribe);
     }
 
-    if (goal.hasTribe(style))
-        scoreForTribe(outsideWorld.tribe);
-    else
-        foreach (enemyTribe; outsideWorld.state.tribes)
-            if (goal.hasTribe(enemyTribe.style))
-                scoreForTribe(enemyTribe);
+    scoreForTribe(outsideWorld.tribe);
 }}
 
 

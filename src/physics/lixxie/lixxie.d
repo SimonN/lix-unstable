@@ -62,6 +62,11 @@ private:
     };
 
 public:
+    void forcePaint(in Style s)
+    {
+        _style = s;
+    }
+
     inout(Phymap) lookup() inout
     {
         assert (_outsideWorld, "need outsideWorld for ex/ey movement");
