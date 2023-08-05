@@ -129,8 +129,16 @@ void drawAllLixes(Game game)
         auto zone = Zone(profiler, "game draws lixes");
     void drawTribe(in Tribe tr)
     {
-        tr.lixvec.retro.filter!(l => ! l.marked).each!(l => l.draw);
-        tr.lixvec.retro.filter!(l => l.marked).each!(l => l.draw);
+        import physics.lixxie.lixxie;
+        import net.style;
+        void drawIf(bool function(in Lixxie) f)
+        {
+            tr.lixvec.retro.filter!f.each!(l => l.draw);
+        }
+        drawIf((in Lixxie l) => (! l.marked && l.style == Style.garden));
+        drawIf((in Lixxie l) => (l.marked && l.style == Style.garden));
+        drawIf((in Lixxie l) => (! l.marked && l.style != Style.garden));
+        drawIf((in Lixxie l) => (l.marked && l.style != Style.garden));
     }
     with (game) {
         foreach (otherTribe; nurse.constStateForDrawingOnly.tribes)
@@ -181,7 +189,7 @@ void drawMapToA5Display(Game game)
             auto zo2 = Zone(profiler, "game draws map to screen");
         game.map.drawCamera();
     }
-    game.drawReplaySign();
+    //game.drawReplaySign();
     game.drawTooltips();
 }
 
