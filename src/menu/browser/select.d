@@ -148,12 +148,4 @@ private:
         else
             highlightNone();
     }
-
-    static private int keyMenuMoveByTotal()
-    {
-        return opt.keyMenuUpBy1  .keyTappedAllowingRepeats * -1
-            +  opt.keyMenuUpBy5  .keyTappedAllowingRepeats * -5
-            +  opt.keyMenuDownBy1.keyTappedAllowingRepeats * 1
-            +  opt.keyMenuDownBy5.keyTappedAllowingRepeats * 5;
-    }
 }
