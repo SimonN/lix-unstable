@@ -12,11 +12,20 @@ interface PickerNav {
 }
 
 class NoKeyboardNav : PickerNav {
-
+    void visit(Picker) {}
 }
 
 class UpDownKeyboardNav : PickerNav {
+    void visit(Picker pi)
+    {
+        else if (keyMenuMoveByTotal() != 0) {
+            _upDownToCanBeNull = super.moveHighlightBy(
+                _upDownToCanBeNull ? _upDownToCanBeNull
+                : _fileRecent, keyMenuMoveByTotal);
+            highlightIfInCurrentDir(_upDownToCanBeNull); // may be null here
+        }
 
+    }
 
     static private int keyMenuMoveByTotal()
     {
