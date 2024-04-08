@@ -132,12 +132,6 @@ protected:
             highlightIfInCurrentDir(_fileRecent);
             _upDownToCanBeNull = null;
         }
-        else if (keyMenuMoveByTotal() != 0) {
-            _upDownToCanBeNull = super.moveHighlightBy(
-                _upDownToCanBeNull ? _upDownToCanBeNull
-                : _fileRecent, keyMenuMoveByTotal);
-            highlightIfInCurrentDir(_upDownToCanBeNull); // may be null here
-        }
     }
 
 private:

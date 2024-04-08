@@ -85,12 +85,6 @@ protected:
         return ret ? some(ret) : Optional!Filename();
     }
 
-    final auto moveHighlightBy(Filename old, in int by)
-    {
-        return _picker.moveHighlightBy(old, by,
-                                       CenterOnHighlitFile.onlyIfOffscreen);
-    }
-
     override void calcSelf()
     {
         super.calcSelf();
