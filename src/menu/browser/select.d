@@ -29,13 +29,6 @@ private:
     // highlight, not select. May be in different dir. Never a directory.
     MutFilename _fileRecent;
 
-    // Last-highlit dir or file with up/down keys.
-    // We need this because it may point to dirs, not only to files as
-    // _fileRecent would allow.
-    // _upDownToCanBeNull cannot be Optional because Optional doesn't behave
-    // well with Rebindable!Filename == MutFilename: Both together corrupt RAM.
-    MutFilename _upDownToCanBeNull;
-
     TextButton _buttonPlay;
 
 public:
