@@ -102,6 +102,22 @@ logfEvenDuringUnittest(Args...)(string formatstr, Args args)
     catch (Exception) {}
 }
 
+// Throws again its argument (firstThr).
+static void
+logThenRethrowToTerminate(Throwable firstThr)
+{
+    // Uncaught exceptions, assert errors, and assert (false) should
+    // fly straight out of main() and terminate the program. Since
+    // Windows users won't run the game from a shell, they should
+    // retrieve the error message from the logfile.
+    for (Throwable thr = firstThr; thr !is null; thr = thr.next) {
+        logf("%s:%d:", thr.file, thr.line);
+        log(thr.msg);
+        log(thr.info.toString());
+    }
+    throw firstThr;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 private static void
