@@ -5,7 +5,7 @@ import std.file;
 import std.stdio;
 import std.string;
 
-import basics.globals;
+static import basics.globals;
 import net.versioning;
 import file.date;
 
@@ -114,6 +114,16 @@ logThenRethrowToTerminate(Throwable firstThr)
         logf("%s:%d:", thr.file, thr.line);
         log(thr.msg);
         log(thr.info.toString());
+    }
+    version (Windows) {
+        import core.sys.windows.windows;
+        import std.conv;
+        const messageBody = wtext(
+            firstThr.msg,
+            "\n\n", "Crash: ", firstThr.file, ":", firstThr.line,
+            "\n", "Logfile: ", basics.globals.fileLog.rootless,
+            "\0");
+        MessageBoxW(null, messageBody.ptr, null, MB_ICONERROR);
     }
     throw firstThr;
 }
