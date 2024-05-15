@@ -60,11 +60,14 @@ Occurrence addFromLine(
         {
             GadOcc newpos = new GadOcc(ga);
             newpos.loc = level.topology.wrap(cornerAt);
-            if (ga.type == GadType.HATCH)
+            if (ga.type == GadType.HATCH
+                || ga.type == GadType.prePlacedNeutral
+            ) {
                 foreach (char c; text2) switch (c) {
                     case 'r': newpos.mirrY = ! newpos.mirrY; break;
                     default: break;
                 }
+            }
             level.gadgets[ga.type] ~= newpos;
             ret = newpos;
         }

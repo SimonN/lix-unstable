@@ -24,10 +24,12 @@ import physics.handimrg;
 import physics.lixxie.fields;
 import physics.lixxie.lixxie;
 import physics.score;
+import tile.occur;
 
 final class Tribe {
 private:
-    int _lixSpawned; // 0 at start
+    int _lixSpawnedFromHatch; // 0 at start
+    int _lixSpawnedPrePlaced; // 0 at start
     int _lixOut;
     int _lixLeaving; // these have been scored, but keep game running
     int _lixSaved; // query with score()
@@ -68,7 +70,8 @@ public:
     this(in Tribe rhs)
     {
         assert (rhs, "don't copy-construct from a null Tribe");
-        _lixSpawned = rhs._lixSpawned;
+        _lixSpawnedFromHatch = rhs._lixSpawnedFromHatch;
+        _lixSpawnedPrePlaced = rhs._lixSpawnedPrePlaced;
         _lixOut = rhs._lixOut;
         _lixLeaving = rhs._lixLeaving;
         _lixSaved = rhs._lixSaved;
@@ -107,7 +110,7 @@ public:
         int lixOut() { return _lixOut; }
         int lixInHatch() {
             return rules.handicap.initialLix.scale(
-                rules.initialLixInHatchWithoutHandicap) - _lixSpawned;
+                rules.initialLixInHatchWithoutHandicap) - _lixSpawnedFromHatch;
         }
 
         Optional!Phyu phyuOfNextSpawn()
@@ -161,14 +164,6 @@ public:
     // Mutation
     ///////////////////////////////////////////////////////////////////////////
 
-    void recordSpawnedFromHatch()
-    in { assert (this.lixInHatch > 0); }
-    out { assert (this.lixInHatch >= 0 && this._lixOut >= 0); }
-    do {
-        ++_lixSpawned;
-        ++_lixOut;
-    }
-
     void recordOutToLeaver(in Phyu now)
     in {
         assert (this._lixOut > 0);
@@ -191,7 +186,7 @@ public:
 
     void stopSpawningAnyMoreLixBecauseWeAreNuking()
     {
-        _lixSpawned = rules.handicap.initialLix.scale(
+        _lixSpawnedFromHatch = rules.handicap.initialLix.scale(
             rules.initialLixInHatchWithoutHandicap);
     }
 
@@ -208,8 +203,10 @@ public:
         skillsUsed[ac] -= amount;
     }
 
-    void spawnLixxie(OutsideWorld* ow)
+    void spawnLixxieAtNextHatch(OutsideWorld* ow)
     in {
+        assert (this.lixInHatch > 0, "No more in hatch, don't call this.");
+
         if (! ow.state.hatches[this.nextHatch].hasTribe(this.style)) {
             import std.string;
             string msg = format("Style %s spawns from wrong hatch #%d.",
@@ -223,6 +220,7 @@ public:
             assert (false, msg);
         }
     }
+    out { assert (this.lixInHatch >= 0 && this._lixOut >= 0); }
     do {
         const hatch = ow.state.hatches[nextHatch];
         LixxieImpl newLix = LixxieImpl(ow, Point(
@@ -231,7 +229,8 @@ public:
         if (hatch.spawnFacingLeft)
             newLix.turn();
         lixvecImpl ~= newLix;
-        recordSpawnedFromHatch();
+        ++_lixSpawnedFromHatch;
+        ++_lixOut;
         _previousSpawn = ow.state.age;
         do {
             nextHatch = (nextHatch + 1) % ow.state.hatches.len;
@@ -239,6 +238,17 @@ public:
         while (! ow.state.hatches[nextHatch].hasTribe(this.style));
     }
 
+    void spawnLixxiePrePlaced(OutsideWorld* ow, const(GadOcc) here)
+    {
+        LixxieImpl newLix = LixxieImpl(ow, Point(
+            here.loc.x + here.tile.trigger.x - 2 * here.hatchRot,
+            here.loc.y + here.tile.trigger.y));
+        if (here.hatchRot)
+            newLix.turn();
+        lixvecImpl ~= newLix;
+        ++_lixSpawnedPrePlaced;
+        ++_lixOut;
+    }
 
     ///////////////////////////////////////////////////////////////////////////
     // Nuke
