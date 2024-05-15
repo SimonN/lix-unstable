@@ -159,7 +159,8 @@ void makePanel(Editor editor)
             "[0], opt.editorLastDirTerrain, MergeDirs.depthTwo, " ~ edMap));
         mixin (mkBrowser!("Steel", "[preExtSteel], opt.editorLastDirSteel,"
             ~ " MergeDirs.allIntoRoot, " ~ edMap));
-        mixin (mkBrowser!("Hatch", "[preExtHatch], opt.editorLastDirHatch"));
+        mixin (mkBrowser!("Hatch", "[preExtHatch, preExtPreNeu],"
+            ~ " opt.editorLastDirHatch"));
         mixin (mkBrowser!("Goal", "[preExtGoal], opt.editorLastDirGoal"));
         mixin (mkBrowser!("Hazard", "['W','T','F'], opt.editorLastDirHazard"));
     }

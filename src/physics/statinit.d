@@ -14,6 +14,7 @@ import graphic.torbit;
 import file.replay;
 import level.level;
 import net.permu;
+import physics.lixxie.fields;
 import physics.state;
 import physics.tribe;
 import physics.handimrg;
@@ -41,12 +42,13 @@ do {
     s.lookup = new Phymap(cfg.level.topology);
     cfg.level.drawTerrainTo(s.land, s.lookup);
 
-    s.preparePlayers(cfg);
+    s.preparePlayersButNotNeutralsYet(cfg);
     s.prepareGadgets(cfg.level);
     s.assignTribesToGoals(cfg.permu);
     s.foreachGadget((Gadget g) {
         g.drawLookup(s.lookup);
     });
+    s.prepareNeutrals(cfg.level);
     s.age = s.isBattle ? Phyu(0) : Phyu(45); // start quickly in 1-player
     s.overtimeAtStartInPhyus = s.isBattle
         ? cfg.level.overtimeSeconds * phyusPerSecondAtNormalSpeed : 0;
@@ -55,7 +57,7 @@ do {
 
 private:
 
-void preparePlayers(GameState state, in GameStateInitCfg cfg)
+void preparePlayersButNotNeutralsYet(GameState state, in GameStateInitCfg cfg)
 in {
     assert (state.tribes.numPlayerTribes == 0);
     assert (cfg.tribes.length >= 1);
@@ -93,6 +95,19 @@ void prepareGadgets(GameState state, in Level level)
     instantiateGadgetsFromArray(state.waters,   GadType.WATER);
     instantiateGadgetsFromArray(state.flingPerms, GadType.FLINGPERM);
     instantiateGadgetsFromArray(state.flingTrigs, GadType.FLINGTRIG);
+}
+
+void prepareNeutrals(GameState state, in Level level)
+{
+    if (level.gadgets[GadType.prePlacedNeutral].empty) {
+        return;
+    }
+    state.tribes.add(Tribe.RuleSet(Style.neutral));
+    foreach (pre; level.gadgets[GadType.prePlacedNeutral]) {
+        auto ow = OutsideWorld(state, null, null,
+            Passport(Style.neutral, state.tribes[Style.neutral].lixlen));
+        state.tribes[Style.neutral].spawnLixxiePrePlaced(&ow, pre);
+    }
 }
 
 void assignTribesToGoals(GameState state, in Permu permu)

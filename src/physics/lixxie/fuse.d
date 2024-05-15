@@ -44,8 +44,10 @@ void drawFlame(in Lixxie lixxie) { drawFuseOrFlame!true (lixxie); }
 
 void drawAbilities(in Lixxie lixxie, bool highlit = false) { with (lixxie)
 {
-    if (! healthy || ploderTimer > 0
-        || ! (abilityToRun || abilityToClimb || abilityToFloat))
+    if (! healthy || ploderTimer > 0)
+        return;
+    if (! abilityToRun && ! abilityToClimb && ! abilityToFloat
+        && lixxie.style != Style.neutral)
         return;
 
     const cb = InternalImage.ability.toCutbit;
@@ -59,6 +61,7 @@ void drawAbilities(in Lixxie lixxie, bool highlit = false) { with (lixxie)
         cb.draw(topLeft, frame + facingLeft * cb.xfs / 2, highlit);
         topLeft.y -= cb.yl + 1;
     }
+    printIf(lixxie.style == Style.neutral, 3);
     printIf(lixxie.abilityToFloat, 2);
     printIf(lixxie.abilityToRun, 0);
     printIf(lixxie.abilityToClimb, 1);

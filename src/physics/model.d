@@ -172,7 +172,7 @@ private:
             // lookupmap inside the current state. Everything else will be
             // passed anew when the lix are updated.
             auto ow = makeGypsyWagon(Passport(tribe.style, tribe.lixlen));
-            tribe.spawnLixxie(&ow);
+            tribe.spawnLixxieAtNextHatch(&ow);
         }
     }
 
@@ -196,6 +196,10 @@ private:
     {
         version (tharsisprofiling)
             Zone zone = Zone(profiler, "PhysSeq updateLixxies()");
+        if (_cs.age < Tribe.firstSpawnWithoutHandicap) {
+            return; // Pre-placed lix should sit in place until hatches spawn.
+        }
+
         bool anyFlingers = false;
 
         void foreachLix(void delegate(Tribe, in int, Lixxie) func)

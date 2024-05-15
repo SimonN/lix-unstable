@@ -132,16 +132,23 @@ void drawGadgetAnnotations(Editor editor) {
             if (intendedNumberOfPlayers > 1)
                 print(g, y += plusY, teams.map!(
                     function char(int i) { return 'A'+i & 0xFF; }).to!string);
-            if (intendedNumberOfPlayers == 1
-                || (g.tile.type == GadType.HATCH && numForUs > 1))
+            if (g.tile.type != GadType.prePlacedNeutral
+                && (intendedNumberOfPlayers == 1
+                    || (g.tile.type == GadType.HATCH && numForUs > 1))
+            ) {
                 print(g, y += plusY, "%d/%d".format(
                     ((i - teams[0]) / intendedNumberOfPlayers) + 1, numForUs));
-            if (g.tile.type == GadType.HATCH)
+            }
+            if (g.tile.type == GadType.HATCH
+                || g.tile.type == GadType.prePlacedNeutral
+            ) {
                 // unicode: LEFTWARDS ARROW, RIGHTWARDS ARROW
                 print(g, y += plusY, g.hatchRot ? "\u2190" : "\u2192");
+            }
         }
     }
     annotate(gadgets[GadType.HATCH]);
+    annotate(gadgets[GadType.prePlacedNeutral]);
     if (intendedNumberOfPlayers > 1)
         annotate(gadgets[GadType.GOAL]);
 }}

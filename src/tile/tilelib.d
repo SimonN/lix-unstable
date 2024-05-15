@@ -133,6 +133,7 @@ do {
     else if (pe == glo.preExtTrap)  { type = GadType.TRAP;  }
     else if (pe == glo.preExtWater) { type = GadType.WATER; }
     else if (pe == glo.preExtFire)  { type = GadType.WATER; subtype = true; }
+    else if (pe == glo.preExtPreNeu){ type = GadType.prePlacedNeutral; }
     else {
         logBadTile!"Unknown pre-extension"(strNoExt);
         return;

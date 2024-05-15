@@ -78,6 +78,7 @@ public:
             case GadType.WATER:   return new Water   (top, levelpos);
             case GadType.FLINGTRIG: return new FlingTrig(top, levelpos);
             case GadType.FLINGPERM: return new FlingPerm(top, levelpos);
+            case GadType.prePlacedNeutral: return new Hatch(top, levelpos);
             case GadType.MAX:
                 assert (false, "GadType isn't supported by Gadget.factory");
         }
@@ -126,6 +127,7 @@ public:
         Phybitset phyb = 0;
         final switch (tile.type) {
             case GadType.HATCH:
+            case GadType.prePlacedNeutral:
             case GadType.MAX: return;
 
             case GadType.GOAL:  phyb = Phybit.goal; break;
