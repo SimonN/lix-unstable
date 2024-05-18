@@ -94,13 +94,18 @@ void useGoal(Lixxie li, in Goal goal, ref const(Tribe)[] alreadyScoredFor) {
     with (li)
 {
     // We may or may not be exiter already, by colliding with stacked goals
-    if (ac != Ac.exiter)
+    if (ac != Ac.exiter) {
         become(Ac.exiter);
+    }
 
     Exiter exiter = cast (Exiter) job;
     assert (exiter, "exiters shouldn't become anything else upon becoming");
-
     exiter.determineSidewaysMotion(goal);
+
+    if (outsideWorld.state.onlyNeutralsCount && style != Style.neutral) {
+        return;
+    }
+
     exiter.playSound(goal);
 
     void scoreForTribe(Tribe tribe)

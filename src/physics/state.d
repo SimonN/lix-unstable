@@ -148,6 +148,11 @@ public:
         return ! nukeIsAssigningExploders || overtimeRunningSince == age;
     }
 
+    bool onlyNeutralsCount() const pure nothrow @safe @nogc
+    {
+        return tribes.contains(Style.neutral);
+    }
+
 private:
     ref RawGameState opAssignImpl(ref const(RawGameState) rhs) return
     {
