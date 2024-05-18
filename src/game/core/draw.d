@@ -21,6 +21,7 @@ import graphic.torbit;
 import hardware.display;
 import hardware.music;
 import hardware.tharsis;
+import net.style;
 import physics.tribe;
 import physics.lixxie.fuse : drawAbilities; // onto opponents, behind our own
 import tile.draw : drawAllTriggerAreas;
@@ -134,9 +135,17 @@ void drawAllLixes(Game game)
         tr.lixvec.retro.filter!(l => l.marked).each!(l => l.draw);
     }
     with (game) {
-        foreach (otherTribe; cs.tribes.allTribesEvenNeutral)
-            if (otherTribe !is game.localTribe)
+        if (cs.tribes.contains(Style.neutral)) {
+            const unused = getLixSpritesheet(Style.neutral); // Hack for eyes.
+            foreach (li; cs.tribes[Style.neutral].lixvec.retro) {
+                li.drawAbilities(); // This needs the eye matrix.
+            }
+        }
+        foreach (otherTribe; cs.tribes.allTribesEvenNeutral) {
+            if (otherTribe !is game.localTribe) {
                 drawTribe(otherTribe);
+            }
+        }
         foreach (li; localTribe.lixvec.retro) {
             li.drawAbilities();
         }
