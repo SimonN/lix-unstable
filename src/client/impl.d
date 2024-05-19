@@ -268,10 +268,16 @@ private:
         return "%d.%d.%d.%d".format(ptr[0], ptr[1], ptr[2], ptr[3]);
     }
 
-    string playerName(PlNr plNr)
+    string playerName(PlNr plNr) const pure nothrow @safe @nogc
     {
         auto ptr = plNr in _profilesInOurRoom;
         return ptr ? ptr.name : "?";
+    }
+
+    Style playerChatColor(in PlNr plNr) const pure nothrow @safe @nogc
+    {
+        auto ptr = plNr in _profilesInOurRoom;
+        return ptr ? ptr.style : Style.garden;
     }
 
     void sayHello()
@@ -408,7 +414,8 @@ private:
         else if (got[0] == PacketStoC.peerChatMessage) {
             auto chat = ChatPacket(got);
             foreach (obs; _observers) {
-                obs.onChatMessage(playerName(chat.header.plNr), chat.text);
+                obs.onChatMessage(playerChatColor(chat.header.plNr),
+                    playerName(chat.header.plNr), chat.text);
             }
         }
         else if (got[0] == PacketStoC.peerLevelFile) {

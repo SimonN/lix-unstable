@@ -105,9 +105,9 @@ public:
         _console.add(Lang.netChatYouLostConnection.transl);
     }
 
-    void onChatMessage(in string peerName, in string chat)
+    void onChatMessage(in Style color, in string peerName, in string chat)
     {
-        _console.addWhite("%s: %s".format(peerName, chat));
+        _console.add(color, "%s: %s".format(peerName, chat));
     }
 
     void onPeerDisconnect(in string peerName)
