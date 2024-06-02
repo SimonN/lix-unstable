@@ -1,0 +1,114 @@
+$BUILT 2024-05-24 14:22:11
+$AUTHOR Simon
+$ENGLISH In die Pfanne Hauen
+
+#INTENDED_NUMBER_OF_PLAYERS 2
+#SIZE_X 560
+#SIZE_Y 328
+
+#INITIAL 10
+#SPAWN_INTERVAL 9
+
+#WALKER 50
+#CLIMBER 10
+#EXPLODER2 10
+#BUILDER 20
+#PLATFORMER 10
+#BASHER 5
+#MINER 5
+#DIGGER 1
+#JUMPER 50
+#BATTER 50
+
+:geoo/abstract/hatch.H: 40 80
+:geoo/abstract/hatch.H: 488 80 r
+:geoo/abstract/hatch.H: 160 152
+:geoo/abstract/hatch.H: 368 152 r
+
+:simon/tapir/goal.G: 200 240
+:simon/tapir/goal.G: 296 240
+:simon/tapir/goal.G: 408 208
+:simon/tapir/goal.G: 88 208
+
+:simon/neutrallix.P: 240 40
+:simon/neutrallix.P: 288 40 r
+
+:matt/marble/21: 248 72
+:matt/marble/03: 312 56
+:matt/marble/03: 232 56
+:matt/marble/21: 120 88
+:matt/marble/03: 184 72
+:matt/marble/03: 104 72
+:matt/marble/21: 376 88
+:matt/marble/03: 440 72
+:matt/marble/03: 360 72
+:matt/marble/21: 184 136
+:matt/marble/03: 248 120
+:matt/marble/03: 136 120
+:matt/marble/001: 192 104
+:matt/marble/001: 360 104
+:matt/marble/21: 152 136
+:matt/marble/21: 344 136
+:matt/marble/03: 408 120
+:matt/marble/03: 296 120
+:matt/marble/21: 312 136
+:matt/marble/001: 136 152
+:matt/marble/001: 256 152
+:matt/marble/001: 296 152
+:matt/marble/001: 416 152
+:matt/marble/21: 32 144
+:matt/marble/03: 96 128
+:matt/marble/21: 464 144
+:matt/marble/03: 448 128
+:raymanni/toys/brick_8: 88 176
+:matt/carnival/28: 40 192 r
+:raymanni/toys/brick_8: 40 216
+:raymanni/toys/brick_8: 136 216
+:raymanni/toys/brick_8: 408 176
+:raymanni/toys/brick_8: 360 216
+:matt/carnival/28: 504 192 fr
+:raymanni/toys/brick_8: 456 216
+:raymanni/toys/brick_6: 200 216
+:raymanni/toys/brick_6: 296 216
+:raymanni/toys/brick_19: 176 256
+:raymanni/toys/soldier_2: 166 256
+:raymanni/toys/brick_19: 344 256
+:raymanni/toys/brick_19: 136 296
+$BEGIN_TILE_GROUP 0
+:raymanni/toys/brick_19: 0 4
+:raymanni/toys/brick_19: 24 4
+:raymanni/toys/brick_19: 16 0 rd
+$END_TILE_GROUP
+:Group-0: 128 296
+:raymanni/toys/brick_3: 176 288 fr
+:raymanni/toys/brick_19: 260 256
+:Group-0: 248 256
+:raymanni/toys/brick_19: 384 296
+:Group-0: 368 296
+:raymanni/toys/soldier_2: 346 256 frr
+:raymanni/toys/brick_3: 320 288 fr
+:raymanni/toys/brick_19: 240 288
+:raymanni/toys/brick_19: 280 288
+:raymanni/toys/brick_2: 88 256 fr
+:raymanni/toys/brick_2: 408 256 fr
+:matt/marble/06: 0 96
+:matt/marble/06: 0 32
+:matt/marble/06: 528 96
+:matt/marble/06: 528 32
+:raymanni/toys/brick_18: 24 256
+:raymanni/toys/brick_18: 496 256
+:raymanni/toys/brick_2: 24 288 fr
+:raymanni/toys/brick_2: 472 288 fr
+:raymanni/toys/brick_18: 432 296
+:raymanni/toys/brick_18: 88 296
+:amanda/steel/steel8x16.S: 224 288 fr
+:amanda/steel/steel8x16.S: 320 288 fr
+:amanda/steel/steel8x16.S: 112 256 fr
+:amanda/steel/steel8x16.S: 432 256 fr
+:raymanni/toys/soldier_3: 168 280
+:raymanni/toys/soldier_3: 344 280 frr
+:raymanni/toys/brick_6: 248 176
+:matt/marble/08: 0 0
+:matt/marble/08: 496 0
+:matt/marble/04: 64 0
+:matt/marble/04: 464 0
