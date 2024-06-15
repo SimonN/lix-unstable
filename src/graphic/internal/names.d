@@ -14,6 +14,7 @@ import glo = basics.globals;
 
 enum Spritesheet : byte {
     allSkills,
+    platformer,
 
     goalMarkers,
     infoBarIcons,
@@ -64,6 +65,8 @@ string toBasenameNoExt(in Spritesheet sheet) @nogc
 {
     with (Spritesheet) final switch (sheet) {
         case allSkills: return "lixsprites";
+        case platformer: return "sprites/platformer";
+
         case goalMarkers: return "goalmarker";
         case infoBarIcons: return "lixouticon";
         case skillsInPanel: return "skillsinpanel";

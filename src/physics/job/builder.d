@@ -209,22 +209,16 @@ public:
         // Platforming starts with (loobBackToFrame)-many frames 0, 1, ...
         // that then merge into the looping 16 frames. In the first set of
         // frames, one brick is built, and it is higher than the floor height.
-        if (frame == 2)
+        if (frame == 2) {
             buildBrick();
-        else if (frame == 5)
-            planNextBrickFirstCycle();
-        else if (frame == 7) {
-            // DTODO there could be a nasty bug here when the first of these
-            // 2 funcs terminates platforming, and the second assumes that
-            // the lixxie() is still platforming. I believe the effect in
-            // the 2017-09-06 code (JobUnion) is that the second function
-            // makes us move (perfectly fine) and maybe again issues the
-            // transition to shrugger (fine even though we already are shrug).
             moveUpAndCollide();
+        }
+        else if (frame == 5) {
+            planNextBrickFirstCycle();
+        }
+        else if (frame == 7 || frame == 8) {
             moveAheadAndCollide();
         }
-        else if (frame == 8)
-            moveAheadAndCollide();
 
         // Looping 16 frames: build brick at floor height, not above
         else if (frame == loopBackToFrame) {

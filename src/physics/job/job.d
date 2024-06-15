@@ -168,6 +168,9 @@ struct JobUnion {
         }
         assert (asClass.ac == Ac.nothing);
         asClass._ac = ac;
+        asClass._spritesheet
+            = ac == Ac.platformer ? Spritesheet.platformer
+            : Spritesheet.allSkills;
     }
 
     /+
