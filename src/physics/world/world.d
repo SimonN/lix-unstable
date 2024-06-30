@@ -1,9 +1,16 @@
-module physics.state;
+module physics.world.world;
 
-/* A gamestate. It saves everything about the current position, but not
- * how we got here. The class Replay saves everything about the history,
- * so you can reconstruct the current state from the beginning gamestate and
- * a replay.
+/*
+ * A World is the gamestate, but without the logic how to update it.
+ *
+ * A World consists of two halves, the mutable half and the immutable half.
+ * World itself is public, but the split is package-visible. The WorldCache
+ * must know about the mutable half to keep copies of it.
+ *
+ * The logic about how to advance the world during a physics update
+ * is elsewhere (../model.d) and the history (what to do when) is elsewhere
+ * again (class Replay). These two together are responsible to reconstruct
+ * the current World from the beginning of play.
  */
 
 import std.algorithm;
@@ -22,7 +29,7 @@ import physics.tribe;
 import physics.tribes;
 import tile.phymap;
 
-alias GameState = RefCounted!(RawGameState, RefCountedAutoInitialize.no);
+alias GameState = RefCounted!(MutHalf, RefCountedAutoInitialize.no);
 
 GameState clone(in GameState gs)
 {
@@ -32,7 +39,17 @@ GameState clone(in GameState gs)
     return ret;
 }
 
-private struct RawGameState {
+alias World = WorldImpl*;
+alias ConstWorld = const(WorldImpl)*;
+
+package struct WorldImpl {
+    ImmuHalf immu;
+    MutHalf mut;
+}
+
+private struct ImmuHalf {}
+
+package struct MutHalf {
 public:
     Phyu age;
     int overtimeAtStartInPhyus;
@@ -50,7 +67,7 @@ public:
 
     this(this) { opAssignImpl(this); }
 
-    ref RawGameState opAssign(ref const(RawGameState) rhs) return
+    ref typeof(this) opAssign(ref const(typeof(this)) rhs) return
     {
         if (this is rhs)
             return this;
@@ -149,7 +166,7 @@ public:
     }
 
 private:
-    ref RawGameState opAssignImpl(ref const(RawGameState) rhs) return
+    ref typeof(this) opAssignImpl(ref const(typeof(this)) rhs) return
     {
         copyValuesArraysFrom(rhs);
         copyLandFrom(rhs);
@@ -157,7 +174,7 @@ private:
         return this;
     }
 
-    void copyLandFrom(ref const(RawGameState) rhs)
+    void copyLandFrom(ref const(typeof(this)) rhs)
     {
         if (land && land.matches(rhs.land)) {
             land.copyFrom(rhs.land);
@@ -169,7 +186,7 @@ private:
         }
     }
 
-    void copyValuesArraysFrom(ref const(RawGameState) rhs)
+    void copyValuesArraysFrom(ref const(typeof(this)) rhs)
     {
         overtimeAtStartInPhyus = rhs.overtimeAtStartInPhyus;
         age = rhs.age;

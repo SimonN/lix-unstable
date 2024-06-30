@@ -1,4 +1,4 @@
-module physics.statinit;
+module physics.world.init;
 
 import std.algorithm;
 import std.array;
@@ -14,7 +14,7 @@ import graphic.torbit;
 import file.replay;
 import level.level;
 import net.permu;
-import physics.state;
+import physics.world.world;
 import physics.tribe;
 import physics.handimrg;
 import tile.phymap;
@@ -27,8 +27,6 @@ struct GameStateInitCfg {
     MergedHandicap[Style] tribes;
     Permu permu;
 }
-
-package:
 
 GameState newZeroState(in GameStateInitCfg cfg)
 in {

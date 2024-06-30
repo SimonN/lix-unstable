@@ -3,9 +3,9 @@ module game.nurse.savestat;
 import std.algorithm;
 
 import file.option; // replayAfterFrameBack
-import game.nurse.cache;
 import hardware.tharsis;
-import physics.state;
+import physics.world.cache;
+import physics.world.world;
 
 public import game.nurse.base;
 

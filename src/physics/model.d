@@ -31,8 +31,8 @@ import physics.lixxie.fields;
 import physics.lixxie.fuse;
 import physics.lixxie.lixxie;
 import physics.physdraw;
-import physics.state;
-import physics.statinit;
+import physics.world.world;
+import physics.world.init;
 import physics.tribe;
 import tile.phymap;
 

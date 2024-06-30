@@ -1,4 +1,4 @@
-module game.nurse.cache;
+module physics.world.cache;
 
 /* PhysicsCache (former name: StateManager) holds many states, and knows when
  * to auto-save. Feed the StateManager with the current state all the time,
@@ -17,7 +17,7 @@ import file.replay;
 import file.log;
 import hardware.tharsis;
 import net.repdata;
-import physics.state;
+import physics.world.world;
 
 enum DuringTurbo : bool { no = false, yes = true }
 
