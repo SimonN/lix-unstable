@@ -3,7 +3,6 @@ module physics.world.init;
 import std.algorithm;
 import std.array;
 import std.conv;
-import std.typecons;
 
 import basics.alleg5;
 import basics.globals;
@@ -28,32 +27,34 @@ struct GameStateInitCfg {
     Permu permu;
 }
 
-GameState newZeroState(in GameStateInitCfg cfg)
+WorldAsStruct newZeroState(in GameStateInitCfg cfg)
 in {
     assert (cfg.tribes.length >= 1);
 }
+out (ret) {
+    assert (ret.isValid, "newZeroState must be valid at least here");
+}
 do {
-    GameState s;
-    s.refCountedStore.ensureInitialized();
-    s.land   = new Torbit(Torbit.Cfg(cfg.level.topology));
-    s.lookup = new Phymap(cfg.level.topology);
-    cfg.level.drawTerrainTo(s.land, s.lookup);
+    typeof(return) ret;
+    ret.land   = new Torbit(Torbit.Cfg(cfg.level.topology));
+    ret.lookup = new Phymap(cfg.level.topology);
+    cfg.level.drawTerrainTo(ret.land, ret.lookup);
 
-    s.preparePlayers(cfg);
-    s.prepareGadgets(cfg.level);
-    s.assignTribesToGoals(cfg.permu);
-    s.foreachGadget((Gadget g) {
-        g.drawLookup(s.lookup);
+    (&ret).preparePlayers(cfg);
+    (&ret).prepareGadgets(cfg.level);
+    (&ret).assignTribesToGoals(cfg.permu);
+    (&ret).foreachGadget((Gadget g) {
+        g.drawLookup(ret.lookup);
     });
-    s.age = s.isBattle ? Phyu(0) : Phyu(45); // start quickly in 1-player
-    s.overtimeAtStartInPhyus = s.isBattle
+    ret.age = ret.isBattle ? Phyu(0) : Phyu(45); // start quickly in 1-player
+    ret.overtimeAtStartInPhyus = ret.isBattle
         ? cfg.level.overtimeSeconds * phyusPerSecondAtNormalSpeed : 0;
-    return s;
+    return ret;
 }
 
 private:
 
-void preparePlayers(GameState state, in GameStateInitCfg cfg)
+void preparePlayers(World state, in GameStateInitCfg cfg)
 in {
     assert (state.tribes.numPlayerTribes == 0);
     assert (cfg.tribes.length >= 1);
@@ -74,7 +75,7 @@ do {
     }
 }
 
-void prepareGadgets(GameState state, in Level level)
+void prepareGadgets(World state, in Level level)
 {
     assert (state.lookup);
     void instantiateGadgetsFromArray(T)(ref T[] gadgetVec, GadType tileType)
@@ -94,7 +95,7 @@ void prepareGadgets(GameState state, in Level level)
     instantiateGadgetsFromArray(state.flingPerms, GadType.steam);
 }
 
-void assignTribesToGoals(GameState state, in Permu permu)
+void assignTribesToGoals(World state, in Permu permu)
 in {
     import std.format;
     assert (state.hatches.len, "we'll do modulo on the hatches, 0 is bad");

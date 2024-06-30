@@ -108,7 +108,7 @@ protected:
     inout(Replay) replay() inout { return _replay; }
     Replay replay(Replay r) { return _replay = r; }
 
-    inout(GameState) cs() inout pure nothrow @safe @nogc
+    inout(World) cs() inout pure nothrow @safe @nogc
     in { assert (_model); }
     do { return _model.cs; }
 

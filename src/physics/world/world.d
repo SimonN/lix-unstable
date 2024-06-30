@@ -4,8 +4,7 @@ module physics.world.world;
  * A World is the gamestate, but without the logic how to update it.
  *
  * A World consists of two halves, the mutable half and the immutable half.
- * World itself is public, but the split is package-visible. The WorldCache
- * must know about the mutable half to keep copies of it.
+ * PhysicsCache will store deep copies of the mutable half for backtracking.
  *
  * The logic about how to advance the world during a physics update
  * is elsewhere (../model.d) and the history (what to do when) is elsewhere
@@ -13,10 +12,11 @@ module physics.world.world;
  * the current World from the beginning of play.
  */
 
+import core.stdc.string : memcpy, memset;
+
 import std.algorithm;
 import std.conv;
 import std.range;
-import std.typecons;
 
 import basics.help; // clone(T[]), a deep copy for arrays
 import basics.topology;
@@ -29,81 +29,69 @@ import physics.tribe;
 import physics.tribes;
 import tile.phymap;
 
-alias GameState = RefCounted!(MutHalf, RefCountedAutoInitialize.no);
+alias World = WorldAsStruct*;
+alias ConstWorld = const(WorldAsStruct)*;
 
-GameState clone(in GameState gs)
-{
-    GameState ret;
-    ret.refCountedStore.ensureInitialized();
-    ret.refCountedPayload = gs.refCountedPayload;
-    return ret;
-}
+struct WorldAsStruct {
+    ImmutableHalfOfWorld immutableHalf;
+    MutableHalfOfWorld mutableHalf;
 
-alias World = WorldImpl*;
-alias ConstWorld = const(WorldImpl)*;
+    private alias mut = mutableHalf;
+    private alias immu = immutableHalf;
 
-package struct WorldImpl {
-    ImmuHalf immu;
-    MutHalf mut;
-}
+    mixin(mkDecl("Phyu", "age"));
+    mixin(mkDecl("int", "overtimeAtStartInPhyus"));
 
-private struct ImmuHalf {}
+    mixin(mkDecl("Torbit", "land"));
+    mixin(mkDecl("Phymap", "lookup"));
+    mixin(mkDecl("Tribes", "tribes"));
 
-package struct MutHalf {
-public:
-    Phyu age;
-    int overtimeAtStartInPhyus;
+    mixin(mkDecl("Hatch[]", "hatches"));
+    mixin(mkDecl("Goal[]", "goals"));
+    mixin(mkDecl("Water[]", "waters"));
+    mixin(mkDecl("TrapTrig[]", "traps"));
+    mixin(mkDecl("FlingPerm[]", "flingPerms"));
+    mixin(mkDecl("FlingTrig[]", "flingTrigs"));
 
-    Torbit land;
-    Phymap lookup;
-    Tribes tribes; // update order is garden, red, orange, yellow, ...
-
-    Hatch[] hatches;
-    Goal[] goals;
-    Water[] waters;
-    TrapTrig[] traps;
-    FlingPerm[] flingPerms;
-    FlingTrig[] flingTrigs;
-
-    this(this) { opAssignImpl(this); }
-
-    ref typeof(this) opAssign(ref const(typeof(this)) rhs) return
+    void takeOwnershipOf(ref MutableHalfOfWorld wo)
     {
-        if (this is rhs)
-            return this;
-        return opAssignImpl(rhs);
+        mut.takeOwnershipOf(wo);
     }
 
-    ~this()
+    void dispose() nothrow @nogc
     {
-        age = Phyu(0);
-        if (land) {
-            land.dispose();
-            land = null;
-        }
-        lookup = null;
+        mut.dispose();
     }
+
+    bool isValid() const pure nothrow @safe @nogc { return mut.isValid; }
 
     // With dmd 2.0715.1, inout doesn't seem to work for this.
     // Let's duplicate the function, once for const, once for mutable.
     void foreachConstGadget(void delegate(const(Gadget)) func) const
     {
-        chain(hatches, goals, waters, traps, flingPerms, flingTrigs).each!func;
+        chain(mut.hatches, mut.goals, mut.waters, mut.traps,
+            mut.flingPerms, mut.flingTrigs
+            ).each!func;
     }
     void foreachGadget(void delegate(Gadget) func)
     {
-        chain(hatches, goals, waters, traps, flingPerms, flingTrigs).each!func;
+        chain(mut.hatches, mut.goals, mut.waters, mut.traps,
+            mut.flingPerms, mut.flingTrigs
+            ).each!func;
     }
 
     const pure nothrow @safe @nogc {
-        bool isPuzzle() { return tribes.isPuzzle; }
-        bool isBattle() { return tribes.isBattle; }
-        bool isSolvedPuzzle(in int req) { return tribes.isSolvedPuzzle(req); }
+        bool isPuzzle() { return mut.tribes.isPuzzle; }
+        bool isBattle() { return mut.tribes.isBattle; }
+        bool isSolvedPuzzle(in int req)
+        {
+            return mut.tribes.isSolvedPuzzle(req);
+        }
     }
 
     bool someoneDoesntYetPreferGameToEnd() const
     {
-        return tribes.playerTribes.any!(tr => ! tr.prefersGameToEnd);
+        return mut.tribes.playerTribes.any!(tr => ! tr.prefersGameToEnd);
     }
 
     // False as long as overtime hasn't started running yet.
@@ -111,8 +99,8 @@ public:
     bool isOvertimeRunning() const pure nothrow @safe @nogc
     in { assert (isBattle || isPuzzle, "Add players to avoid empty truth."); }
     do {
-        return tribes.playerTribes.all!(tr => tr.prefersGameToEnd)
-            || tribes.playerTribes.any!(tr => tr.triggersOvertime);
+        return mut.tribes.playerTribes.all!(tr => tr.prefersGameToEnd)
+            || mut.tribes.playerTribes.any!(tr => tr.triggersOvertime);
     }
 
     // Call this only if isOvertimeRunning.
@@ -123,14 +111,14 @@ public:
         assert (isOvertimeRunning);
     }
     do {
-        if (tribes.playerTribes.all!(tr => tr.prefersGameToEnd)) {
-            return tribes.playerTribes
+        if (mut.tribes.playerTribes.all!(tr => tr.prefersGameToEnd)) {
+            return mut.tribes.playerTribes
                 .map!(tr => tr.prefersGameToEndSince.front)
                 .reduce!max;
         }
         else {
-            assert (tribes.playerTribes.any!(tr => tr.triggersOvertime));
-            return tribes.playerTribes
+            assert (mut.tribes.playerTribes.any!(tr => tr.triggersOvertime));
+            return mut.tribes.playerTribes
                 .filter!(tr => tr.triggersOvertime)
                 .map!(tr => tr.triggersOvertimeSince.front)
                 .reduce!min;
@@ -141,10 +129,10 @@ public:
     int overtimeRemainingInPhyus() const
     {
         if (! isOvertimeRunning)
-            return overtimeAtStartInPhyus;
-        if (tribes.playerTribes.all!(tr => tr.prefersGameToEnd))
+            return mut.overtimeAtStartInPhyus;
+        if (mut.tribes.playerTribes.all!(tr => tr.prefersGameToEnd))
             return 0;
-        return clamp(overtimeAtStartInPhyus + overtimeRunningSince - age,
+        return clamp(overtimeAtStartInPhyus + overtimeRunningSince - mut.age,
             0, overtimeAtStartInPhyus);
     }
 
@@ -162,28 +150,99 @@ public:
     // Solution: In race maps, allow that one update to finish with scoring.
     bool lixMayUseGoals() const
     {
-        return ! nukeIsAssigningExploders || overtimeRunningSince == age;
+        return ! nukeIsAssigningExploders || overtimeRunningSince == mut.age;
     }
 
 private:
-    ref typeof(this) opAssignImpl(ref const(typeof(this)) rhs) return
+    static string mkDecl(in string type, in string var)
     {
-        copyValuesArraysFrom(rhs);
-        copyLandFrom(rhs);
-        lookup = rhs.lookup ? rhs.lookup.clone() : null;
-        return this;
+        return "ref inout(" ~ type ~ ") " ~ var
+            ~ "() return inout pure nothrow @safe @nogc { return mut."
+            ~ var ~ "; }";
+    }
+}
+
+struct ImmutableHalfOfWorld {}
+
+struct MutableHalfOfWorld {
+public:
+    Phyu age;
+    int overtimeAtStartInPhyus;
+
+    Torbit land;
+    Phymap lookup = null;
+    Tribes tribes; // update order is garden, red, orange, yellow, ...
+
+    Hatch[] hatches;
+    Goal[] goals;
+    Water[] waters;
+    TrapTrig[] traps;
+    FlingPerm[] flingPerms;
+    FlingTrig[] flingTrigs;
+
+    typeof(this) clone() const
+    out (ret) { assert (ret.isValid == this.isValid); }
+    do {
+        MutableHalfOfWorld ret;
+        ret.copyValuesArraysFrom(this);
+        ret.copyLandFrom(this);
+        ret.lookup = lookup ? lookup.clone() : null;
+        return ret;
     }
 
+    void takeOwnershipOf(ref typeof(this) rhs) nothrow @nogc
+    {
+        if (rhs is this) {
+            return;
+        }
+        dispose();
+        memcpy(&this, &rhs, typeof(this).sizeof);
+        memset(&rhs, 0, typeof(this).sizeof);
+    }
+
+    void dispose() nothrow @nogc
+    out {
+        assert (! isValid, "Callers rely on dispose() invalidating us");
+        assert (age <= 0, "Callers rely on our small age");
+    }
+    do {
+        if (land) {
+            land.dispose();
+        }
+        this = typeof(this).init;
+    }
+
+    bool isValid() const pure nothrow @safe @nogc { return lookup !is null; }
+
+    invariant()
+    {
+        if (land !is null) {
+            assert (lookup !is null, "Graphical mode needs land and lookup");
+            assert (land.albit !is null, "Bug in our Torbit handling."
+                ~ " If you dispose the land, always set land = null.");
+        }
+        // If land is null, lookup may be valid (coverage mode) or null.
+    }
+
+private:
     void copyLandFrom(ref const(typeof(this)) rhs)
     {
+        if (rhs.land is null) {
+            if (land is null) {
+                return;
+            }
+            land.dispose();
+            land = null;
+            return;
+        }
         if (land && land.matches(rhs.land)) {
             land.copyFrom(rhs.land);
+            return;
         }
-        else {
-            if (land)
-                land.dispose();
-            land = rhs.land ? rhs.land.clone() : null;
+        if (land) {
+            land.dispose();
         }
+        land = rhs.land.clone();
     }
 
     void copyValuesArraysFrom(ref const(typeof(this)) rhs)

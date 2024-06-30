@@ -8,30 +8,22 @@ module physics.world.cache;
 import std.algorithm;
 import std.range;
 import std.string;
-import std.typecons;
 
 import basics.alleg5 : OutOfVramException;
 import basics.globals : levelPixelsToWarn;
-import basics.help; // clone(T[]), a deep copy for arrays
 import file.replay;
-import file.log;
-import hardware.tharsis;
 import net.repdata;
 import physics.world.world;
 
 enum DuringTurbo : bool { no = false, yes = true }
 
 class PhysicsCache {
-
 private:
-
-    enum updatesMostFrequentPair = 10;
-    enum updatesMultiplierNextPairIsSlowerBy = 5; // 10, 50, 250, 1250
     enum pairsToKeep = 4;
 
-    GameState _zero;
-    GameState _userState;
-    GameState[2 * pairsToKeep] _auto;
+    MutableHalfOfWorld _zero; // for returning to the beginning
+    MutableHalfOfWorld _userState; // for savestating
+    MutableHalfOfWorld[2 * pairsToKeep] _auto;
 
     // For the user-triggered save (_user), remember the replay that was
     // correct by then. Otherwise, the user could restart, do something
@@ -43,10 +35,9 @@ private:
 public:
     void dispose()
     {
-        destroy(_zero);
-        destroy(_userState);
+        _zero.dispose();
+        _userState.dispose();
         forgetAutoSavesOnAndAfter(Phyu(0));
-        assert (! _auto[0].refCountedStore.isInitialized);
     }
 
     void considerGC() nothrow
@@ -60,76 +51,79 @@ public:
         GC.minimize();
     }
 
+    // Internally, this creates a deep copy.
     // This throws if we can't allocate VRAM for the zero state.
     // Letting that exception fly out of main is fine for the zero state.
-    void saveZero(in GameState s) { _zero = s.clone(); }
+    void saveZero(in World aZero)
+    in {
+        assert (aZero.isValid, "Complete the world first before saving it");
+    }
+    do {
+        auto deepCopy = aZero.mutableHalf.clone();
+        _zero.takeOwnershipOf(deepCopy);
+    }
 
-    @property Phyu zeroStatePhyu() const {
-        assert (_zero.refCountedStore.isInitialized);
+    Phyu zeroStatePhyu() const pure nothrow @safe @nogc {
+        assert (_zero.isValid);
         return _zero.age;
     }
 
-    void saveUser(in GameState s, in Replay r)
+    // Internally, this creates a deep copy.
+    // Deep copies may throw OutOfVramException.
+    void saveUser(in World wo, in Replay r)
     {
-        try {
-            if (_userState.refCountedStore.isInitialized)
-                _recommendGC = true;
-            assert (r);
-            _userState = s.clone();
-            _userReplay = r.clone();
+        if (_userState.isValid) {
+            _recommendGC = true;
         }
-        catch (OutOfVramException e)
-            log(e.msg);
+        assert (wo);
+        assert (r);
+        auto deepCopy = wo.mutableHalf.clone();
+        _userState.takeOwnershipOf(deepCopy);
+        _userReplay = r.clone();
     }
 
-    bool userStateExists() const @nogc nothrow
+    bool userStateExists() const pure nothrow @safe @nogc
     out (ret) {
-        assert (ret == _userState.refCountedStore.isInitialized,
+        assert (ret == _userState.isValid,
             "Bad user savestate: We have a replay XOR we have state");
     }
     do {
         return _userReplay !is null;
     }
 
-    // Depending on mismatches between Nurse's replay and our saved replay,
-    // some cached states must be invalidated. Fixes user-stateload desyncs.
-    // See inner struct for the many return values.
-    auto loadUser(in Replay nurseReplay, in Phyu wantEqualBefore)
-    in {
-        assert (userStateExists, "don't load if there is nothing to load");
-        assert (nurseReplay, "need reference so I know what to invalidate");
-    }
-    do {
-        forgetAutoSavesOnAndAfter(Phyu(0));
-        /+
-         + Anything here but the line above is instead speed optimization.
-         + Make the thing correct first, then fast!
-         +
-        // Different 'before' than in SaveStatingNurse; see her comment too.
-        immutable before = min(wantEqualBefore, Phyu(_userState.update + 1));
-        forgetAutoSavesOnAndAfter(nurseReplay.equalBefore(_userReplay, before)
-            ? before : Phyu(0));
-         +/
+    /*
+     * Returns a deep copy of the user state. Caller may sell its ownership.
+     * Returns a shallow copy of the replay. Caller should clone.
+     *
+     * We invalidate all cached states to kill all possible desynching bugs.
+     * Maybe it's possible to optimize this:
+     * Depending on mismatches between Nurse's replay and our saved replay
+     * (let the caller pass you the nurse's replay), invalidate only some of
+     * the cached states
+     */
+    auto loadUser()
+    {
+        forgetAutoSavesOnAndAfter(Phyu(0)); // See comment above loadUser().
         struct Ret {
-            const(GameState) state;
-            const(Replay) replay;
+            MutableHalfOfWorld state; // Deep copy. Caller may shallow-copy.
+            const(Replay) replay; // Shallow copy. Caller should clone.
         }
-        return Ret(_userState, _userReplay);
+        return Ret(_userState.clone(), _userReplay);
     }
 
-    const(GameState) loadBeforePhyu(in Phyu u)
+    // Returns a deep copy by value. Caller can sell its ownership.
+    MutableHalfOfWorld loadBeforePhyu(in Phyu u)
     {
-        GameState ret = _zero;
-        foreach (gs; _auto)
-            if (   gs.refCountedStore.isInitialized
-                && gs.age < u && gs.age > ret.age)
-                ret = gs;
+        MutableHalfOfWorld* ret = &_zero;
+        foreach (ref cand; _auto)
+            if (cand.isValid && cand.age < u && cand.age > ret.age)
+                ret = &cand;
         forgetAutoSavesOnAndAfter(u);
-        return ret;
+        return ret.clone();
     }
 
     bool wouldAutoSave(
-        in GameState s,
+        in World s,
         in Phyu updTo,
         in DuringTurbo duringTurbo) const
     {
@@ -148,7 +142,7 @@ public:
         return false;
     }
 
-    void autoSave(in GameState s, in Phyu ultimatelyTo)
+    void autoSave(in World s, in Phyu ultimatelyTo)
     {
         if (! wouldAutoSave(s, ultimatelyTo, DuringTurbo.no))
             return;
@@ -160,50 +154,34 @@ public:
         immutable int pairsToKeepForThisMap = s.land.xl * s.land.yl
             > levelPixelsToWarn ? pairsToKeep - 1 : pairsToKeep;
 
-        // Potentially push older auto-saved states down the hierarchy.
-        // First, if it's time to copy a frequent state into a less frequent
-        // state, make these copies. Start with least frequent copying the
-        // second-to-least freqent.
-        // After copying the internal states like that, save s into the most
-        // frequently updated pair. The most frequently updated pair has
-        // array indices 0 and 1. The next one has array indices 2 and 3, ...
         for (int pair = pairsToKeepForThisMap - 1; pair >= 0; --pair) {
-            immutable int umfp = updateMultipleForPair(pair);
-            if (s.age % umfp != 0)
+            if (s.age % updateMultipleForPair(pair) != 0) {
                 continue;
-
-            int whichOfPair = (s.age / umfp) % 2;
-            if (pair > 0)
-                // Make a shallow copy of the more-frequently-hit state:
-                // We treat states inside PhysicsCache like immutable.
-                // Only clone when we return to outside of PhysicsCache.
-                _auto[2*pair + whichOfPair] = _auto[2*(pair-1)];
-            else {
-                try {
-                    _auto[0 + whichOfPair] = s.clone(); // deep copy of current
-                }
-                catch (OutOfVramException e) {
-                    _auto[0 + whichOfPair] = GameState.init;
-                    log(e.msg);
-                }
             }
+            bool leapfrog = (s.age / updateMultipleForPair(pair)) & 1;
+            auto deepCopy = s.mutableHalf.clone();
+            _auto[2 * pair + leapfrog].takeOwnershipOf(deepCopy);
+            return;
         }
     }
 
 private:
     void forgetAutoSavesOnAndAfter(in Phyu u)
     {
-        foreach (ref GameState gs; _auto)
-            if (gs.refCountedStore.isInitialized && (u <= 0 || gs.age >= u))
-                destroy(gs);
+        foreach (ref state; _auto) {
+            if (state.isValid && (u <= _zero.age || state.age >= u)) {
+                state.dispose();
+            }
+        }
         _recommendGC = true;
     }
 
     int updateMultipleForPair(in int pair) const pure @nogc
     in { assert (pair >= 0 && pair < pairsToKeep); }
     do {
-        return updatesMostFrequentPair
-            * updatesMultiplierNextPairIsSlowerBy^^pair;
+        return pair == 0 ? 10
+            : pair == 1 ? 10*5
+            : pair == 2 ? 10*5*5 : 10*5*5*5;
     }
 }
 // end class StateManager

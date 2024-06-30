@@ -38,7 +38,7 @@ import tile.phymap;
 
 class GameModel {
 private:
-    GameState     _cs;            // owned (current state)
+    WorldAsStruct _cs; // owned (current state)
     PhysicsDrawer _physicsDrawer; // owned
     EffectSink _effect; // not owned, never null. May be the NullEffectSink.
 
@@ -61,17 +61,18 @@ public:
     do {
         _effect = ef;
         _cs = newZeroState(cfg);
+        assert (_cs.isValid);
         _physicsDrawer = new PhysicsDrawer(_cs.land, _cs.lookup);
         finalizePhyuAnimateGadgets();
     }
 
     // Should be accsessible by the Nurse. Shouldn't be accessed straight from
     // the game, but it's the Nurse's task to hide that information.
-    inout(GameState) cs() inout pure nothrow @safe @nogc { return _cs; }
+    inout(World) cs() inout pure nothrow @safe @nogc { return &_cs; }
 
-    void takeOwnershipOf(GameState s)
+    void takeOwnershipOf(ref MutableHalfOfWorld mutWo)
     {
-        _cs = s;
+        _cs.takeOwnershipOf(mutWo);
         _physicsDrawer.rebind(_cs.land, _cs.lookup);
         finalizePhyuAnimateGadgets();
     }
@@ -98,15 +99,17 @@ public:
 
     void dispose()
     {
-        if (_physicsDrawer)
-            _physicsDrawer.dispose();
-        _physicsDrawer = null;
+        _cs.dispose;
+        if (_physicsDrawer) {
+            _physicsDrawer.dispose;
+            _physicsDrawer = null;
+        }
     }
 
 private:
     OutsideWorld makeGypsyWagon(in Passport pa) pure nothrow @nogc
     {
-        return OutsideWorld(_cs, _physicsDrawer, _effect, pa);
+        return OutsideWorld(cs, _physicsDrawer, _effect, pa);
     }
 
     void applyPly(in ColoredData i)
