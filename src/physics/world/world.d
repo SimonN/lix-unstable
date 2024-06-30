@@ -33,25 +33,26 @@ alias World = WorldAsStruct*;
 alias ConstWorld = const(WorldAsStruct)*;
 
 struct WorldAsStruct {
-    ImmutableHalfOfWorld immutableHalf;
+package:
     MutableHalfOfWorld mutableHalf;
+    ImmutableHalfOfWorld immutableHalf;
 
+public:
     private alias mut = mutableHalf;
-    private alias immu = immutableHalf;
 
-    mixin(mkDecl("Phyu", "age"));
-    mixin(mkDecl("int", "overtimeAtStartInPhyus"));
+    mixin(mkDecl('m', "Phyu", "age"));
+    mixin(mkDecl('i', "int", "overtimeAtStartInPhyus"));
 
-    mixin(mkDecl("Torbit", "land"));
-    mixin(mkDecl("Phymap", "lookup"));
-    mixin(mkDecl("Tribes", "tribes"));
+    mixin(mkDecl('m', "Torbit", "land"));
+    mixin(mkDecl('m', "Phymap", "lookup"));
+    mixin(mkDecl('m', "Tribes", "tribes"));
 
-    mixin(mkDecl("Hatch[]", "hatches"));
-    mixin(mkDecl("Goal[]", "goals"));
-    mixin(mkDecl("Water[]", "waters"));
-    mixin(mkDecl("TrapTrig[]", "traps"));
-    mixin(mkDecl("FlingPerm[]", "flingPerms"));
-    mixin(mkDecl("FlingTrig[]", "flingTrigs"));
+    mixin(mkDecl('m', "Hatch[]", "hatches"));
+    mixin(mkDecl('m', "Goal[]", "goals"));
+    mixin(mkDecl('m', "Water[]", "waters"));
+    mixin(mkDecl('m', "TrapTrig[]", "traps"));
+    mixin(mkDecl('m', "FlingPerm[]", "flingPerms"));
+    mixin(mkDecl('m', "FlingTrig[]", "flingTrigs"));
 
     void takeOwnershipOf(ref MutableHalfOfWorld wo)
     {
@@ -128,12 +129,14 @@ struct WorldAsStruct {
     // Returns as int, not as Phyu. Phyu is a point in time, not a duration.
     int overtimeRemainingInPhyus() const
     {
-        if (! isOvertimeRunning)
-            return mut.overtimeAtStartInPhyus;
-        if (mut.tribes.playerTribes.all!(tr => tr.prefersGameToEnd))
+        if (! isOvertimeRunning) {
+            return immutableHalf.overtimeAtStartInPhyus;
+        }
+        if (mut.tribes.playerTribes.all!(tr => tr.prefersGameToEnd)) {
             return 0;
+        }
         return clamp(overtimeAtStartInPhyus + overtimeRunningSince - mut.age,
-            0, overtimeAtStartInPhyus);
+            0, immutableHalf. overtimeAtStartInPhyus);
     }
 
     bool nukeIsAssigningExploders() const
@@ -154,20 +157,25 @@ struct WorldAsStruct {
     }
 
 private:
-    static string mkDecl(in string type, in string var)
-    {
-        return "ref inout(" ~ type ~ ") " ~ var
-            ~ "() return inout pure nothrow @safe @nogc { return mut."
-            ~ var ~ "; }";
+    static string mkDecl(in char c, in string type, in string var)
+    in { assert (c == 'i' || c == 'm'); }
+    do {
+        return (c == 'i' ? "const(" : "ref inout(")
+            ~ type ~ ") " ~ var
+            ~ "() return inout pure nothrow @safe @nogc"
+            ~ " { return " ~ (c == 'i' ? "immutableHalf" : "mutableHalf")
+            ~ "." ~ var ~ "; }";
     }
 }
 
-struct ImmutableHalfOfWorld {}
+struct ImmutableHalfOfWorld {
+public:
+    int overtimeAtStartInPhyus;
+}
 
 struct MutableHalfOfWorld {
 public:
     Phyu age;
-    int overtimeAtStartInPhyus;
 
     Torbit land;
     Phymap lookup = null;
@@ -247,7 +255,6 @@ private:
 
     void copyValuesArraysFrom(ref const(typeof(this)) rhs)
     {
-        overtimeAtStartInPhyus = rhs.overtimeAtStartInPhyus;
         age = rhs.age;
         tribes = rhs.tribes.clone();
         hatches  = basics.help.clone(rhs.hatches);

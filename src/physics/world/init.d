@@ -47,8 +47,10 @@ do {
         g.drawLookup(ret.lookup);
     });
     ret.age = ret.isBattle ? Phyu(0) : Phyu(45); // start quickly in 1-player
-    ret.overtimeAtStartInPhyus = ret.isBattle
+
+    ret.immutableHalf.overtimeAtStartInPhyus = ret.isBattle
         ? cfg.level.overtimeSeconds * phyusPerSecondAtNormalSpeed : 0;
+
     return ret;
 }
 
