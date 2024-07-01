@@ -63,7 +63,6 @@ public:
         _cs = newZeroState(cfg);
         assert (_cs.isValid);
         _physicsDrawer = new PhysicsDrawer(_cs.land, _cs.lookup);
-        finalizePhyuAnimateGadgets();
     }
 
     // Should be accsessible by the Nurse. Shouldn't be accessed straight from
@@ -74,7 +73,6 @@ public:
     {
         _cs.takeOwnershipOf(mutWo);
         _physicsDrawer.rebind(_cs.land, _cs.lookup);
-        finalizePhyuAnimateGadgets();
     }
 
     void applyChangesToLand() {
@@ -87,10 +85,11 @@ public:
         ++_cs.age;
         range.each!(cd => applyPly(cd));
 
-        updateNuke(); // sets lixInHatch = 0, thus affects spawnLixxiesFromHatch
+        updateNuke(); // sets lixInHatch = 0, affecting spawnLixxiesFromHatch
         spawnLixxiesFromHatches();
         updateLixxies();
-        finalizePhyuAnimateGadgets();
+
+        Hatch.maybePlaySound(_cs.age, _effect);
         if (_cs.isOvertimeRunning && _cs.someoneDoesntYetPreferGameToEnd) {
             _effect.announceOvertime(_cs.overtimeRunningSince,
                 _cs.overtimeAtStartInPhyus);
@@ -268,18 +267,5 @@ private:
         _physicsDrawer.applyChangesToPhymap();
 
         performUnmarked(PhyuOrder.peaceful);
-    }
-
-    void finalizePhyuAnimateGadgets()
-    {
-        foreach (hatch; _cs.hatches) {
-            hatch.performAtEndOfPhysicsUpdate(_cs.age, _effect);
-        }
-        foreach (muncher; _cs.munchers) {
-            muncher.performAtEndOfPhysicsUpdate();
-        }
-        foreach (catapult; _cs.catapults) {
-            catapult.performAtEndOfPhysicsUpdate();
-        }
     }
 }

@@ -94,13 +94,12 @@ public:
     void feed(in Phyu upd, in Style st)
     {
         assert (isOpenFor(upd, st), "don't feed what it's not open for");
-        super.addTribe(st);
-        _lastFed = upd;
-    }
-
-    void performAtEndOfPhysicsUpdate()
-    {
-        clearTribes();
+        assert (upd >= _lastFed, "Gadget ate in the future? Bad savestating.");
+        if (upd > _lastFed) {
+            _lastFed = upd;
+            clearTribes;
+        }
+        addTribe(st);
     }
 
 protected:

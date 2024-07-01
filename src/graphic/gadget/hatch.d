@@ -39,10 +39,11 @@ public:
 
     override Hatch clone() const { return new Hatch(this); }
 
-    void performAtEndOfPhysicsUpdate(in Phyu now, EffectSink effect) const
+    static void maybePlaySound(in Phyu now, EffectSink effect)
     {
-        if (now == updateOpen)
+        if (now == updateOpen) {
             effect.addSoundGeneral(now, Sound.HATCH_OPEN);
+        }
     }
 
 protected:
