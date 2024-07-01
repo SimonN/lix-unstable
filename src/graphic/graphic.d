@@ -48,14 +48,14 @@ public:
         _yf     = rhs._yf;
     }
 
-    // This should go in the following "@property pure nothrow @nogc {",
+    const(Albit) albit() const pure nothrow @nogc { return cutbit.albit; }
+
+    // This should go in the following "pure nothrow @nogc {",
     // but fmod is not yet pure in the D standard library.
     // https://issues.dlang.org/show_bug.cgi?id=11320
     double rotation(double dbl) nothrow @nogc { return _rot = fmod(dbl, 4); }
 
-    @property pure nothrow @nogc {
-        const(Albit) albit() const { return cutbit.albit; }
-
+    pure nothrow @safe @nogc {
         bool mirror () const { return _mirror; }
         double rotation() const { return _rot; }
         bool mirror (bool b) { return _mirror = b; }
@@ -106,9 +106,9 @@ public:
     }
 
     /*
-     * This breaks the abstraction that Graphic knows about its selected
-     * frame (xf, yf). I need this break for gadgets that want to pick a
-     * frame and draw, all while the Gadget and the Graphic remain const.
+     * Hack: This breaks the abstraction that Graphic knows about its selected
+     * frame (xf, yf). I need this break for gadgets that want to pick a frame
+     * and draw it once, all while the Gadget and the Graphic remain const.
      */
     void drawSpecificFrame(in Point xfyf) const
     {

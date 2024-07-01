@@ -85,7 +85,7 @@ public:
             return ! isEating(upd);
     }
 
-    bool isEating(in Phyu upd) const
+    bool isEating(in Phyu upd) const pure nothrow @safe @nogc
     {
         assert (upd >= _lastFed, "relics from the future");
         return upd < firstIdlingPhyuAfterEating;
@@ -98,16 +98,22 @@ public:
         _lastFed = upd;
     }
 
-    override void perform(in Phyu upd, EffectSink ef)
+    void performAtEndOfPhysicsUpdate()
     {
-        exactXfYf = isEating(upd)
-            ? Point(upd - _lastFed, 1)
-            : Point((upd - firstIdlingPhyuAfterEating) % _idleAnimLen, 0);
         clearTribes();
     }
 
+protected:
+    override Gadget.Frame frame(in Phyu now) const pure nothrow @safe @nogc
+    {
+        return isEating(now)
+            ? Gadget.Frame(now - _lastFed, true)
+            : Gadget.Frame((now - firstIdlingPhyuAfterEating) % _idleAnimLen,
+                false);
+    }
+
 private:
-    Phyu firstIdlingPhyuAfterEating() const
+    Phyu firstIdlingPhyuAfterEating() const pure nothrow @safe @nogc
     {
         return _lastFed == 0 ? Phyu(0) // never eaten anything
             : Phyu(_lastFed + _eatingAnimLen);

@@ -94,26 +94,21 @@ public:
         tile = rhs.tile;
     }
 
-    final const pure nothrow @nogc {
+    final const pure nothrow @safe @nogc {
         Point loc() { return _graphic.loc; }
         Rect rect() { return _graphic.rect; }
         int xl() { return _graphic.xl; }
         int yl() { return _graphic.yl; }
-        int frames() { return max(1, _graphic.xfs * _graphic_yfs); }
-    }
-
-    // This affects physics. Call during physics update. It does not draw.
-    void perform(in Phyu upd, EffectSink ef)
-    {
-        frame = upd;
+        int frames() { return max(1, _graphic.xfs * _graphic.yfs); }
     }
 
     final void draw(in Phyu now, in Style treatSpecially) const
     {
-        const fra = frame;
-        _graphic.draw(fra.forceSecondRow ? Point(fra.frame, 1)
-            : _graphic.xfs == 0 ? Point(0, fra.frame) : Point(fra.frame, 0));
-        onDraw(treatSpecially);
+        const fra = frame(now);
+        _graphic.drawSpecificFrame(fra.forceSecondRow ? Point(fra.frame, 1)
+            : _graphic.xfs > 1 ? Point(fra.frame, 0) : Point(0, fra.frame));
+
+        onDraw(now, treatSpecially);
     }
 
     // For semi-transparent goal markers in multiplayer.
@@ -138,17 +133,6 @@ public:
     }
 
 protected:
-    /*
-     * Customization points for class Gadget's draw() template method pattern:
-     *
-     * frame: Via this, the subclass must report to base class Gadget
-     * which frame (xf, yf) they want to paint, given the current tick.
-     *
-     * onDraw: Optionally, the subclass may draw some after the base has drawn.
-     */
-    abstract Frame frame(in Phyu now) const pure nothrow @safe @nogc;
-    void onDraw(in Phyu now, in Style treatSpecially) const { }
-
     static struct Frame {
         /*
          * frame: It means the graphic's xf normally. But some graphics are
@@ -158,5 +142,20 @@ protected:
         int frame;
         bool forceSecondRow; // For triggered traps
     }
+
+    /*
+     * Customization points for class Gadget's draw() template method pattern:
+     *
+     * frame: Via this, the subclass must report to base class Gadget
+     * which frame (xf, yf) they want to paint, given the current tick.
+     *
+     * onDraw: Optionally, the subclass may draw some after the base has drawn.
+     */
+    Frame frame(in Phyu now) const pure nothrow @safe @nogc
+    {
+        return Gadget.Frame(positiveMod(now, frames));
+    }
+
+    void onDraw(in Phyu now, in Style treatSpecially) const { }
 }
 // end class Gadget

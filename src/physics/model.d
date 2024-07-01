@@ -272,9 +272,14 @@ private:
 
     void finalizePhyuAnimateGadgets()
     {
-        // Animate after we had the traps eat lixes. Eating a lix sets a flag
-        // in the trap to run through the animation, showing the first killing
-        // frame after this next perform() call. Physics depend on this anim!
-        _cs.foreachMutableGadget((Gadget g) { g.perform(_cs.age, _effect); });
+        foreach (hatch; _cs.hatches) {
+            hatch.performAtEndOfPhysicsUpdate(_cs.age, _effect);
+        }
+        foreach (trap; _cs.traps) {
+            trap.performAtEndOfPhysicsUpdate();
+        }
+        foreach (catapult; _cs.flingTrigs) {
+            catapult.performAtEndOfPhysicsUpdate();
+        }
     }
 }
