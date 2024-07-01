@@ -41,7 +41,7 @@ public:
     }
 
 protected:
-    override void onDraw(in Style markWithArrow) const
+    override void onDraw(in Phyu now, in Style markWithArrow) const
     {
         foreach (st; tribes)
             drawOwner(st, hasTribe(markWithArrow) ? 1 : 0);

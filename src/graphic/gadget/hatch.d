@@ -45,12 +45,6 @@ public:
 
     override void perform(in Phyu u, EffectSink effect)
     {
-        // (of) is first absolute frame of opening. This is earlier if the
-        // sound shall match a later frame of the hatch, as given by specialX.
-        // xfs * yfs is length of animation, see Gadget.animateForPhyu.
-        immutable int of = updateOpen - tile.specialX;
-        frame = (u - of).clamp(0, frames - 1);
-
         if (u >= updateBlinkStop)
             _blinkNow = false;
         else {
@@ -62,13 +56,27 @@ public:
     }
 
 protected:
-    override void onDraw(in Style blinkStyle) const
+    Gadget.Frame frame(in Phyu now)
+    {
+        return Gadget.Frame((now - firstOpeningFrame).clamp(0, frames - 1));
+    }
+
+    override void onDraw(in Phyu now, in Style blinkStyle) const
     {
         if (_blinkNow && hasTribe(blinkStyle) && blinkStyle != Style.garden) {
             const c = Spritesheet.skillsInPanel.toCutbitFor(blinkStyle);
             c.draw(loc + tile.trigger - c.len/2,
                 Ac.walker.acToSkillIconXf, 0);
         }
+    }
+
+private:
+    // The first absolute frame of opening. This is earlier if the
+    // sound shall match a later frame of the hatch, as given by specialX.
+    // xfs * yfs is length of animation, see Gadget.animateForPhyu.
+    int firstOpeningFrame() const pure nothrow @safe @nogc
+    {
+        return updateOpen - tile.specialX;
     }
 }
 // end class Hatch

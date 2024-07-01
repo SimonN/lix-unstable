@@ -48,7 +48,6 @@ package immutable string StandardGadgetCtor =
 class Gadget {
 private:
     Graphic _graphic;
-    int _frame; // between 0 incl. and (_graphic.xfs * _graphic.yfs) exclusive
 
 public:
     const(GadgetTile) tile;
@@ -62,7 +61,6 @@ protected:
     }
     do {
         _graphic = new Graphic(levelpos.tile.cb, top, levelpos.loc);
-        _frame = 0;
         tile = levelpos.tile;
     }
 
@@ -93,7 +91,6 @@ public:
     }
     do {
         _graphic = rhs._graphic.clone;
-        _frame = rhs._frame;
         tile = rhs.tile;
     }
 
@@ -102,7 +99,7 @@ public:
         Rect rect() { return _graphic.rect; }
         int xl() { return _graphic.xl; }
         int yl() { return _graphic.yl; }
-        int frame() { return _frame; }
+        int frames() { return max(1, _graphic.xfs * _graphic_yfs); }
     }
 
     // This affects physics. Call during physics update. It does not draw.
@@ -111,10 +108,11 @@ public:
         frame = upd;
     }
 
-    protected void onDraw(in Style treatSpecially) const { }
-    final void draw(in Style treatSpecially) const
+    final void draw(in Phyu now, in Style treatSpecially) const
     {
-        _graphic.draw();
+        const fra = frame;
+        _graphic.draw(fra.forceSecondRow ? Point(fra.frame, 1)
+            : _graphic.xfs == 0 ? Point(0, fra.frame) : Point(fra.frame, 0));
         onDraw(treatSpecially);
     }
 
@@ -140,31 +138,25 @@ public:
     }
 
 protected:
-    final nothrow pure @nogc {
-        // Subclasses should override animateForPhyu instead.
-        // Game should call animateForPhyu instead.
-        // Most graphics have only one animation. This can be in a row,
-        // in column, or in a rectangular sheet. We traverse a rectangular
-        // sheet row-majorly, like we read a western book.
-        // The rectangular sheet solves github issues #4 and #213 about
-        // graphics card limitation with Amanda's tar.
-        int frames() const { return max(1, _graphic.xfs * _graphic.yfs); }
-        int frame(in int fr)
-        {
-            _graphic.xf = positiveMod(fr, _graphic.xfs);
-            _graphic.yf = positiveMod(fr / _graphic.xfs, _graphic.yfs);
-            return _graphic.yf * _graphic.xfs + _graphic.xf;
-        }
+    /*
+     * Customization points for class Gadget's draw() template method pattern:
+     *
+     * frame: Via this, the subclass must report to base class Gadget
+     * which frame (xf, yf) they want to paint, given the current tick.
+     *
+     * onDraw: Optionally, the subclass may draw some after the base has drawn.
+     */
+    abstract Frame frame(in Phyu now) const pure nothrow @safe @nogc;
+    void onDraw(in Phyu now, in Style treatSpecially) const { }
 
-        // Traps need access to two different rows. Allow to break the
-        // abstraction of frame() earlier. >_>
-        Point exactXfYf() const { return Point(_graphic.xf, _graphic.yf); }
-        Point exactXfYf(Point p)
-        {
-            _graphic.xf = p.x;
-            _graphic.yf = p.y;
-            return exactXfYf;
-        }
+    static struct Frame {
+        /*
+         * frame: It means the graphic's xf normally. But some graphics are
+         * in a column, e.g., Amanda's tar. Class Gadget may interpret (frame)
+         * as yf in such a case, see draw(). But subclasses shouldn't worry.
+         */
+        int frame;
+        bool forceSecondRow; // For triggered traps
     }
 }
 // end class Gadget
