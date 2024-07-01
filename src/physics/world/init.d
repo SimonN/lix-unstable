@@ -43,7 +43,7 @@ do {
     (&ret).preparePlayers(cfg);
     (&ret).prepareGadgets(cfg.level);
     (&ret).assignTribesToGoals(cfg.permu);
-    (&ret).foreachGadget((Gadget g) {
+    (&ret).foreachConstGadget((const(Gadget) g) {
         g.drawLookup(ret.lookup);
     });
     ret.age = ret.isBattle ? Phyu(0) : Phyu(45); // start quickly in 1-player
@@ -91,10 +91,10 @@ void prepareGadgets(World state, in Level level)
     instantiateGadgetsFromArray(state.hatches,  GadType.HATCH);
     instantiateGadgetsFromArray(state.goals,    GadType.GOAL);
     instantiateGadgetsFromArray(state.traps,    GadType.TRAP);
-    instantiateGadgetsFromArray(state.waters, GadType.water);
-    instantiateGadgetsFromArray(state.waters, GadType.fire);
+    instantiateGadgetsFromArray(state.immutableHalf.waters, GadType.water);
+    instantiateGadgetsFromArray(state.immutableHalf.waters, GadType.fire);
     instantiateGadgetsFromArray(state.flingTrigs, GadType.catapult);
-    instantiateGadgetsFromArray(state.flingPerms, GadType.steam);
+    instantiateGadgetsFromArray(state.immutableHalf.steams, GadType.steam);
 }
 
 void assignTribesToGoals(World state, in Permu permu)

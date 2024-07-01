@@ -64,8 +64,8 @@ void useFlingers(Lixxie lixxie) { with (lixxie) with (outsideWorld.state)
     auto encounteredOpenFlingers = chain(flingTrigs
             .filter!(fl => inTriggerArea(fl) && fl.isOpenFor(age, style))
             .tee!(fl => fl.feed(age, style)),
-        outsideWorld.state.flingPerms.filter!(fl => inTriggerArea(fl)));
-    foreach (Gadget fl; encounteredOpenFlingers) {
+        outsideWorld.state.steams.filter!(fl => inTriggerArea(fl)));
+    foreach (const(Gadget) fl; encounteredOpenFlingers) {
         assert (fl.tile);
         addFling(fl.tile.flingForward
             ? fl.tile.specialX * lixxie.dir // fling forward

@@ -49,9 +49,9 @@ public:
 
     mixin(mkDecl('m', "Hatch[]", "hatches"));
     mixin(mkDecl('m', "Goal[]", "goals"));
-    mixin(mkDecl('m', "Water[]", "waters"));
+    mixin(mkDecl('i', "Water[]", "waters"));
     mixin(mkDecl('m', "TrapTrig[]", "traps"));
-    mixin(mkDecl('m', "FlingPerm[]", "flingPerms"));
+    mixin(mkDecl('i', "Steam[]", "steams"));
     mixin(mkDecl('m', "FlingTrig[]", "flingTrigs"));
 
     void takeOwnershipOf(ref MutableHalfOfWorld wo)
@@ -70,15 +70,14 @@ public:
     // Let's duplicate the function, once for const, once for mutable.
     void foreachConstGadget(void delegate(const(Gadget)) func) const
     {
-        chain(mut.hatches, mut.goals, mut.waters, mut.traps,
-            mut.flingPerms, mut.flingTrigs
+        chain(mut.hatches, mut.goals, immutableHalf.waters, mut.traps,
+            immutableHalf.steams, mut.flingTrigs
             ).each!func;
     }
-    void foreachGadget(void delegate(Gadget) func)
+
+    void foreachMutableGadget(void delegate(Gadget) func)
     {
-        chain(mut.hatches, mut.goals, mut.waters, mut.traps,
-            mut.flingPerms, mut.flingTrigs
-            ).each!func;
+        chain(mut.hatches, mut.goals, mut.traps, mut.flingTrigs).each!func;
     }
 
     const pure nothrow @safe @nogc {
@@ -171,6 +170,8 @@ private:
 struct ImmutableHalfOfWorld {
 public:
     int overtimeAtStartInPhyus;
+    Water[] waters;
+    Steam[] steams;
 }
 
 struct MutableHalfOfWorld {
@@ -183,9 +184,7 @@ public:
 
     Hatch[] hatches;
     Goal[] goals;
-    Water[] waters;
     TrapTrig[] traps;
-    FlingPerm[] flingPerms;
     FlingTrig[] flingTrigs;
 
     typeof(this) clone() const
@@ -259,9 +258,7 @@ private:
         tribes = rhs.tribes.clone();
         hatches  = basics.help.clone(rhs.hatches);
         goals    = basics.help.clone(rhs.goals);
-        waters   = basics.help.clone(rhs.waters);
         traps    = basics.help.clone(rhs.traps);
-        flingPerms = basics.help.clone(rhs.flingPerms);
         flingTrigs = basics.help.clone(rhs.flingTrigs);
     }
 }

@@ -35,9 +35,9 @@ import tile.occur;
 import tile.gadtile;
 import net.style; // dubious, but I need it for fat interface antipattern
 
-public alias Water     = Gadget;
-public alias Fire      = Gadget;
-public alias FlingPerm = Gadget;
+public alias Water = Gadget;
+public alias Fire = Gadget;
+public alias Steam = Gadget;
 
 package immutable string StandardGadgetCtor =
     "this(const(Topology) top, in GadOcc levelpos)
@@ -78,7 +78,7 @@ public:
             case GadType.water: return new Water(top, levelpos);
             case GadType.fire: return new Fire(top, levelpos);
             case GadType.catapult: return new FlingTrig(top, levelpos);
-            case GadType.steam: return new FlingPerm(top, levelpos);
+            case GadType.steam: return new Steam(top, levelpos);
             case GadType.MAX:
                 assert (false, "GadType isn't supported by Gadget.factory");
         }

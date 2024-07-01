@@ -275,6 +275,6 @@ private:
         // Animate after we had the traps eat lixes. Eating a lix sets a flag
         // in the trap to run through the animation, showing the first killing
         // frame after this next perform() call. Physics depend on this anim!
-        _cs.foreachGadget((Gadget g) { g.perform(_cs.age, _effect); });
+        _cs.foreachMutableGadget((Gadget g) { g.perform(_cs.age, _effect); });
     }
 }
