@@ -275,10 +275,10 @@ private:
         foreach (hatch; _cs.hatches) {
             hatch.performAtEndOfPhysicsUpdate(_cs.age, _effect);
         }
-        foreach (trap; _cs.traps) {
-            trap.performAtEndOfPhysicsUpdate();
+        foreach (muncher; _cs.munchers) {
+            muncher.performAtEndOfPhysicsUpdate();
         }
-        foreach (catapult; _cs.flingTrigs) {
+        foreach (catapult; _cs.catapults) {
             catapult.performAtEndOfPhysicsUpdate();
         }
     }

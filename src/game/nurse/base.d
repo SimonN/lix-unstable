@@ -78,7 +78,7 @@ public:
     bool doneAnimating() const
     {
         return cs.tribes.allTribesEvenNeutral.all!(a => a.doneAnimating)
-            && cs.traps.all!(a => ! a.isEating(now));
+            && cs.munchers.all!(a => ! a.isEating(now));
     }
 
     final auto scores() const

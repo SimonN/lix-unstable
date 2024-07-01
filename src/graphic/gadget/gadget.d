@@ -72,10 +72,10 @@ public:
         final switch (levelpos.tile.type) {
             case GadType.HATCH:   return new Hatch   (top, levelpos);
             case GadType.GOAL:    return new Goal    (top, levelpos);
-            case GadType.TRAP:    return new TrapTrig(top, levelpos);
+            case GadType.TRAP: return new Muncher(top, levelpos);
             case GadType.water: return new Water(top, levelpos);
             case GadType.fire: return new Fire(top, levelpos);
-            case GadType.catapult: return new FlingTrig(top, levelpos);
+            case GadType.catapult: return new Catapult(top, levelpos);
             case GadType.steam: return new Steam(top, levelpos);
             case GadType.MAX:
                 assert (false, "GadType isn't supported by Gadget.factory");

@@ -88,13 +88,14 @@ void prepareGadgets(World state, in Level level)
             // don't draw to the lookup map yet, we may remove some goals first
         }
     }
-    instantiateGadgetsFromArray(state.hatches,  GadType.HATCH);
-    instantiateGadgetsFromArray(state.goals,    GadType.GOAL);
-    instantiateGadgetsFromArray(state.traps,    GadType.TRAP);
+    instantiateGadgetsFromArray(state.immutableHalf.hatches, GadType.HATCH);
+    instantiateGadgetsFromArray(state.immutableHalf.goals, GadType.GOAL);
     instantiateGadgetsFromArray(state.immutableHalf.waters, GadType.water);
     instantiateGadgetsFromArray(state.immutableHalf.waters, GadType.fire);
-    instantiateGadgetsFromArray(state.flingTrigs, GadType.catapult);
     instantiateGadgetsFromArray(state.immutableHalf.steams, GadType.steam);
+
+    instantiateGadgetsFromArray(state.munchers, GadType.TRAP);
+    instantiateGadgetsFromArray(state.catapults, GadType.catapult);
 }
 
 void assignTribesToGoals(World state, in Permu permu)
@@ -113,11 +114,11 @@ do { with (state)
 {
     immutable numTribes = state.tribes.numPlayerTribes;
     while (hatches.len % numTribes != 0 && numTribes % hatches.len != 0)
-        hatches = hatches[0 .. $-1];
+        state.immutableHalf.hatches = state.immutableHalf.hatches[0 .. $-1];
     assert (hatches.len);
     while (goals.len
         && goals.len % numTribes != 0 && numTribes % goals.len != 0)
-        goals = goals[0 .. $-1];
+        state.immutableHalf.goals = state.immutableHalf.goals[0 .. $-1];
 
     auto stylesInPlay = tribes.playerTribes.map!(tr => tr.style).array;
     stylesInPlay.sort();
@@ -131,10 +132,10 @@ do { with (state)
         immutable int slot = permu[i.to!int];
         tribes[style].nextHatch = slot % hatches.len;
         for (int j = slot % hatches.len; j < hatches.len; j += numTribes)
-            hatches[j].addTribe(style);
+            state.immutableHalf.hatches[j].addTribe(style);
         if (goals.len == 0)
             continue;
         for (int j = slot % goals.len; j < goals.len; j += numTribes)
-            goals[j].addTribe(style);
+            state.immutableHalf.goals[j].addTribe(style);
     }
 }}

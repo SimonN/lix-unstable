@@ -39,7 +39,7 @@ public:
 
     override Hatch clone() const { return new Hatch(this); }
 
-    void performAtEndOfPhysicsUpdate(in Phyu now, EffectSink effect)
+    void performAtEndOfPhysicsUpdate(in Phyu now, EffectSink effect) const
     {
         if (now == updateOpen)
             effect.addSoundGeneral(now, Sound.HATCH_OPEN);

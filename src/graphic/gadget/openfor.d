@@ -28,8 +28,8 @@ import tile.occur;
 import net.style;
 import physics.effect;
 
-public alias TrapTrig  = GadgetAnimsOnFeed;
-public alias FlingTrig = GadgetAnimsOnFeed; // see gadget.d for FlingPerm
+public alias Muncher  = GadgetAnimsOnFeed;
+public alias Catapult = GadgetAnimsOnFeed; // see gadget.d for FlingPerm
 
 private class GadgetAnimsOnFeed : GadgetWithTribeList {
 private:

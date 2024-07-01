@@ -47,12 +47,12 @@ public:
     mixin(mkDecl('m', "Phymap", "lookup"));
     mixin(mkDecl('m', "Tribes", "tribes"));
 
-    mixin(mkDecl('m', "Hatch[]", "hatches"));
-    mixin(mkDecl('m', "Goal[]", "goals"));
+    mixin(mkDecl('i', "Hatch[]", "hatches"));
+    mixin(mkDecl('i', "Goal[]", "goals"));
     mixin(mkDecl('i', "Water[]", "waters"));
-    mixin(mkDecl('m', "TrapTrig[]", "traps"));
+    mixin(mkDecl('m', "Muncher[]", "munchers"));
     mixin(mkDecl('i', "Steam[]", "steams"));
-    mixin(mkDecl('m', "FlingTrig[]", "flingTrigs"));
+    mixin(mkDecl('m', "Catapult[]", "catapults"));
 
     void takeOwnershipOf(ref MutableHalfOfWorld wo)
     {
@@ -67,17 +67,11 @@ public:
     bool isValid() const pure nothrow @safe @nogc { return mut.isValid; }
 
     // With dmd 2.0715.1, inout doesn't seem to work for this.
-    // Let's duplicate the function, once for const, once for mutable.
     void foreachConstGadget(void delegate(const(Gadget)) func) const
     {
-        chain(mut.hatches, mut.goals, immutableHalf.waters, mut.traps,
-            immutableHalf.steams, mut.flingTrigs
+        chain(immutableHalf.hatches, immutableHalf.goals, immutableHalf.waters,
+            mut.munchers, immutableHalf.steams, mut.catapults
             ).each!func;
-    }
-
-    void foreachMutableGadget(void delegate(Gadget) func)
-    {
-        chain(mut.hatches, mut.goals, mut.traps, mut.flingTrigs).each!func;
     }
 
     const pure nothrow @safe @nogc {
@@ -170,6 +164,8 @@ private:
 struct ImmutableHalfOfWorld {
 public:
     int overtimeAtStartInPhyus;
+    Hatch[] hatches;
+    Goal[] goals;
     Water[] waters;
     Steam[] steams;
 }
@@ -182,10 +178,8 @@ public:
     Phymap lookup = null;
     Tribes tribes; // update order is garden, red, orange, yellow, ...
 
-    Hatch[] hatches;
-    Goal[] goals;
-    TrapTrig[] traps;
-    FlingTrig[] flingTrigs;
+    Muncher[] munchers;
+    Catapult[] catapults;
 
     typeof(this) clone() const
     out (ret) { assert (ret.isValid == this.isValid); }
@@ -256,9 +250,7 @@ private:
     {
         age = rhs.age;
         tribes = rhs.tribes.clone();
-        hatches  = basics.help.clone(rhs.hatches);
-        goals    = basics.help.clone(rhs.goals);
-        traps    = basics.help.clone(rhs.traps);
-        flingTrigs = basics.help.clone(rhs.flingTrigs);
+        munchers = basics.help.clone(rhs.munchers);
+        catapults = basics.help.clone(rhs.catapults);
     }
 }
