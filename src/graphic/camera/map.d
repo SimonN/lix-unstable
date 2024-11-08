@@ -126,7 +126,7 @@ private void reinitializeCamera()
         immutable Point oldFocus = oldCam.focus;
         _cams[key] = new Camera(torbit, oldCam.targetLen,
             opt.allowBlurryZoom.value);
-        _cams[key].focus = oldFocus;
+        _cams[key].scrollTo(oldFocus);
     }
 }
 
@@ -141,10 +141,10 @@ private void reinitializeCamera()
          * pixels stay where they were on screen using the old camera.
          * Hardcoding Point(0, 0) assumes that the tweaker is on the right.
          */
-        _cams[next].focus = chosenCam.focus;
+        _cams[next].scrollTo(chosenCam.focus);
         immutable topLeftLand = chosenCam.sourceOf(Point(0, 0));
         immutable topLeftWrong = _cams[next].sourceOf(Point(0, 0));
-        _cams[next].focus = _cams[next].focus - (topLeftWrong - topLeftLand);
+        _cams[next].scrollTo(_cams[next].focus - (topLeftWrong - topLeftLand));
         _chosenCam = next;
     }
 
@@ -156,36 +156,17 @@ private void reinitializeCamera()
 void centerOnAverage(Rx, Ry)(Rx rangeX, Ry rangeY)
     if (isInputRange!Rx && isInputRange!Ry)
 {
-    chosenCam.focus = Point(
+    chosenCam.scrollTo(Point(
         topology.torusAverageX(rangeX),
-        topology.torusAverageY(rangeY));
+        topology.torusAverageY(rangeY)));
 }
 
 void zoomOutToSeeEntireMap() { chosenCam.zoomOutToSeeEntireSource(); }
 void snapToBoundary() { chosenCam.snapToBoundary(); }
 
-// By how much is the camera larger than the map?
-// These are 0 on torus maps, only > 0 for small non-torus maps.
-// If something > 0 is returned, we will draw a dark border around the level.
-// The border is split into two equally thick sides in the x direction.
-private int borderOneSideXl() const
-{
-    if (topology.torusX || topology.xl * zoom >= chosenCam.targetLen.x)
-        return 0;
-    return (chosenCam.targetLen.x - topology.xl * zoom).ceilInt / 2;
-}
-
-private int borderUpperSideYl() const
-{
-    if (topology.torusY || topology.yl * zoom >= chosenCam.targetLen.y)
-        return 0;
-    return (chosenCam.targetLen.y - topology.yl * zoom).ceilInt;
-}
-
 Point mouseOnTarget() const
 {
-    return hardware.mouse.mouseOnScreen
-        - Point(borderOneSideXl, borderUpperSideYl);
+    return hardware.mouse.mouseOnScreen;
 }
 
 Point mouseOnLand() const
@@ -233,7 +214,7 @@ private void calcEdgeScrolling(Camera cam)
         if (mouseX == dxl) { mov += .Point(a, 0); msg(cam.mayScrollLeft); }
         if (mouseY == 0)   { mov -= .Point(0, a); msg(cam.mayScrollDown); }
         if (mouseY == dyl) { mov += .Point(0, a); msg(cam.mayScrollUp); }
-        cam.focus = cam.focus + mov;
+        cam.scrollTo(cam.focus + mov);
     }
 }
 
@@ -277,7 +258,7 @@ private void calcHoldScrolling(Camera cam)
         clickScrollingOneDimension(cam.mayScrollUp, cam.mayScrollDown,
         _scrollGrabbed.y, hardware.mouse.mouseY,
         hardware.mouse.mouseMickey.y, &hardware.mouse.freezeMouseY));
-    cam.focus = cam.focus + p;
+    cam.scrollTo(cam.focus + p);
 }
 
 
@@ -290,7 +271,10 @@ private void calcHoldScrolling(Camera cam)
 
 void drawCamera()
 {
-    drawBorders(borderOneSideXl, borderUpperSideYl, chosenCam.targetLen);
+    // Draw the void.
+    al_draw_filled_rectangle(0, 0, chosenCam.targetLen.x,
+        chosenCam.targetLen.y, color.screenBorder);
+
     drawCameraBorderless(chosenCam);
 }
 
@@ -298,23 +282,25 @@ void drawCamera()
 // to the current drawing target, most likely the screen
 private void drawCameraBorderless(in Camera cam)
 {
-    immutable int overallMaxX = cam.targetLen.x - borderOneSideXl;
+    immutable int overallMaxX = cam.targetLen.x;
     immutable int overallMaxY = cam.targetLen.y;
+    immutable bool torX = topology.torusX;
+    immutable bool torY = topology.torusY;
     immutable int plusX = (topology.xl * zoom).ceil.to!int;
     immutable int plusY = (topology.yl * zoom).ceil.to!int;
-    for (int x = borderOneSideXl; x < overallMaxX; x += plusX) {
-        for (int y = borderUpperSideYl; y < overallMaxY; y += plusY) {
-            // maxXl, maxYl describe the size of the image to be drawn
+    for (int x = 0; x < overallMaxX; x += plusX) {
+        for (int y = 0; y < overallMaxY; y += plusY) {
+            // 4th and 5th arg are the size of the image to be drawn
             // in this iteration of the double-for loop. This should always
             // be as much as possible, i.e., the first argument to min().
             // Only in the last iteration of the loop,
             // a smaller rectangle is better.
-            immutable maxXl = min(plusX, overallMaxX - x);
-            immutable maxYl = min(plusY, overallMaxY - y);
-            drawCamera_with_target_corner(cam, x, y, maxXl, maxYl);
-            if (borderUpperSideYl != 0) break;
+            drawCamera_with_target_corner(cam, x, y,
+                torX ? min(plusX, overallMaxX - x) : overallMaxX,
+                torY ? min(plusY, overallMaxY - y) : overallMaxY);
+            if (! topology.torusY) break;
         }
-        if (borderOneSideXl != 0) break;
+        if (! topology.torusX) break;
     }
 }
 
@@ -371,38 +357,6 @@ drawCamera_with_target_corner(
 // end class Map
 
 private:
-
-/*
- * To tell apart air from areas outside of the map, color screen borders.
- * Assumes that target A5 bitmap is already chosen.
- */
-private void drawBorders(
-    in int borderOneSideXl,
-    in int borderUpperSideYl,
-    in Point camLen, // pass your chosen Camera's targetLen
-) {
-    void draw_border(in int ax, in int ay, in int axl, in int ayl)
-    {
-        // we assume the correct target bitmap is set.
-        // D/A5 Lix doesn't make screen border coloring optional
-        al_draw_filled_rectangle(ax, ay, ax + axl, ay + ayl,
-                                 color.screenBorder);
-    }
-    if (borderOneSideXl > 0) {
-        // Left edge.
-        draw_border(0, 0, borderOneSideXl, camLen.y);
-        // Right edge. With fractional zoom, drawCameraBorderless might draw
-        // a smaller rectangle than its plusX (see drawCameraBorderless).
-        // To prevent leftover pixel rows from the last frame, make the border
-        // thicker by 1 pixel here. The camera will draw over it.
-        draw_border(camLen.x - borderOneSideXl - 1, 0,
-            borderOneSideXl + 1, camLen.y);
-    }
-    if (borderUpperSideYl > 0) {
-        draw_border(borderOneSideXl, 0, camLen.x - 2 * borderOneSideXl,
-            borderUpperSideYl);
-    }
-}
 
 void loadCameraRectImpl(in Torbit src, Torbit target, in Camera cam)
 {

@@ -47,16 +47,18 @@ public:
         targetLen = aTargetLen;
         sourceLen = aSourceLen;
         torus = aTorus;
-        focus = aSourceLen / 2;
+        scrollToCenter();
     }
 
 pure nothrow @safe @nogc:
     int focus() const { return _focus; }
-    void focus(in int aFocus)
+
+    void scrollToCenter() { _focus = sourceLen / 2; }
+
+    void scrollTo(in int aFocus)
     {
         _focus = torus ? basics.help.positiveMod(aFocus, sourceLen)
-            : focusMin >= focusMax ? sourceLen / 2 // happens on small maps
-            : clamp(aFocus, focusMin, focusMax);
+            : clamp(aFocus, focusHardMin, focusHardMax);
     }
 
     // On non-torus maps, we want the initial scrolling position exactly at the
@@ -65,26 +67,28 @@ pure nothrow @safe @nogc:
     {
         if (torus)
             return;
-        immutable int margin = focusMin / 6;
-        if (2 * focus < focusMin + focusMax && focus < focusMin + margin)
-            focus = focusMin;
-        else if (focus > focusMax - margin)
-            focus = focusMax;
+        immutable int margin = focusSoftMin / 6;
+        if (2 * focus < focusSoftMin + focusSoftMax
+            && focus < focusSoftMin + margin
+        ) {
+            scrollTo(focusSoftMin);
+        }
+        else if (focus > focusSoftMax - margin) {
+            scrollTo(focusSoftMax);
+        }
     }
 
 const pure nothrow @safe @nogc:
-    bool mayScrollHigher() { return _focus < focusMax || torus; }
-    bool mayScrollLower()  { return _focus > focusMin || torus; }
+    bool mayScrollHigher() { return _focus < focusHardMax || torus; }
+    bool mayScrollLower()  { return _focus > focusHardMin || torus; }
     bool seesEntireSource() { return numPixelsSeen >= sourceLen; }
 
     Side sourceSeen()
     out (side) {
-        assert (side.start >= 0);
         assert (side.len >= 0);
     } do {
-        immutable int first = focus - focusMin;
-        immutable int start = torus
-            ? positiveMod(first, sourceLen) : max(first, 0);
+        immutable int first = focus - numPixelsSeen / 2;
+        immutable int start = torus ? positiveMod(first, sourceLen) : first;
         return Side(start, numPixelsSeen);
     }
 
@@ -96,9 +100,7 @@ const pure nothrow @safe @nogc:
      */
     Side sourceSeenBeforeFirstTorusSeam()
     out (side) {
-        assert (side.start >= 0);
         assert (side.len >= 0);
-        assert (side.start + side.len <= sourceLen);
     } do {
         immutable Side uncut = sourceSeen;
         return Side(uncut.start, min(uncut.len, sourceLen - uncut.start));
@@ -117,11 +119,26 @@ const pure nothrow @safe @nogc:
     }
 
 private:
-    int focusMin() { return numPixelsSeen / 2; }
-    int focusMax() { return sourceLen - numPixelsSeen + focusMin; }
-    // Why not focusMax = sourceLen - focusMin? If numPixelsSeen is odd,
-    // dividing by 2 discards some length, and we want
-    // (focusMax - focusMin) == numPixelsSeen exactly.
+    /*
+     * softMin/Max: You can scroll further than this by zooming in/out,
+     *      but hold-to-scroll or edge scrolling can't scroll past soft limits.
+     *
+     * hardMin/Max: We clamp all repositioning to the hard limits.
+     *      It's a program invariant to always have _focus within hard limits.
+     */
+    int focusHardMin() { return 0; }
+    int focusHardMax() { return sourceLen; }
+
+    int focusSoftMin()
+    {
+        return min(numPixelsSeen / 2, sourceLen / 2);
+    }
+
+    int focusSoftMax()
+    {
+        return max(sourceLen - numPixelsSeen + numPixelsSeen / 2,
+            sourceLen / 2);
+    }
 
     /*
      * numPixelsSeen: Number of pixels from the source that are copied.

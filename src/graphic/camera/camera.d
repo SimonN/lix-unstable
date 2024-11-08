@@ -54,10 +54,10 @@ public:
         return _zoom.divideCeil(x);
     }
 
-    void focus(in Point p) nothrow pure @safe @nogc
+    void scrollTo(in Point p) nothrow pure @safe @nogc
     {
-        _x.focus = p.x;
-        _y.focus = p.y;
+        _x.scrollTo(p.x);
+        _y.scrollTo(p.y);
     }
 
     void zoomInKeepingTargetPointFixed(in Point targetToFix)
@@ -77,7 +77,8 @@ public:
         ) {
             _zoom.zoomOut();
         }
-        focus = focus;
+        _x.scrollToCenter();
+        _y.scrollToCenter();
     }
 
     void snapToBoundary()
@@ -116,7 +117,7 @@ private:
         immutable Point oldSource = sourceOf(targetToFix);
         callZoom();
         immutable Point newSource = sourceOf(targetToFix);
-        focus = focus + oldSource - newSource;
+        scrollTo(focus + oldSource - newSource);
     }
 }
 
