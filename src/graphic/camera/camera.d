@@ -60,16 +60,6 @@ public:
         _y.focus = p.y;
     }
 
-    void zoomInKeepingSourcePointFixed(in Point sourceToFix)
-    {
-        zoomKeepingSourcePointFixed(sourceToFix, { _zoom.zoomIn(); });
-    }
-
-    void zoomOutKeepingSourcePointFixed(in Point sourceToFix)
-    {
-        zoomKeepingSourcePointFixed(sourceToFix, { _zoom.zoomOut(); });
-    }
-
     void zoomInKeepingTargetPointFixed(in Point targetToFix)
     {
         zoomKeepingTargetPointFixed(targetToFix, { _zoom.zoomIn(); });
@@ -119,24 +109,6 @@ public:
     }
 
 private:
-    void zoomKeepingSourcePointFixed(
-        in Point sourceToFix,
-        void delegate() callZoom,
-    ) {
-        immutable oldZoom = zoom;
-        callZoom();
-        /*
-         * Now, we want to move the focus such that sourceToFix will be
-         * projected to the same target pixel before and after callZoom().
-         * The new focus is a convex combination of sourceToFix and old focus.
-         * We'll denote by (a) the factor of the two-fold convex combi.
-         */
-        immutable a = 1f - (oldZoom / zoom);
-        focus = Point(
-            roundInt(a * sourceToFix.x + (1f - a) * focus.x),
-            roundInt(a * sourceToFix.y + (1f - a) * focus.y));
-    }
-
     void zoomKeepingTargetPointFixed(
         in Point targetToFix,
         void delegate() callZoom,
@@ -145,29 +117,6 @@ private:
         callZoom();
         immutable Point newSource = sourceOf(targetToFix);
         focus = focus + oldSource - newSource;
-    }
-}
-
-version (unittest) {
-    void assertNear(in Point a, in Point b, in string msg = "")
-    {
-        assert (abs(a.x - b.x) < 3 && abs(a.y - b.y) < 3,
-            "Points aren't together: "
-            ~ a.to!string
-            ~ " and "
-            ~ b.to!string
-            ~ (msg == "" ? "" : " - ")
-            ~ msg);
-    }
-
-    void assertNear(in Point a, in Point b, in Camera c, in string msg = "")
-    {
-        assertNear(a, b,
-            "zoom=" ~ c.zoom.to!string
-            ~ " focus=" ~ c.focus.to!string
-            ~ " sourceSeen=" ~ c.sourceSeen.to!string
-            ~ (msg == "" ? "" : " - ")
-            ~ msg);
     }
 }
 
@@ -182,66 +131,5 @@ unittest {
         assert (c.sourceOf(Point(0, 0)) == Point(160, 125),
             msg ~ ", sourceOf(0)=" ~ c.sourceOf(Point(0, 0)).to!string);
         assert (c.focus == Point(200, 150), msg ~ " should focus on center");
-    }
-    for (int i = 0; i < 5; ++i) {
-        assertCIsLikeAtStart("really at start");
-        immutable mid = Point(200, 150);
-        for (int _ = 0; _ < i; ++_) {
-            c.zoomInKeepingSourcePointFixed(mid);
-        }
-        assertNear(c.focus, mid, c,
-            "non-torus zooming in, focus - iteration " ~ i.to!string);
-        assertNear(c.sourceSeen.center, mid, c,
-            "non-torus zooming in, sourceSeen - iteration " ~ i.to!string);
-        for (int _ = 0; _ < i; ++_) {
-            c.zoomOutKeepingSourcePointFixed(mid);
-        }
-        assertCIsLikeAtStart("after zooming in and out at center of map");
-    }
-
-    immutable Point p = Point(200, 125);
-    assert (p.y == c.sourceSeen.y, "want to zoom in at top of viewfield");
-
-    assertCIsLikeAtStart("before considering p");
-    c.zoomInKeepingSourcePointFixed(p);
-    assert (c.focus.x == 200, "we zoomed into the x-center once");
-    assert (c.focus.y >= 125, "beans " ~ c.focus.to!string);
-    assert (c.focus.y <= 150, "bacon " ~ c.focus.to!string);
-    assertNear(p, Point(c.focus.x, c.sourceSeen.y), c,
-        "p should stay at top of viewfield 1");
-    c.zoomInKeepingSourcePointFixed(p);
-    assert (c.focus.x == 200, "we zoomed into the x-center twice");
-    assert (c.zoom == 2f, "zoom in around p, zoom should be 2");
-    assertNear(p, Point(c.focus.x, c.sourceSeen.y), c,
-        "p should stay at top of viewfield 2");
-    assertNear(c.focus, Point(200, 125 + 25/2), c, "after zooming in 2x at p");
-}
-
-unittest {
-    Topology tp = new Topology(200, 200, false, true);
-    Camera c = new Camera(tp, Point(50, 50), true);
-
-    void assertCIsLikeAtStart(in string msg)
-    {
-        assert (c.zoom == 1f, msg);
-        assert (c.sourceSeen == Rect(75, 75, 50, 50),
-            msg ~ ", we see around the center: " ~ c.sourceSeen.to!string);
-        assert (c.sourceOf(Point(5, 5)) == Point(80, 80),
-            msg ~ ", now sourceOf(5, 5)=" ~ c.sourceOf(Point(5, 5)).to!string);
-    }
-    assertCIsLikeAtStart("really at start");
-    immutable Point mid = Point(100, 100);
-    c.zoomInKeepingSourcePointFixed(mid);
-    assertNear(c.focus, mid, c, "zooming into center");
-    c.zoomOutKeepingSourcePointFixed(mid);
-    assertCIsLikeAtStart("after zoom in and out at center of map");
-
-    immutable Point roof = Point(100, 75);
-    c.zoomInKeepingSourcePointFixed(roof);
-    c.zoomInKeepingSourcePointFixed(roof);
-    {
-        assert (c.zoom == 2f);
-        assertNear(Point(c.focus.x, c.sourceSeen.y), roof, c,
-            "after zooming to zoom 2 to roof");
     }
 }
