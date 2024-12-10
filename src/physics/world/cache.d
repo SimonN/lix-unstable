@@ -14,6 +14,7 @@ import basics.alleg5 : OutOfVramException;
 import basics.globals : levelPixelsToWarn;
 import basics.topology;
 import file.replay;
+import file.log;
 import net.repdata;
 import physics.world.world;
 
@@ -168,14 +169,21 @@ public:
     }
     do {
         _recommendGC = true;
-        // First, attempt to save into a slower-frequency pair than _pairs[0].
-        for (int pair = _pairs.len - 1; pair >= 1; --pair) {
-            if (_pairs[pair].accepts(world.age)) {
-                _pairs[pair].save(world);
-                return;
+        try {
+            // First, attempt to find a slower-frequency pair than _pairs[0].
+            for (int pair = _pairs.len - 1; pair >= 1; --pair) {
+                if (_pairs[pair].accepts(world.age)) {
+                    _pairs[pair].save(world);
+                    return;
+                }
             }
+            // No slow-frequency pair found. Save into the most frequent.
+            saveIntoPair0ButMaybeBorrowSpaceFromHighestPair(world);
         }
-        saveIntoPair0ButMaybeBorrowSpaceFromHighestPair(world);
+        catch (OutOfVramException e) {
+            logf("Skipping automatic savestate at %d ticks.", world.age);
+            logf("    -> %s", e.msg);
+        }
     }
 
 private:
