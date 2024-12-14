@@ -6,43 +6,88 @@ module hardware.keyboard;
  * Mouse buttons may be mapped as hotkeys.
  */
 
+import std.algorithm;
 import std.array;
 import std.utf;
 
 import basics.alleg5;
+import file.key.key;
+import file.key.set;
 import file.log;
+import hardware.keyhist;
 import hardware.mouse;
-import hardware.keyenum;
 
 static import basics.globals;
 
-bool keyTapped(int alkey) nothrow @safe @nogc { return _once[alkey]; }
-bool keyHeld(int alkey) nothrow @safe @nogc { return _hold[alkey] > 0; }
-bool keyReleased(int alkey) nothrow @safe @nogc { return _rlsd[alkey]; }
-
-// For moving around terrain in the editor, and similar things that are
-// meaningful if executed many times in a row. Move once, wait for repetitions.
-bool keyTappedAllowingRepeats(int alkey) nothrow @safe @nogc
+bool wasTapped(in KeySet set) nothrow @safe @nogc
 {
-    enum repeatSpeed = basics.globals.ticksForDoubleClick * 3 / 5;
-    return _once[alkey]
-        || _hold[alkey] > repeatSpeed;
+    return set[].any!(k => statsFor(k).wasTapped);
 }
 
-bool backspace() nothrow @safe @nogc { return _backspace; }
-bool ctrlHeld() nothrow @safe @nogc { return _ctrl; }
-bool shiftHeld() nothrow @safe @nogc { return _shift; }
-bool altHeld() nothrow @safe @nogc { return _alt; }
-
-int scancodeTapped() // For the hotkey-mapping button
+bool isHeld(in KeySet set) nothrow @safe @nogc
 {
-    foreach (int scancode, bool tapped; _once)
-        if (tapped)
-            return scancode;
-    return 0;
+    return set[].any!(k => statsFor(k).isHeldForAlticks > 0);
 }
 
-void clearKeyBufferAfterAltTab() { _hold[] = 0; }
+bool wasReleased(in KeySet set) nothrow @safe @nogc
+{
+    return set[].any!(k => statsFor(k).wasReleased);
+}
+
+bool wasTappedOrRepeated(in KeySet set) nothrow @safe @nogc
+{
+    return set[].any!(k => statsFor(k).wasTappedOrRepeated);
+}
+
+bool backspace() nothrow @safe @nogc
+{
+    return _backspace;
+}
+
+bool ctrlHeld() nothrow @safe @nogc
+{
+    return eitherIsHeld(ALLEGRO_KEY_LCTRL, ALLEGRO_KEY_RCTRL);
+}
+
+bool shiftHeld() nothrow @safe @nogc
+{
+    return eitherIsHeld(ALLEGRO_KEY_LSHIFT, ALLEGRO_KEY_RSHIFT);
+}
+
+bool altHeld() nothrow @safe @nogc
+{
+    return eitherIsHeld(ALLEGRO_KEY_ALT, ALLEGRO_KEY_ALTGR);
+}
+
+Key whatExactlyWasTapped() nothrow @safe @nogc // For the hotkey-mapping button
+{
+    foreach (int id, ref KeyHistory hist; _kbHist) {
+        if (hist.wasTapped) {
+            return Key.allegroKeyId(id);
+        }
+    }
+    foreach (int id, ref KeyHistory hist; _mbHist) {
+        if (hist.wasTapped) {
+            return Key.mouseButtonId(id);
+        }
+    }
+    if (_whHist[0].wasTapped) {
+        return Key.wheelUp;
+    }
+    if (_whHist[1].wasTapped) {
+        return Key.wheelDown;
+    }
+
+    static assert (! Key.init.isValid);
+    return Key.init;
+}
+
+void clearKeyBufferAfterAltTab() nothrow @safe @nogc
+{
+    foreach (ref stat; _kbHist) stat.wasTapped = false;
+    foreach (ref stat; _mbHist) stat.wasTapped = false;
+    foreach (ref stat; _whHist) stat.wasTapped = false;
+}
 
 // Take great care to not introduce malformed UTF8, even though we build
 // _bufferUTF8 already only by encoing codepoints with the D standard lib.
@@ -71,28 +116,6 @@ string utf8Input() nothrow
     }
 }
 
-// ############################################################################
-// #################################################################### private
-// ############################################################################
-
-private:
-    ALLEGRO_EVENT_QUEUE* _queue;
-
-    bool _backspace;
-    bool _ctrl;  // holding at least one of the two Ctrl?
-    bool _shift; // holding at least one of the two Shift?
-    bool _alt;   // holding at least one of the two Alt that I consider equal?
-
-    bool[hardwareKeyboardArrLen] _once;
-    int [hardwareKeyboardArrLen] _hold;
-    bool[hardwareKeyboardArrLen] _rlsd;
-
-    string _bufferUTF8;
-
-
-
-public:
-
 void initialize()
 {
     al_install_keyboard();
@@ -113,27 +136,53 @@ void deinitialize()
 
 void calcCallThisAfterMouseCalc()
 {
-    _once[]     = false;
-    _rlsd[]     = false;
+    foreach (ref stat; _kbHist) stat.resetTappedAndReleased;
     _bufferUTF8 = null;
     _backspace  = false;
 
-    onceRlsdFromAllegro();
-    onceRlsdFromMouse();
-    updateOtherArrays();
-    mergeSomeKeys();
+    fetchStatsFromAllegro();
+    foreach (ref stat; _kbHist) {
+        stat.updateHeldAccordingToTapped();
+    }
+
+    _kbHist[ALLEGRO_KEY_ENTER].mergeWith(_kbHist[ALLEGRO_KEY_PAD_ENTER]);
 }
 
-private void onceRlsdFromAllegro()
+// ############################################################################
+private: // ########################################################## :private
+// ############################################################################
+
+ALLEGRO_EVENT_QUEUE* _queue;
+bool _backspace;
+string _bufferUTF8;
+KeyHistory[ALLEGRO_KEY_MAX] _kbHist;
+
+const(KeyHistory) statsFor(in Key k) nothrow @safe @nogc
+{
+    final switch (k.type) {
+        case Key.Type.keyboardKey: return _kbHist[k.keyboardKey];
+        case Key.Type.mouseButton: return _mbHist[k.mouseButton];
+        case Key.Type.mouseWheelDirection:
+            return _whHist[k == Key.wheelUp ? 0 : 1];
+    }
+}
+
+bool eitherIsHeld(in int idA, in int idB) nothrow @safe @nogc
+{
+    return _kbHist[idA].isHeldForAlticks > 0
+        || _kbHist[idB].isHeldForAlticks > 0;
+}
+
+void fetchStatsFromAllegro()
 {
     ALLEGRO_EVENT event;
     while(al_get_next_event(_queue, &event))
     {
         if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
-            _once[event.keyboard.keycode] = true;
+            _kbHist[event.keyboard.keycode].wasTapped = true;
         }
         else if (event.type == ALLEGRO_EVENT_KEY_UP) {
-            _rlsd[event.keyboard.keycode] = true;
+            _kbHist[event.keyboard.keycode].wasReleased = true;
         }
         else if (event.type == ALLEGRO_EVENT_KEY_CHAR) {
             immutable int c = event.keyboard.unichar;
@@ -151,46 +200,4 @@ private void onceRlsdFromAllegro()
             }
         }
     }
-}
-
-private void onceRlsdFromMouse()
-{
-    _once[keyMMB]       = mouseClickMiddle;
-    _once[keyRMB]       = mouseClickRight;
-    _once[keyWheelUp]   = mouseWheelNotches < 0;
-    _once[keyWheelDown] = mouseWheelNotches > 0;
-
-    _rlsd[keyMMB]       = mouseReleaseMiddle > 0;
-    _rlsd[keyRMB]       = mouseReleaseRight  > 0;
-    _rlsd[keyWheelUp]   = mouseWheelNotches == 0;
-    _rlsd[keyWheelDown] = mouseWheelNotches == 0;
-}
-
-private void updateOtherArrays()
-{
-    for (int i = 0; i < _hold.length; ++i) {
-        // when the key is still held from last time, hold[i] > 0 right now
-        if      (_rlsd[i])     _hold[i] = 0;
-        else if (_once[i])     _hold[i] = 1;
-        else if (_hold[i] > 0) _hold[i] += 1;
-    }
-    // You can't hold these keys anyway, so don't flicker buttons on use:
-    _hold[keyWheelUp] = 0;
-    _hold[keyWheelDown] = 0;
-}
-
-private void mergeSomeKeys()
-{
-    _ctrl  = _hold[ALLEGRO_KEY_LCTRL]  || _hold[ALLEGRO_KEY_RCTRL];
-    _shift = _hold[ALLEGRO_KEY_LSHIFT] || _hold[ALLEGRO_KEY_RSHIFT];
-    _alt   = _hold[ALLEGRO_KEY_ALT]    || _hold[ALLEGRO_KEY_ALTGR];
-
-    // Lump Enter and Keypad-Enter together already in the hardware. We had
-    // ugly button code in A4/C++ Lix like this copied over and over:
-    //      if (_hotkey == ALLEGRO_KEY_ENTER) b = b || key_enter_once();
-    //      else                              b = b || keyTapped(_hotkey);
-    enum e1 = ALLEGRO_KEY_ENTER;
-    enum e2 = ALLEGRO_KEY_PAD_ENTER;
-    _once[e1] = (_once[e2] = _once[e1] || _once[e2]);
-    _rlsd[e1] = (_rlsd[e2] = _rlsd[e1] || _rlsd[e2]);
 }

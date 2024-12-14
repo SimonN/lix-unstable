@@ -11,7 +11,7 @@ import file.language;
 import gui;
 import gui.picker;
 import hardware.keyboard;
-import hardware.keyset;
+import file.key.set;
 
 class SaveBrowser : BrowserHighlight {
 private:

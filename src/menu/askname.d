@@ -6,8 +6,9 @@ static import file.option;
 static import hardware.keyboard;
 
 import basics.alleg5; // Explicit press of ESC
-import file.option;
+import file.key.set;
 import file.language;
+import file.option;
 import file.trophy;
 import gui;
 import menu.menubg;
@@ -54,8 +55,10 @@ protected:
         if (! _gotoMainMenu && ! _gotoExitApp) {
             _tt.down = false;
             _tt.on = true;
-            if (hardware.keyboard.keyTapped(ALLEGRO_KEY_ESCAPE))
+            static immutable esc = KeySet(ALLEGRO_KEY_ESCAPE);
+            if (hardware.keyboard.wasTapped(esc)) {
                 _gotoExitApp = true;
+            }
         }
     }
 }

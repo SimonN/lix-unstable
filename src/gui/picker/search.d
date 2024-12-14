@@ -32,7 +32,7 @@ import gui.picker.scrolist;
 import level.metadata;
 import hardware.mouse : mouseClickRight;
 import hardware.keyboard;
-import hardware.keyset;
+import file.key.set;
 
 class LevelSearch : Window {
 private:

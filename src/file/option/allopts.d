@@ -24,8 +24,8 @@ import file.filename;
 import file.io;
 import file.language;
 import file.option;
-import hardware.keyenum;
-import hardware.keyset;
+import file.key.key;
+import file.key.set;
 import hardware.tharsis;
 import net.ac;
 import net.style;
@@ -339,26 +339,25 @@ do {
     newSkillKey(Ac.miner, ALLEGRO_KEY_G);
     newSkillKey(Ac.digger, ALLEGRO_KEY_W);
 
-    auto newKey(string str, Lang lang, int key)
+    auto newKey(IntOrKey)(string str, Lang lang, in IntOrKey key)
     {
         return newOpt(str, lang, KeySet(key));
     }
-    auto newKey2(string str, Lang lang, int key1, int key2)
+    auto newKey2(IntOrKey)(string str, Lang lang, int key1, in IntOrKey key2)
     {
         return newOpt(str, lang, KeySet(KeySet(key1), KeySet(key2)));
     }
     // Global keys -- these work in editor and game
-    keyScroll = newKey("keyHoldToScroll", Lang.optionKeyScroll, hardware.keyenum.keyRMB);
-    keyPriorityInvert = newKey("keyPriorityInvert", Lang.optionKeyPriorityInvert, hardware.keyenum.keyRMB);
-    keyZoomIn = newKey("keyZoomIn", Lang.optionKeyZoomIn, hardware.keyenum.keyWheelUp);
-    keyZoomOut = newKey("keyZoomOut", Lang.optionKeyZoomOut, hardware.keyenum.keyWheelDown);
-    keyScreenshot = newOpt("keyScreenshot", Lang.optionKeyScreenshot,
-        KeySet());
+    keyScroll = newKey("keyHoldToScroll", Lang.optionKeyScroll, Key.rmb);
+    keyPriorityInvert = newKey("keyPriorityInvert", Lang.optionKeyPriorityInvert, Key.rmb);
+    keyZoomIn = newKey("keyZoomIn", Lang.optionKeyZoomIn, Key.wheelUp);
+    keyZoomOut = newKey("keyZoomOut", Lang.optionKeyZoomOut, Key.wheelDown);
+    keyScreenshot = newOpt("keyScreenshot", Lang.optionKeyScreenshot, KeySet());
 
     // Game keys
     keyForceLeft = newKey2("keyForceLeft", Lang.optionKeyForceLeft, ALLEGRO_KEY_S, ALLEGRO_KEY_LEFT);
     keyForceRight = newKey2("keyForceRight", Lang.optionKeyForceRight, ALLEGRO_KEY_F, ALLEGRO_KEY_RIGHT);
-    keyPause = newKey2("keyPause", Lang.optionKeyPause, ALLEGRO_KEY_SPACE, hardware.keyenum.keyMMB);
+    keyPause = newKey2("keyPause", Lang.optionKeyPause, ALLEGRO_KEY_SPACE, Key.mmb);
     keyRewindPrevPly = newOpt("keyRewindPrevPly",
         Lang.optionKeyRewindPrevPly, KeySet());
     keyRewindOneSecond = newKey("keySpeedBackMany",

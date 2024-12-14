@@ -16,6 +16,7 @@ import basics.cmdargs;
 import basics.alleg5;
 import basics.globals;
 import file.filename; // running levels from the command-line
+import file.key.set;
 import hardware.display;
 import hardware.keyboard;
 import mainloop.topscrn.base;
@@ -80,8 +81,9 @@ public:
         hardware.mouse   .calc();
         hardware.keyboard.calcCallThisAfterMouseCalc();
 
+        static immutable esc = KeySet(ALLEGRO_KEY_ESCAPE);
         if (hardware.display.displayCloseWasClicked()
-            || shiftHeld() && keyTapped(ALLEGRO_KEY_ESCAPE)
+            || shiftHeld && esc.wasTapped
         ) {
             return true;
         }
@@ -111,8 +113,9 @@ public:
     {
         import file.option;
         import hardware.scrshot;
-        if (! keyScreenshot.keyTapped)
+        if (! keyScreenshot.wasTapped) {
             return;
+        }
         hardware.scrshot.takeScreenshot(screen.filenamePrefixForScreenshot);
     }
 }

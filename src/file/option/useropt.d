@@ -18,9 +18,12 @@ import std.string;
 
 import sdlang;
 
+import basics.alleg5 : ALLEGRO_KEY_MAX; // Fallback for 2024 option files
 import file.filename;
 import file.language;
-import hardware.keyset;
+import file.key.key;
+import file.key.set;
+import hardware.keyboard; // Convenience: Call wasTapped directly on the option
 
 abstract class AbstractUserOption {
 private:
@@ -63,95 +66,6 @@ protected:
 
 
 
-class UserOption(T) : AbstractUserOption
-    if (is (T == int) || is (T == bool) || is (T == string) || is (T == KeySet)
-) {
-private:
-    immutable T _defaultValue;
-    T _value;
-
-public:
-    this(string aKey, Lang aShort, T aValue)
-    {
-        super(aKey, aShort);
-        _defaultValue = aValue;
-        _value        = aValue;
-    }
-
-    nothrow @nogc @safe {
-        T defaultValue() const { return _defaultValue; }
-        T value()        const { return _value; }
-        T opAssign(const(T) aValue) { return _value = aValue; }
-    }
-
-    static if (is (T == KeySet)) {
-        const nothrow @safe @nogc:
-        bool keyTapped() { return _value.keyTapped; }
-        bool keyHeld() { return _value.keyHeld; }
-        bool keyReleased() { return _value.keyReleased; }
-        bool keyTappedAllowingRepeats()
-        {
-            return _value.keyTappedAllowingRepeats;
-        }
-    }
-
-protected:
-    override void setImpl(Tag tag)
-    {
-        static if (is (T == KeySet)) {
-            _value = KeySet();
-            import std.variant;
-            foreach (value; tag.values.filter!(v => v.convertsTo!int))
-                _value = KeySet(_value, KeySet(value.get!int));
-        }
-        else {
-            // If the tag's value type-mismatches, set _value to _value.
-            _value = tag.getValue!T(_value);
-        }
-    }
-
-    override void addValueTo(Tag tag) const
-    {
-        static if (is (T == int) || is (T == bool) || is (T == string)) {
-            tag.add(Value(value));
-        }
-        else static if (is (T == KeySet))
-            foreach (int scancode; _value.keysAsInts)
-                tag.add(Value(scancode));
-        else
-            static assert (false);
-    }
-
-    override void revertToDefault() { _value = _defaultValue; }
-}
-
-unittest
-{
-    UserOption!int a = new UserOption!int("myUnittestKey", Lang.commonOk, 4);
-    a = 5;
-    assert (a.createTag().name == "myUnittestKey");
-    assert (a.createTag().values.front == 5);
-}
-
-unittest {
-    UserOption!KeySet mykey = new UserOption!KeySet("myHotkeyKey",
-        Lang.optionKeyMenuOkay, KeySet(45));
-    assert (mykey.createTag().name == "myHotkeyKey");
-    assert (mykey.createTag().values.front == 45);
-    {
-        Tag root = parseSource("myHotkeyKey 2 1 4 3 2 2 2\n");
-        mykey.set(root.tags.front);
-        import std.algorithm;
-        assert (mykey.createTag().values.equal([1, 2, 3, 4]));
-    }
-    mykey = KeySet();
-    assert (mykey.createTag().values.empty);
-    mykey.set(new Tag("", "myHotkeyKey"));
-    assert (mykey.createTag().values.empty);
-}
-
-
-
 class UserOptionFilename : AbstractUserOption {
 private:
     Filename _defaultValue;
@@ -187,4 +101,135 @@ protected:
     }
 
     override void revertToDefault() { _value = _defaultValue; }
+}
+
+
+
+class UserOption(T) : AbstractUserOption
+    if (is (T == int) || is (T == bool) || is (T == string) || is (T == KeySet)
+) {
+private:
+    immutable T _defaultValue;
+    T _value;
+
+public:
+    this(string aKey, Lang aShort, T aValue)
+    {
+        super(aKey, aShort);
+        _defaultValue = aValue;
+        _value        = aValue;
+    }
+
+    nothrow @nogc @safe {
+        T defaultValue() const { return _defaultValue; }
+        T value()        const { return _value; }
+        T opAssign(const(T) aValue) { return _value = aValue; }
+    }
+
+    static if (is (T == KeySet)) {
+        const nothrow @safe @nogc:
+        bool wasTapped() { return _value.wasTapped; }
+        bool isHeld() { return _value.isHeld; }
+        bool wasReleased() { return _value.wasReleased; }
+        bool wasTappedOrRepeated() { return _value.wasTappedOrRepeated; }
+    }
+
+protected:
+    override void setImpl(Tag tag)
+    {
+        static if (is (T == KeySet)) {
+            _value = KeySet();
+            import std.variant;
+            foreach (value; tag.values.filter!(v => v.convertsTo!int)) {
+                const Key k = old2024IntToKey(value.get!int);
+                _value = KeySet(_value, KeySet(k));
+            }
+        }
+        else {
+            // If the tag's value type-mismatches, set _value to _value.
+            _value = tag.getValue!T(_value);
+        }
+    }
+
+    override void addValueTo(Tag tag) const
+    {
+        static if (is (T == int) || is (T == bool) || is (T == string)) {
+            tag.add(Value(value));
+        }
+        else static if (is (T == KeySet)) {
+            foreach (Key keyToExport; _value[]) {
+                tag.add2025(keyToExport);
+                tag.maybeAdd2024BackCompat(keyToExport);
+            }
+        }
+        else
+            static assert (false);
+    }
+
+    override void revertToDefault() { _value = _defaultValue; }
+}
+
+private:
+
+Key old2024IntToKey(in int from2024Options) pure nothrow @safe @nogc
+{
+    return from2024Options == ALLEGRO_KEY_MAX ? Key.mmb
+        : from2024Options == ALLEGRO_KEY_MAX + 1 ? Key.rmb
+        : from2024Options == ALLEGRO_KEY_MAX + 2 ? Key.wheelUp
+        : from2024Options == ALLEGRO_KEY_MAX + 3 ? Key.wheelDown
+        : Key.allegroKeyId(from2024Options);
+}
+
+void add2025(ref Tag target, in Key keyToExport)
+{
+    final switch (keyToExport.type) {
+    case Key.Type.keyboardKey:
+        target.add(Value(keyToExport.keyboardKey));
+        return;
+    case Key.Type.mouseButton:
+        // Add 2025 export string here.
+        return;
+    case Key.Type.mouseWheelDirection:
+        // Add 2025 export string here.
+        return;
+    }
+}
+
+void maybeAdd2024BackCompat(ref Tag target, in Key keyToExport)
+{
+    int backCompat
+        = keyToExport == Key.mmb ? ALLEGRO_KEY_MAX
+        : keyToExport == Key.rmb ? ALLEGRO_KEY_MAX + 1
+        : keyToExport == Key.wheelUp ? ALLEGRO_KEY_MAX + 2
+        : keyToExport == Key.wheelDown ? ALLEGRO_KEY_MAX + 3
+        : 0;
+    if (backCompat == 0) {
+        return;
+    }
+    target.add(Value(backCompat));
+}
+
+unittest
+{
+    UserOption!int a = new UserOption!int("myUnittestKey", Lang.commonOk, 4);
+    a = 5;
+    assert (a.createTag().name == "myUnittestKey");
+    assert (a.createTag().values.front == 5);
+}
+
+unittest {
+    UserOption!KeySet mykey = new UserOption!KeySet("myHotkeyKey",
+        Lang.optionKeyMenuOkay, KeySet(45));
+    assert (mykey.createTag().name == "myHotkeyKey");
+    assert (mykey.createTag().values.front == 45);
+    {
+        Tag root = parseSource("myHotkeyKey 2 1 4 3 2 2 2\n");
+        mykey.set(root.tags.front);
+        import std.algorithm;
+        assert (mykey.createTag().values.equal([1, 2, 3, 4]));
+    }
+    mykey = KeySet();
+    assert (mykey.createTag().values.empty);
+    mykey.set(new Tag("", "myHotkeyKey"));
+    assert (mykey.createTag().values.empty);
 }
