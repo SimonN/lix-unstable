@@ -49,6 +49,7 @@ void initialize()
 void deinitialize()
 {
     if (_queue) {
+        al_unregister_event_source(_queue, al_get_mouse_event_source());
         al_destroy_event_queue(_queue);
         _queue = null;
         al_uninstall_mouse();
