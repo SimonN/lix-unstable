@@ -220,7 +220,7 @@ unittest
 
 unittest {
     UserOption!KeySet mykey = new UserOption!KeySet("myHotkeyKey",
-        Lang.optionKeyMenuOkay, KeySet(45));
+        Lang.optionKeyMenuOkay, KeySet(Key.byA5KeyId(45)));
     assert (mykey.createTag().name == "myHotkeyKey");
     assert (mykey.createTag().values.front == 45);
     {

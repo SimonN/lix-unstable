@@ -322,7 +322,8 @@ do {
     void newSkillKey(Ac ac, int singleKey)
     {
         keySkill[ac] = newOpt(
-            "keySkill" ~ ac.acToNiceCase.to!string, KeySet(singleKey));
+            "keySkill" ~ ac.acToNiceCase.to!string,
+            KeySet(Key.byA5KeyId(singleKey)));
     }
     newSkillKey(Ac.walker, ALLEGRO_KEY_D);
     newSkillKey(Ac.jumper, ALLEGRO_KEY_R);
@@ -341,11 +342,23 @@ do {
 
     auto newKey(IntOrKey)(string str, Lang lang, in IntOrKey key)
     {
-        return newOpt(str, lang, KeySet(key));
+        static if (is (IntOrKey == Key)) {
+            return newOpt(str, lang, KeySet(key));
+        }
+        else {
+            return newOpt(str, lang, KeySet(Key.byA5KeyId(key)));
+        }
     }
     auto newKey2(IntOrKey)(string str, Lang lang, int key1, in IntOrKey key2)
     {
-        return newOpt(str, lang, KeySet(KeySet(key1), KeySet(key2)));
+        static if (is (IntOrKey == Key)) {
+            return newOpt(str, lang, KeySet(
+                KeySet(Key.byA5KeyId(key1)), KeySet(key2)));
+        }
+        else {
+            return newOpt(str, lang, KeySet(
+                KeySet(Key.byA5KeyId(key1)), KeySet(Key.byA5KeyId(key2))));
+        }
     }
     // Global keys -- these work in editor and game
     keyScroll = newKey("keyHoldToScroll", Lang.optionKeyScroll, Key.rmb);

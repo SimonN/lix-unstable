@@ -34,25 +34,6 @@ nothrow:
         }
     }
 
-    this(in int singleAllegroKeyId)
-    {
-        this(Key.byA5KeyId(singleAllegroKeyId));
-    }
-
-    this(Key first, Key second)
-    {
-        if (first.isValid) {
-            _keys[0] = first;
-            if (second.isValid && second != first) {
-                _keys[1] = second;
-            }
-        }
-        else if (second.isValid) {
-            _keys[0] = second;
-        }
-        _keys[].sort;
-    }
-
     this(in typeof(this) first, in typeof(this) second)
     {
         _keys = first._keys;
@@ -100,9 +81,11 @@ nothrow:
 }
 
 unittest {
-    KeySet a = KeySet(4);
-    KeySet b = KeySet(2);
-    KeySet c = KeySet(KeySet(KeySet(4), KeySet(5)), KeySet(3));
+    Key f(in int i) { return Key.byA5KeyId(i); }
+
+    KeySet a = KeySet(f(4));
+    KeySet b = KeySet(f(2));
+    KeySet c = KeySet(KeySet(KeySet(f(4)), KeySet(f(5))), KeySet(f(3)));
     auto mergedABC = KeySet(a, KeySet(b, c));
     auto mergedCAB = KeySet(c, KeySet(a, b));
 
