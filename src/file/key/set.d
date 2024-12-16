@@ -78,28 +78,14 @@ nothrow:
         return _keys.length & 0x7FFF_FFFF;
     }
 
-    void remove(in Key keyToRm)
+    KeySet butWithOneKeyFewer() const
     {
-        if (! keyToRm.isValid) {
-            return; // We have stored only valid Keys.
-        }
-        for (int i = 0; i < _keys.length; ++i) {
-            if (_keys[i] == keyToRm) {
-                _keys[i] = Key.init;
-                _keys[].sort;
-                assert (! _keys[$-1].isValid,
-                    "Invalid keys sort at the end, and we introduced one");
-                return;
-            }
-        }
-    }
-
-    void removeAnySingleOne()
-    {
-        _keys[0] = Key.init;
-        _keys[].sort;
-        assert (! _keys[$-1].isValid,
+        KeySet ret = this;
+        ret._keys[0] = Key.init;
+        ret._keys[].sort;
+        assert (! ret._keys[$-1].isValid,
             "Invalid keys sort at the end, and we introduced one");
+        return ret;
     }
 
     const(Key)[] opIndex() const return
@@ -127,9 +113,8 @@ unittest {
         Key.byA5KeyId(4),
         Key.byA5KeyId(5)]));
 
-    c.remove(Key.byA5KeyId(4));
-    c.remove(Key.byA5KeyId(6));
+    c = c.butWithOneKeyFewer;
     assert (c[].equal([
-        Key.byA5KeyId(3),
+        Key.byA5KeyId(4),
         Key.byA5KeyId(5)]));
 }

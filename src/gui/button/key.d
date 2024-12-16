@@ -180,9 +180,7 @@ protected:
             _addTheseToBig = KeySet();
         }
         if (_minus.execute) {
-            KeySet temp = keySet;
-            temp.removeAnySingleOne;
-            keySet = temp;
+            keySet = keySet.butWithOneKeyFewer;
         }
         if (_plus.execute) {
             _addTheseToBig = _big.keySet;
