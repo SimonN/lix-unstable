@@ -25,12 +25,12 @@ private:
     int _mb;
 
 public:
-    static Key allegroKeyId(in int a5KeyId) pure nothrow @safe @nogc
+    static Key byA5KeyId(in int a5KeyId) pure nothrow @safe @nogc
     {
         return Key(a5KeyId, 0);
     }
 
-    static Key mouseButtonId(in int mButtonId) pure nothrow @safe @nogc
+    static Key byMouseButtonId(in int mButtonId) pure nothrow @safe @nogc
     {
         return Key(0, mButtonId);
     }

@@ -177,7 +177,8 @@ Key old2024IntToKey(in int from2024Options) pure nothrow @safe @nogc
         : from2024Options == ALLEGRO_KEY_MAX + 1 ? Key.rmb
         : from2024Options == ALLEGRO_KEY_MAX + 2 ? Key.wheelUp
         : from2024Options == ALLEGRO_KEY_MAX + 3 ? Key.wheelDown
-        : Key.allegroKeyId(from2024Options);
+        : from2024Options < ALLEGRO_KEY_MAX ? Key.byA5KeyId(from2024Options)
+        : Key.init;
 }
 
 void add2025(ref Tag target, in Key keyToExport)

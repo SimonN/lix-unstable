@@ -26,7 +26,7 @@ public:
 
     this(in int singleAllegroKeyId) pure nothrow @safe
     {
-        this(Key.allegroKeyId(singleAllegroKeyId));
+        this(Key.byA5KeyId(singleAllegroKeyId));
     }
 
     this(const typeof(this)[] sets...) pure

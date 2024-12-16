@@ -63,12 +63,12 @@ Key whatExactlyWasTapped() nothrow @safe @nogc // For the hotkey-mapping button
 {
     foreach (int id, ref KeyHistory hist; _kbHist) {
         if (hist.wasTapped) {
-            return Key.allegroKeyId(id);
+            return Key.byA5KeyId(id);
         }
     }
     foreach (int id, ref KeyHistory hist; _mbHist) {
         if (hist.wasTapped) {
-            return Key.mouseButtonId(id);
+            return Key.byMouseButtonId(id);
         }
     }
     if (_whHist[0].wasTapped) {
