@@ -79,7 +79,7 @@ public:
 
         hardware.display .calc();
         hardware.mouse   .calc();
-        hardware.keyboard.calcCallThisAfterMouseCalc();
+        hardware.keyboard.calc();
 
         if (hardware.display.displayCloseWasClicked()
             || shiftHeld && Key.byA5KeyId(ALLEGRO_KEY_ESCAPE).wasTapped

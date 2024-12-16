@@ -105,7 +105,7 @@ void deinitialize()
     }
 }
 
-void calcCallThisAfterMouseCalc()
+void calc()
 {
     foreach (ref stat; _kbHist) stat.resetTappedAndReleased;
     _bufferUTF8 = null;
