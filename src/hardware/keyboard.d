@@ -19,44 +19,20 @@ import hardware.mouse;
 
 static import basics.globals;
 
-bool wasTapped(in KeySet set) nothrow @safe @nogc
-{
-    return set[].any!(k => statsFor(k).wasTapped);
-}
+nothrow @safe @nogc {
+    bool wasTapped(in Key key) { return key.historyOf.wasTapped; }
+    bool wasTapped(in KeySet set) { return set[].any!wasTapped; }
+    bool isHeld(in Key key) { return key.historyOf.isHeldForAlticks > 0; }
+    bool isHeld(in KeySet set) { return set[].any!isHeld; }
+    bool wasReleased(in Key key) { return key.historyOf.wasReleased; }
+    bool wasReleased(in KeySet set) { return set[].any!wasReleased; }
+    bool wasTappedOrRepeated(in Key key) { return key.historyOf.wasTappedOrRepeated; }
+    bool wasTappedOrRepeated(in KeySet set) { return set[].any!wasTappedOrRepeated; }
 
-bool isHeld(in KeySet set) nothrow @safe @nogc
-{
-    return set[].any!(k => statsFor(k).isHeldForAlticks > 0);
-}
-
-bool wasReleased(in KeySet set) nothrow @safe @nogc
-{
-    return set[].any!(k => statsFor(k).wasReleased);
-}
-
-bool wasTappedOrRepeated(in KeySet set) nothrow @safe @nogc
-{
-    return set[].any!(k => statsFor(k).wasTappedOrRepeated);
-}
-
-bool backspace() nothrow @safe @nogc
-{
-    return _backspace;
-}
-
-bool ctrlHeld() nothrow @safe @nogc
-{
-    return eitherIsHeld(ALLEGRO_KEY_LCTRL, ALLEGRO_KEY_RCTRL);
-}
-
-bool shiftHeld() nothrow @safe @nogc
-{
-    return eitherIsHeld(ALLEGRO_KEY_LSHIFT, ALLEGRO_KEY_RSHIFT);
-}
-
-bool altHeld() nothrow @safe @nogc
-{
-    return eitherIsHeld(ALLEGRO_KEY_ALT, ALLEGRO_KEY_ALTGR);
+    bool backspace() { return _backspace; }
+    bool ctrlHeld() { return eitherIsHeld(ALLEGRO_KEY_LCTRL, ALLEGRO_KEY_RCTRL); }
+    bool shiftHeld() { return eitherIsHeld(ALLEGRO_KEY_LSHIFT, ALLEGRO_KEY_RSHIFT); }
+    bool altHeld() { return eitherIsHeld(ALLEGRO_KEY_ALT, ALLEGRO_KEY_ALTGR); }
 }
 
 Key whatExactlyWasTapped() nothrow @safe @nogc // For the hotkey-mapping button
@@ -71,15 +47,10 @@ Key whatExactlyWasTapped() nothrow @safe @nogc // For the hotkey-mapping button
             return Key.byMouseButtonId(id);
         }
     }
-    if (_whHist[0].wasTapped) {
-        return Key.wheelUp;
-    }
-    if (_whHist[1].wasTapped) {
-        return Key.wheelDown;
-    }
-
     static assert (! Key.init.isValid);
-    return Key.init;
+    return _whHist[0].wasTapped ? Key.wheelUp
+        :  _whHist[1].wasTapped ? Key.wheelDown
+        : Key.init;
 }
 
 void clearKeyBufferAfterAltTab() nothrow @safe @nogc
@@ -143,7 +114,7 @@ void calcCallThisAfterMouseCalc()
     fetchStatsFromAllegro();
     foreach (ref stat; _kbHist) {
         stat.updateHeldAccordingToTapped();
-    }
+   }
 
     _kbHist[ALLEGRO_KEY_ENTER].mergeWith(_kbHist[ALLEGRO_KEY_PAD_ENTER]);
 }
@@ -157,7 +128,7 @@ bool _backspace;
 string _bufferUTF8;
 KeyHistory[ALLEGRO_KEY_MAX] _kbHist;
 
-const(KeyHistory) statsFor(in Key k) nothrow @safe @nogc
+const(KeyHistory) historyOf(in Key k) nothrow @safe @nogc
 {
     final switch (k.type) {
         case Key.Type.keyboardKey: return _kbHist[k.keyboardKey];

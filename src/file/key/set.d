@@ -86,13 +86,13 @@ unittest {
     KeySet b = KeySet(2);
     KeySet c = KeySet(KeySet(4), KeySet(5), KeySet(3));
     assert (KeySet(a, b, c)._keys == [
-        Key.allegroKeyId(2),
-        Key.allegroKeyId(3),
-        Key.allegroKeyId(4),
-        Key.allegroKeyId(5)]);
-    c.remove(Key.allegroKeyId(4));
-    c.remove(Key.allegroKeyId(6));
+        Key.byA5KeyId(2),
+        Key.byA5KeyId(3),
+        Key.byA5KeyId(4),
+        Key.byA5KeyId(5)]);
+    c.remove(Key.byA5KeyId(4));
+    c.remove(Key.byA5KeyId(6));
     assert (c._keys == [
-        Key.allegroKeyId(3),
-        Key.allegroKeyId(5)]);
+        Key.byA5KeyId(3),
+        Key.byA5KeyId(5)]);
 }
