@@ -16,7 +16,7 @@ import basics.cmdargs;
 import basics.alleg5;
 import basics.globals;
 import file.filename; // running levels from the command-line
-import file.key.set;
+import file.key.key;
 import hardware.display;
 import hardware.keyboard;
 import mainloop.topscrn.base;
@@ -81,9 +81,8 @@ public:
         hardware.mouse   .calc();
         hardware.keyboard.calcCallThisAfterMouseCalc();
 
-        static immutable esc = KeySet(ALLEGRO_KEY_ESCAPE);
         if (hardware.display.displayCloseWasClicked()
-            || shiftHeld && esc.wasTapped
+            || shiftHeld && Key.byA5KeyId(ALLEGRO_KEY_ESCAPE).wasTapped
         ) {
             return true;
         }

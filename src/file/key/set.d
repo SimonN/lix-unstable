@@ -34,6 +34,11 @@ nothrow:
         }
     }
 
+    this(in int singleAllegroKeyId)
+    {
+        this(Key.byA5KeyId(singleAllegroKeyId));
+    }
+
     this(Key first, Key second)
     {
         if (first.isValid) {
@@ -50,19 +55,9 @@ nothrow:
 
     this(in typeof(this) first, in typeof(this) second)
     {
-        mergeFrom(first);
-        mergeFrom(second);
-    }
-
-    this(in int singleAllegroKeyId)
-    {
-        this(Key.byA5KeyId(singleAllegroKeyId));
-    }
-
-    void mergeFrom(in typeof(this) rhs)
-    {
-        for (int i = 0; i < rhs.len; ++i) {
-            immutable Key k = rhs[i];
+        _keys = first._keys;
+        for (int i = 0; i < second.len; ++i) {
+            immutable Key k = second[i];
             assert (k.isValid);
             if (len < _keys.length && ! _keys[].canFind(k)) {
                 _keys[len] = k;
@@ -121,19 +116,17 @@ nothrow:
 unittest {
     KeySet a = KeySet(4);
     KeySet b = KeySet(2);
-    KeySet c = KeySet(4);
-    c.mergeFrom(KeySet(5));
-    c.mergeFrom(KeySet(3));
+    KeySet c = KeySet(KeySet(KeySet(4), KeySet(5)), KeySet(3));
+    auto mergedABC = KeySet(a, KeySet(b, c));
+    auto mergedCAB = KeySet(c, KeySet(a, b));
 
-    KeySet mergedABC;
-    mergedABC.mergeFrom(a);
-    mergedABC.mergeFrom(b);
-    mergedABC.mergeFrom(c);
+    assert (mergedABC == mergedCAB);
     assert (mergedABC[].equal([
         Key.byA5KeyId(2),
         Key.byA5KeyId(3),
         Key.byA5KeyId(4),
         Key.byA5KeyId(5)]));
+
     c.remove(Key.byA5KeyId(4));
     c.remove(Key.byA5KeyId(6));
     assert (c[].equal([
