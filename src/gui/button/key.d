@@ -45,7 +45,7 @@ public:
     {
         if (sc == _keySet)
             return sc;
-        _keySet = KeySet(sc);
+        _keySet = sc;
         formatScancode();
         return sc;
     }

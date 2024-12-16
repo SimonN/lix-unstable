@@ -13,69 +13,106 @@ import file.key.key;
 
 struct KeySet {
 private:
-    immutable(Key)[] _keys;
+    /*
+     * A nogc implementation of a set, with anemic maximum capacity.
+     * When you reach an invalid entry (! Key.isValid), e.g., Key.init,
+     * you should ignore it and all subsequent entries. It's allowed for
+     * the set to contain only valid entries and no terminating invalid one.
+     */
+    static assert (! Key.init.isValid);
+    Key[6] _keys;
 
 public:
-    this(Key k) pure nothrow @safe
+pure:
+nothrow:
+@nogc:
+@safe:
+    this(Key k)
     {
-        if (! k.isValid) {
-            return;
+        if (k.isValid) {
+            _keys[0] = k;
         }
-        _keys = [k];
     }
 
-    this(in int singleAllegroKeyId) pure nothrow @safe
+    this(Key first, Key second)
+    {
+        if (first.isValid) {
+            _keys[0] = first;
+            if (second.isValid && second != first) {
+                _keys[1] = second;
+            }
+        }
+        else if (second.isValid) {
+            _keys[0] = second;
+        }
+        _keys[].sort;
+    }
+
+    this(in typeof(this) first, in typeof(this) second)
+    {
+        mergeFrom(first);
+        mergeFrom(second);
+    }
+
+    this(in int singleAllegroKeyId)
     {
         this(Key.byA5KeyId(singleAllegroKeyId));
     }
 
-    this(const typeof(this)[] sets...) pure
+    void mergeFrom(in typeof(this) rhs)
     {
-        if (sets.length == 0)
-            return;
-        else if (sets.length == 1)
-            _keys = sets[0]._keys;
-        else if (sets.length == 2
-            && (sets[0].empty || sets[1].empty)
-        ) {
-            _keys = sets[0].empty ? sets[1]._keys : sets[0]._keys;
+        for (int i = 0; i < rhs.len; ++i) {
+            immutable Key k = rhs[i];
+            assert (k.isValid);
+            if (len < _keys.length && ! _keys[].canFind(k)) {
+                _keys[len] = k;
+            }
         }
-        else {
-            Key[] toSort;
-            foreach (set; sets)
-                toSort ~= set._keys;
-            _keys = toSort.sort().uniq.array.assumeUnique;
+        _keys[].sort;
+    }
+
+    bool empty() const { return ! _keys[0].isValid; }
+
+    int len() const
+    {
+        for (int i = 0; i < _keys.length; ++i) {
+            if (! _keys[i].isValid) {
+                return i;
+            }
+        }
+        return _keys.length & 0x7FFF_FFFF;
+    }
+
+    void remove(in Key keyToRm)
+    {
+        if (! keyToRm.isValid) {
+            return; // We have stored only valid Keys.
+        }
+        for (int i = 0; i < _keys.length; ++i) {
+            if (_keys[i] == keyToRm) {
+                _keys[i] = Key.init;
+                _keys[].sort;
+                assert (! _keys[$-1].isValid,
+                    "Invalid keys sort at the end, and we introduced one");
+                return;
+            }
         }
     }
 
-    bool empty() const pure nothrow @safe @nogc { return _keys.empty; }
-    int len() const pure nothrow @safe @nogc
+    void removeAnySingleOne()
     {
-        return _keys.length & 0x7FFF_FFFFu;
+        _keys[0] = Key.init;
+        _keys[].sort;
+        assert (! _keys[$-1].isValid,
+            "Invalid keys sort at the end, and we introduced one");
     }
 
-    void remove(in Key keyToRm) pure nothrow @safe
+    const(Key)[] opIndex() const return
     {
-        if (_keys.empty || ! keyToRm.isValid) {
-            return;
-        }
-        _keys = _keys.filter!(k => k != keyToRm).array;
+        return _keys[0 .. len];
     }
 
-    void removeAnySingleOne() pure nothrow @safe @nogc
-    {
-        if (_keys.empty) {
-            return;
-        }
-        _keys = _keys[0 .. $-1];
-    }
-
-    immutable(Key)[] opIndex() const pure nothrow @safe @nogc
-    {
-        return _keys;
-    }
-
-    Key opIndex(in int i) const pure nothrow @safe @nogc
+    const(Key) opIndex(in int i) const
     {
         return _keys[i];
     }
@@ -84,15 +121,22 @@ public:
 unittest {
     KeySet a = KeySet(4);
     KeySet b = KeySet(2);
-    KeySet c = KeySet(KeySet(4), KeySet(5), KeySet(3));
-    assert (KeySet(a, b, c)._keys == [
+    KeySet c = KeySet(4);
+    c.mergeFrom(KeySet(5));
+    c.mergeFrom(KeySet(3));
+
+    KeySet mergedABC;
+    mergedABC.mergeFrom(a);
+    mergedABC.mergeFrom(b);
+    mergedABC.mergeFrom(c);
+    assert (mergedABC[].equal([
         Key.byA5KeyId(2),
         Key.byA5KeyId(3),
         Key.byA5KeyId(4),
-        Key.byA5KeyId(5)]);
+        Key.byA5KeyId(5)]));
     c.remove(Key.byA5KeyId(4));
     c.remove(Key.byA5KeyId(6));
-    assert (c._keys == [
+    assert (c[].equal([
         Key.byA5KeyId(3),
-        Key.byA5KeyId(5)]);
+        Key.byA5KeyId(5)]));
 }

@@ -15,24 +15,24 @@ private:
     /*
      * A = 1, B = 2, ..., this runs through all Allegro-mapped keyboard keys.
      */
-    int _kb;
+    short _kb;
 
     /*
      * 1 = LMB, 2 = RMB, 3 = some third button, ...
      * -1 = Wheel up
      * -2 = Wheel down
      */
-    int _mb;
+    short _mb;
 
 public:
     static Key byA5KeyId(in int a5KeyId) pure nothrow @safe @nogc
     {
-        return Key(a5KeyId, 0);
+        return Key(a5KeyId & 0x7FFF, 0);
     }
 
     static Key byMouseButtonId(in int mButtonId) pure nothrow @safe @nogc
     {
-        return Key(0, mButtonId);
+        return Key(0, mButtonId & 0x7FFF);
     }
 
     enum Key lmb = Key(0, 1);
@@ -60,8 +60,22 @@ public:
 
     int opCmp(in typeof(this) rhs) const pure nothrow @safe @nogc
     {
-        return _kb != rhs._kb ? _kb - rhs._kb
-                              : _mb - rhs._mb;
+        if (_kb == rhs._kb && _mb == rhs._mb) {
+            return 0;
+        }
+        if (isValid && rhs.isValid) {
+            return _kb != rhs._kb ? _kb - rhs._kb : _mb - rhs._mb;
+        }
+        if (! isValid && ! rhs.isValid) {
+            if (this == Key.init) {
+                return -1;
+            }
+            if (rhs == Key.init) {
+                return 1;
+            }
+            return _kb != rhs._kb ? _kb - rhs._kb : _mb - rhs._mb;
+        }
+        return isValid ? -1 : 1;
     }
 
     int keyboardKey() const pure nothrow @safe @nogc
@@ -83,7 +97,7 @@ public:
     }
 
 private:
-    this(int a, int b) pure nothrow @safe @nogc
+    this(short a, short b) pure nothrow @safe @nogc
     {
         _kb = a;
         _mb = b;
