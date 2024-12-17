@@ -86,16 +86,6 @@ public:
     in { assert (type == Type.mouseButton, "It's not a mouse button"); }
     do { return _mb; }
 
-    bool isWheelUp() const pure nothrow @safe @nogc
-    {
-        return this == Key.wheelUp;
-    }
-
-    bool isWheelDown() const pure nothrow @safe @nogc
-    {
-        return this == Key.wheelDown;
-    }
-
 private:
     this(short a, short b) pure nothrow @safe @nogc
     {
@@ -103,3 +93,7 @@ private:
         _mb = b;
     }
 }
+
+static assert (! Key.init.isValid);
+static assert (Key.init.type == Key.Type.keyboardKey,
+    "Safety precaution. We return Key.init often as an invalid default.");
