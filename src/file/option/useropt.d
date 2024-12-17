@@ -171,13 +171,18 @@ protected:
 
 private:
 
-Key old2024IntToKey(in int from2024Options) pure nothrow @safe @nogc
+// Keywords for import/export of options.
+enum kwMButton = "mouseButton";
+enum kwWhUp = "mouseWheelUp";
+enum kwWhDown = "mouseWheelDown";
+
+Key old2024IntToKey(in int from2024) pure nothrow @safe @nogc
 {
-    return from2024Options == ALLEGRO_KEY_MAX ? Key.mmb
-        : from2024Options == ALLEGRO_KEY_MAX + 1 ? Key.rmb
-        : from2024Options == ALLEGRO_KEY_MAX + 2 ? Key.wheelUp
-        : from2024Options == ALLEGRO_KEY_MAX + 3 ? Key.wheelDown
-        : from2024Options < ALLEGRO_KEY_MAX ? Key.byA5KeyId(from2024Options)
+    return from2024 == ALLEGRO_KEY_MAX ? Key.mmb
+        : from2024 == ALLEGRO_KEY_MAX + 1 ? Key.rmb
+        : from2024 == ALLEGRO_KEY_MAX + 2 ? Key.wheelUp
+        : from2024 == ALLEGRO_KEY_MAX + 3 ? Key.wheelDown
+        : from2024 >= 0 && from2024 < ALLEGRO_KEY_MAX ? Key.byA5KeyId(from2024)
         : Key.init;
 }
 
@@ -188,10 +193,10 @@ void add2025(ref Tag target, in Key keyToExport)
         target.add(Value(keyToExport.keyboardKey));
         return;
     case Key.Type.mouseButton:
-        // Add 2025 export string here.
+        target.add(new Attribute(kwMButton, Value(keyToExport.mouseButton)));
         return;
     case Key.Type.mouseWheelDirection:
-        // Add 2025 export string here.
+        target.add(Value(keyToExport == Key.wheelUp ? kwWhUp : kwWhDown));
         return;
     }
 }
@@ -233,4 +238,15 @@ unittest {
     assert (mykey.createTag().values.empty);
     mykey.set(new Tag("", "myHotkeyKey"));
     assert (mykey.createTag().values.empty);
+}
+
+unittest {
+    immutable k = KeySet(Key.byMouseButtonId(7));
+    UserOption!KeySet mykey = new UserOption!KeySet("myMouseButtonOption",
+        Lang.optionKeyMenuOkay, k);
+    assert (mykey.createTag().values.empty);
+    assert (mykey.createTag().attributes.length == 1);
+    auto attr = mykey.createTag().attributes.front;
+    assert (attr.name == "mouseButton");
+    assert (attr.value == 7);
 }
