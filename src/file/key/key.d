@@ -94,10 +94,15 @@ private:
         _wh = c;
     }
 
-    // Sort valid Keys first, then Type.init, then other invalid Keys.
+    /*
+     * Sort valid Keys first, according to their type.
+     * After the valid Keys, sort Type.init. Only then sort other invalid Keys.
+     */
     int sortingWeightOfTypes() const pure nothrow @safe @nogc
     {
-        return isValid ? type : (0x2000 + (this == Key.init) * 0x1000);
+        return isValid * -0x0010_0000
+            + type
+            + (this == Key.init) * -0x0000_1000;
     }
 
     int sortingWeightOfInts() const pure nothrow @safe @nogc
@@ -109,6 +114,13 @@ private:
     }
 }
 
-static assert (! Key.init.isValid);
-static assert (Key.init.type == Key.Type.keyboardKey,
-    "Safety precaution. We return Key.init often as an invalid default.");
+unittest {
+    assert (! Key.init.isValid);
+    assert (Key.init.type == Key.Type.keyboardKey,
+        "Safety precaution. We return Key.init often as an invalid default.");
+    assert (Key.lmb < Key.init);
+
+    immutable garbage = Key(12, 34, 56);
+    assert (! garbage.isValid);
+    assert (Key.init < garbage);
+}
