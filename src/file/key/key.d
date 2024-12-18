@@ -50,44 +50,32 @@ public:
 
     Type type() const pure nothrow @safe @nogc
     {
-        return _mb != 0 ? Type.mouseButton
+        return _kb != 0 ? Type.keyboardKey
+            :  _mb != 0 ? Type.mouseButton
             :  _wh != 0 ? Type.mouseWheelDirection : Type.keyboardKey;
     }
 
     bool isValid() const pure nothrow @safe @nogc
     {
-        if (1 != (_kb != 0) + (_mb != 0) + (_wh != 0)) {
-            // Valid keys have one of _kb, _mb, _wh != 0 and the two others 0.
-            return false;
-        }
+        // Valid keys have one of _kb, _mb, _wh != 0 and the two others 0.
         final switch (type) {
         case Type.keyboardKey:
-            return _kb >= 0 && _kb < firstInvalidKeyboardKey;
+            return _kb > 0 && _mb == 0 && _wh == 0
+                && _kb < firstInvalidKeyboardKey;
         case Type.mouseButton:
-            return _mb >= 0 && _mb < firstInvalidMouseButton;
+            return _kb == 0 && _mb > 0 && _wh == 0
+                && _mb < firstInvalidMouseButton;
         case Type.mouseWheelDirection:
-            return _wh >= 0 && _wh < firstInvalidWheelDirection;
+            return _kb == 0 && _mb == 0 && _wh > 0
+                && _wh < firstInvalidWheelDirection;
         }
     }
 
     int opCmp(in typeof(this) rhs) const pure nothrow @safe @nogc
     {
-        if (_kb == rhs._kb && _mb == rhs._mb) {
-            return 0;
-        }
-        if (isValid && rhs.isValid) {
-            return _kb != rhs._kb ? _kb - rhs._kb : _mb - rhs._mb;
-        }
-        if (! isValid && ! rhs.isValid) {
-            if (this == Key.init) {
-                return -1;
-            }
-            if (rhs == Key.init) {
-                return 1;
-            }
-            return _kb != rhs._kb ? _kb - rhs._kb : _mb - rhs._mb;
-        }
-        return isValid ? -1 : 1;
+        immutable typediff = sortingWeightOfTypes - rhs.sortingWeightOfTypes;
+        return typediff != 0 ? typediff
+            : sortingWeightOfInts - rhs.sortingWeightOfInts;
     }
 
     int keyboardKey() const pure nothrow @safe @nogc
@@ -104,6 +92,20 @@ private:
         _kb = a;
         _mb = b;
         _wh = c;
+    }
+
+    // Sort valid Keys first, then Type.init, then other invalid Keys.
+    int sortingWeightOfTypes() const pure nothrow @safe @nogc
+    {
+        return isValid ? type : (0x2000 + (this == Key.init) * 0x1000);
+    }
+
+    int sortingWeightOfInts() const pure nothrow @safe @nogc
+    {
+        static assert (_kb.sizeof + _mb.sizeof < int.sizeof);
+        return _kb
+            + (_mb << (8 * _kb.sizeof))
+            + (_wh << (8 * (_kb.sizeof + _mb.sizeof)));
     }
 }
 

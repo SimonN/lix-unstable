@@ -5,6 +5,7 @@ import std.math; // abs
 import basics.alleg5;
 import basics.globals;
 import basics.rect;
+import file.key.key;
 import opt = file.option.allopts;
 import hardware.display;
 import hardware.keyhist;
@@ -86,8 +87,10 @@ void freezeMouseY() { _mouseOwn.y = _mouseFreezeRevert.y; }
 
 package:
 
-KeyHistory[32] _mbHist; // 0 = unused, 1 = lmb, 2 = rmb, 3 = mmb, 4+ = extras
-KeyHistory[2] _whHist; // 0 = Wheel notch up, 1 = wheel notch down
+// _mbHist: 0 = unused, 1 = lmb, 2 = rmb, 3 = mmb, 4+ = extras
+// _whHist: 0 = unused, 1 = Wheel notch up, 2 = wheel notch down
+KeyHistory[Key.firstInvalidMouseButton] _mbHist;
+KeyHistory[Key.firstInvalidWheelDirection] _whHist;
 
 ///////////////////////////////////////////////////////////////////////////////
 private: ///////////////////////////////////////////////////////////// :private
@@ -137,7 +140,7 @@ void consumeAllegroMouseEvents()
             }
             if (event.mouse.dz != 0) {
                 _wheelNotches -= event.mouse.dz;
-                _whHist[event.mouse.dz > 0 ? 0 : 1].wasTapped = true;
+                _whHist[event.mouse.dz > 0 ? 1 : 2].wasTapped = true;
             }
             break;
 

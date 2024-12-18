@@ -126,7 +126,12 @@ private: // ########################################################## :private
 ALLEGRO_EVENT_QUEUE* _queue;
 bool _backspace;
 string _bufferUTF8;
-KeyHistory[ALLEGRO_KEY_MAX] _kbHist;
+KeyHistory[Key.firstInvalidKeyboardKey] _kbHist;
+
+static assert (ALLEGRO_KEY_MAX <= Key.firstInvalidKeyboardKey,
+    "Increase Key.firstInvalidKeyboardKey to be >= ALLEGRO_KEY_MAX."
+    ~ " I didn't want to make struct Key rely on Allegro 5 because"
+    ~ " option file support (import/export) should remain standalone.");
 
 const(KeyHistory) historyOf(in Key k) nothrow @safe @nogc
 {
@@ -134,7 +139,7 @@ const(KeyHistory) historyOf(in Key k) nothrow @safe @nogc
         case Key.Type.keyboardKey: return _kbHist[k.keyboardKey];
         case Key.Type.mouseButton: return _mbHist[k.mouseButton];
         case Key.Type.mouseWheelDirection:
-            return _whHist[k == Key.wheelUp ? 0 : 1];
+            return _whHist[k == Key.wheelUp ? 1 : 2];
     }
 }
 
