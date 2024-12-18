@@ -18,7 +18,12 @@ import std.string;
 
 import sdlang;
 
-import basics.alleg5 : ALLEGRO_KEY_MAX; // Fallback for 2024 option files
+/*
+ * This import is necessary for the fallback of loading option files from
+ * 2024. Remove it in 2028.
+ */
+import basics.alleg5 : ALLEGRO_KEY_MAX;
+
 import file.filename;
 import file.language;
 import file.key.key;
@@ -182,8 +187,8 @@ Key old2024IntToKey(in int from2024) pure nothrow @safe @nogc
         : from2024 == ALLEGRO_KEY_MAX + 1 ? Key.rmb
         : from2024 == ALLEGRO_KEY_MAX + 2 ? Key.wheelUp
         : from2024 == ALLEGRO_KEY_MAX + 3 ? Key.wheelDown
-        : from2024 >= 0 && from2024 < ALLEGRO_KEY_MAX ? Key.byA5KeyId(from2024)
-        : Key.init;
+        : Key.byA5KeyId(from2024);
+    // KeySet is responsible for discarding invalid Keys that we produce here.
 }
 
 void add2025(ref Tag target, in Key keyToExport)
