@@ -236,7 +236,6 @@ unittest {
     {
         Tag root = parseSource("myHotkeyKey 2 1 4 3 2 2 2\n");
         mykey.set(root.tags.front);
-        import std.algorithm;
         assert (mykey.createTag().values.equal([1, 2, 3, 4]));
     }
     mykey = KeySet();
@@ -246,12 +245,20 @@ unittest {
 }
 
 unittest {
-    immutable k = KeySet(Key.byMouseButtonId(7));
-    UserOption!KeySet mykey = new UserOption!KeySet("myMouseButtonOption",
-        Lang.optionKeyMenuOkay, k);
-    assert (mykey.createTag().values.empty);
-    assert (mykey.createTag().attributes.length == 1);
-    auto attr = mykey.createTag().attributes.front;
-    assert (attr.name == "mouseButton");
-    assert (attr.value == 7);
+    UserOption!KeySet ourOpt = new UserOption!KeySet("myMouseButtonOption",
+        Lang.optionKeyMenuOkay, KeySet(Key.byMouseButtonId(7)));
+    assert (ourOpt.createTag().values.empty);
+    assert (ourOpt.createTag().attributes.length == 1);
+    {
+        auto attr = ourOpt.createTag().attributes.front;
+        assert (attr.name == "mouseButton");
+        assert (attr.value == 7);
+    }
+    {
+        Tag root = parseSource(
+            "myMouseButtonOption mouseButton=10 mouseButton=9\n");
+        ourOpt.set(root.tags.front);
+    }
+    assert (ourOpt.value == KeySet(
+        KeySet(Key.byMouseButtonId(9)), KeySet(Key.byMouseButtonId(10))));
 }
