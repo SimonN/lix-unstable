@@ -144,9 +144,12 @@ protected:
     {
         static if (is (T == KeySet)) {
             _value = KeySet();
-            import std.variant;
             foreach (value; tag.values.filter!(v => v.convertsTo!int)) {
                 const Key k = old2024IntToKey(value.get!int);
+                _value = KeySet(_value, KeySet(k));
+            }
+            foreach (attr; tag.attributes) {
+                const Key k = attributeToKey(attr);
                 _value = KeySet(_value, KeySet(k));
             }
         }
@@ -178,8 +181,9 @@ private:
 
 // Keywords for import/export of options.
 enum kwMButton = "mouseButton";
-enum kwWhUp = "mouseWheelUp";
-enum kwWhDown = "mouseWheelDown";
+enum kwWheel = "mouseWheel";
+enum kwWhUp = "up";
+enum kwWhDown = "down";
 
 Key old2024IntToKey(in int from2024) pure nothrow @safe @nogc
 {
@@ -189,6 +193,19 @@ Key old2024IntToKey(in int from2024) pure nothrow @safe @nogc
         : from2024 == ALLEGRO_KEY_MAX + 3 ? Key.wheelDown
         : Key.byA5KeyId(from2024);
     // KeySet is responsible for discarding invalid Keys that we produce here.
+}
+
+Key attributeToKey(Attribute attr)
+{
+    if (attr.name == kwMButton && attr.value.convertsTo!int) {
+        immutable k = Key.byMouseButtonId(attr.value.get!int);
+        // Don't allow LMB, it's not mappable in the options menu either.
+        return k != Key.lmb ? k : Key.init;
+    }
+    if (attr.name == kwWheel && attr.value.convertsTo!string) {
+        return attr.value.get!string == kwWhUp ? Key.wheelUp : Key.wheelDown;
+    }
+    return Key.init;
 }
 
 void add2025(ref Tag target, in Key keyToExport)
@@ -201,7 +218,8 @@ void add2025(ref Tag target, in Key keyToExport)
         target.add(new Attribute(kwMButton, Value(keyToExport.mouseButton)));
         return;
     case Key.Type.mouseWheelDirection:
-        target.add(Value(keyToExport == Key.wheelUp ? kwWhUp : kwWhDown));
+        target.add(new Attribute(kwWheel,
+            Value(keyToExport == Key.wheelUp ? kwWhUp : kwWhDown)));
         return;
     }
 }
@@ -261,4 +279,30 @@ unittest {
     }
     assert (ourOpt.value == KeySet(
         KeySet(Key.byMouseButtonId(9)), KeySet(Key.byMouseButtonId(10))));
+}
+
+unittest {
+    UserOption!KeySet ourOpt = new UserOption!KeySet("myMouseButtonOption",
+        Lang.optionKeyMenuOkay, KeySet(Key.rmb));
+    assert (ourOpt.createTag().values.length == 1,
+        "This is the 2024 fallback: We export MMB, RMB, wheel up/down as"
+        ~ " keyboard integers that Lix versions from 2024 can understand."
+        ~ " In 2028, require .length == 0 here.");
+    auto attrs = ourOpt.createTag().attributes;
+    assert (attrs.length == 1);
+    assert (attrs[0].name == kwMButton);
+    assert (attrs[0].value.get!int == 2);
+}
+
+unittest {
+    UserOption!KeySet ourOpt = new UserOption!KeySet("myMouseWheelOption",
+        Lang.optionKeyMenuOkay, KeySet(Key.wheelDown));
+    assert (ourOpt.createTag().values.length == 1,
+        "This is the 2024 fallback: We export MMB, RMB, wheel up/down as"
+        ~ " keyboard integers that Lix versions from 2024 can understand."
+        ~ " In 2028, require .length == 0 here.");
+    auto attrs = ourOpt.createTag().attributes;
+    assert (attrs.length == 1);
+    assert (attrs[0].name == kwWheel);
+    assert (attrs[0].value.get!string == kwWhDown);
 }
