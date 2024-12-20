@@ -32,51 +32,47 @@ static assert (isForwardRange!BallisticRange);
 struct BallisticRange {
 @nogc:
 private:
-    // constants during iteration
-    Point _start;
-    int _speedX;
-    int _speedY;
-
-    // iteration will change these
-    Point _now;
-    int _stepsTaken;
+    Point _goal;
+    Point _now = Point(0, 0);
 
 public:
+    enum Step { down, up, ahead, }
+
     @disable this();
-    this(Point start, int speedX, int speedY)
+    this(int speedX, int speedY)
     in {
-        assert (start.x % 2 == 0, "BallisticRange needs even x coordinates.");
         assert (speedX % 2 == 0, "BallisticRange needs even x speeds.");
+        assert (speedX >= 0, "BallisticRange goes forward (>= 0) only.");
     }
     do {
-        _start = _now = start;
-        _speedX = speedX;
-        _speedY = speedY;
+        _goal = Point(speedX, speedY);
     }
 
-    @property const pure {
-        // ">", not "==": OK to call front when we're at the target position.
-        // Then we get the final point of the flight for that step.
-        bool  empty() { return _stepsTaken > stepsMax; }
-        Point front() in { assert (! empty); } do { return _now; }
-        int stepsTaken() { return _stepsTaken; }
-        int stepsMax() { return _speedX.abs / 2 + _speedY.abs; }
+    bool empty() const { return _now == _goal; }
+
+    Step front()
+    in { assert (! empty); }
+    do {
+        immutable candidateX = _now + Point(2, 0);
+        immutable candidateY = _now + Point(0, _goal.y >= 0 ? 1 : -1);
+        if (triangleArea(_now, _goal, candidateY)
+          > triangleArea(_now, _goal, candidateX)
+        ) {
+            return Step.ahead;
+        }
+        return _goal.y >= 0 ? Step.down : Step.up;
     }
 
-    auto save() inout pure { return this; }
+    auto save() inout nothrow pure @safe @nogc { return this; }
 
     void popFront()
     in { assert (! empty); }
     do {
-        ++_stepsTaken;
-        if (empty)
-            return;
-        immutable candidateX = _now + Point(_speedX >= 0 ? 2 : -2, 0);
-        immutable candidateY = _now + Point(0, _speedY >= 0 ? 1 : -1);
-        immutable goal = _start + Point(_speedX, _speedY);
-        _now =  triangleArea(_start, goal, candidateY)
-             <= triangleArea(_start, goal, candidateX)
-            ? candidateY : candidateX;
+        final switch (front()) {
+            case Step.down: _now += Point(0, 1); return;
+            case Step.up: _now += Point(0, -1); return;
+            case Step.ahead: _now += Point(2, 0); return;
+        }
     }
 }
 
@@ -94,39 +90,28 @@ private int triangleArea(in Point a, in Point b, in Point c) pure @nogc
 }
 
 unittest {
+with (BallisticRange.Step) {
     // The example from the introduction comment. Let's choose A = (0, 0).
-    assert (BallisticRange(Point(0, 0), 8, -2).equal([
-        Point(0, 0),
-        Point(2, 0),
-        Point(2, -1),
-        Point(4, -1),
-        Point(6, -1),
-        Point(6, -2),
-        Point(8, -2),
+    assert (BallisticRange(8, -2).equal([
+        ahead, up, ahead, ahead, up, ahead,
     ]));
 
     // An example where we move the same distance horizontally and vertically,
     // to show how moving horizontally in steps of 2 affects the trajectory.
-    assert (BallisticRange(Point(10, 10), 6, 6).equal([
-        Point(10, 10),
-        Point(10, 11),
-        Point(12, 11),
-        Point(12, 12),
-        Point(12, 13),
-        Point(14, 13),
-        Point(14, 14),
-        Point(14, 15),
-        Point(16, 15),
-        Point(16, 16),
+    assert (BallisticRange(6, 6).equal([
+        up, ahead, up,
+        up, ahead, up,
+        up, ahead, up,
     ]));
 
     // In a very steep fall that moves horizontally only once,
     // we should move horizontally in the middle of the fall.
-    auto ran = BallisticRange(Point(0, 0), 2, 10);
-    assert (ran.walkLength == 12);
-    assert (ran.count!(p => p.x == 0) == 6);
-    assert (ran.count!(p => p.x == 2) == 6);
+    assert (BallisticRange(2, 10).equal([
+        down, down, down, down, down, ahead,
+        down, down, down, down, down,
+    ]));
 
-    assert (BallisticRange(Point(0, 0), 8, 0).walkLength == 5);
-    assert (BallisticRange(Point(0, 0), 0, 8).walkLength == 9);
-}
+
+    assert (BallisticRange(8, 0).walkLength == 4);
+    assert (BallisticRange(0, 8).walkLength == 8);
+}}

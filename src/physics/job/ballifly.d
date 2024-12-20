@@ -79,16 +79,25 @@ protected:
     }
 
 private:
+    struct PlannedMovement {
+        Point footGoal;
+        bool collideAtGoal = false;
+        BallisticRange.Step lastGood;
+        BallisticRange.Step nextBad; // Only meaningful when collideAtGoal
+    }
+
     BallisticRange rangeBySpeed() const
     {
-        return BallisticRange(lixxie.foot, speedX * lixxie.dir, speedY);
+        return BallisticRange(speedX * lixxie.dir, speedY);
     }
 
     // Step (1) in geoo's proposal: Plan trajectory
-    Point planMovement() const
+    PlannedMovement planMovement() const
     {
+        PlannedMovement ret;
+        ret.footGoal = lixxie.foot;
         BallisticRange ran = rangeBySpeed();
-        Point lastGood = ran.front;
+        Point lastGood = lixxie.foot;
         while (! ran.empty && ! wouldCollideAt(ran.front)) {
             lastGood = ran.front;
             ran.popFront;
