@@ -82,22 +82,24 @@ private:
     struct PlannedMovement {
         Point footGoal;
         bool collideAtGoal = false;
-        BallisticRange.Step lastGood;
-        BallisticRange.Step nextBad; // Only meaningful when collideAtGoal
+        BallisticRange.Step lastGood = BallisticRange.Step.down;
+        BallisticRange.Step nextBad = BallisticRange.Step.down;
     }
 
     BallisticRange rangeBySpeed() const
     {
-        return BallisticRange(speedX * lixxie.dir, speedY);
+        return BallisticRange(speedX, speedY);
     }
 
     // Step (1) in geoo's proposal: Plan trajectory
     PlannedMovement planMovement() const
     {
+        if (wouldCollideAt(lixxie.foot)) {
+            return PlannedMovement(lixxie.foot, true);
+        }
         PlannedMovement ret;
         ret.footGoal = lixxie.foot;
         BallisticRange ran = rangeBySpeed();
-        Point lastGood = lixxie.foot;
         while (! ran.empty && ! wouldCollideAt(ran.front)) {
             lastGood = ran.front;
             ran.popFront;
