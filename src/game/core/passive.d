@@ -26,16 +26,18 @@ package void
 calcPassive(
     Game game,
     in UnderCursor underCursor,
-) {
+) { with (MouseCursor)
+{
     game.map.calcZoomAndScrolling();
     game.activateOrDeactivateTweaker(underCursor.best.empty
         ? no!Passport : some(underCursor.best.front.passport));
 
-    mouseCursor.yf = underCursor.numLix >= 1;
-    mouseCursor.xf
-        = game.map.isHoldScrolling ? 3
-        : forcingLeft ? 1
-        : forcingRight ? 2 : mouseCursor.xf;
+    mouseCursor.want(underCursor.numLix >= 1
+        ? Shape.openSquare : Shape.crosshair);
+    mouseCursor.want(game.map.isHoldScrolling ? Arrows.scroll
+        : forcingLeft ? Arrows.left
+        : forcingRight ? Arrows.right
+        : Arrows.none);
 
     if (game.map.suggestHoldScrollingTooltip)
         game._panelExplainer.suggestTooltip(Tooltip.ID.holdToScroll);
@@ -52,7 +54,7 @@ calcPassive(
     if (game.canWeClickAirNowToCutGlobalFuture) {
         game._mapClickExplainer.suggestTooltip(Tooltip.ID.clickToCancelReplay);
     }
-}
+}}
 
 private:
 

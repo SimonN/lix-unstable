@@ -60,15 +60,13 @@ public:
         double rotation() const { return _rot; }
         bool mirror (bool b) { return _mirror = b; }
 
-        // Looks dumb, why not make _xf/_yf public? Lixxie overrides these,
-        // because it wants to choose the frame to draw even while const.
-        // This is bad design, maybe the Lixxie shouldn't even inherit from us.
         int xf() const { return _xf; }
         int yf() const { return _yf; }
         int xf(in int i) { return _xf = i; }
         int yf(in int i) { return _yf = i; }
 
         Rect rect() const { return Rect(_loc, xl, yl); }
+        Point len() const { return Point(xl, yl); }
         Point loc() const { return _loc; }
         Point loc(in Point newLoc)
         {

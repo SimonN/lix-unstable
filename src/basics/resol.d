@@ -20,7 +20,7 @@ private bool _cmdargsForcedResolutionThusNeverChangeThat = false;
 
 void changeResolutionBasedOnCmdargsThenUserFile(const(Cmdargs) cmdargs)
 {
-    hardware.mousecur.deinitialize();
+    mouseCursor.deinitialize();
     hardware.mouse.deinitialize();
     tile.tilelib.deinitialize();
     physics.physdraw.deinitialize();
@@ -38,7 +38,7 @@ void changeResolutionBasedOnCmdargsThenUserFile(const(Cmdargs) cmdargs)
     graphic.internal.initializeScale(gui.stretchFactor);
     physics.physdraw.initialize();
     hardware.mouse.initialize();
-    hardware.mousecur.initialize();
+    mouseCursor.initialize();
 }
 
 void changeResolutionBasedOnUserFileAlone()
