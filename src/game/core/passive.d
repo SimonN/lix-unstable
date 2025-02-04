@@ -45,14 +45,22 @@ calcPassive(
     if (game.pan.highlightGoalsExecute) {
         game._altickHighlightGoalsUntil = timerTicks + ticksPerSecond * 3 / 2;
     }
+
+    if (game.canWeClickAirNowToCutGlobalFuture) {
+        game._mapClickExplainer.suggestTooltip(Tooltip.ID.clickToCancelReplay);
+        if (underCursor.numLix >= 1) {
+            mouseCursor.want(Sidekick.scissors);
+        }
+        else {
+            mouseCursor.want(Shape.scissors);
+        }
+    }
     if (! underCursor.best.empty) {
         game._effect.localStyle = underCursor.best.front.lixxie.style;
         if (game.isInsertMode && game.canWeClickAirNowToCutGlobalFuture) {
             game._mapClickExplainer.suggestTooltip(Tooltip.ID.clickToInsert);
+            mouseCursor.want(Sidekick.insert);
         }
-    }
-    if (game.canWeClickAirNowToCutGlobalFuture) {
-        game._mapClickExplainer.suggestTooltip(Tooltip.ID.clickToCancelReplay);
     }
 }}
 
