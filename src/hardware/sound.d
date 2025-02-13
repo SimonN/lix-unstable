@@ -17,15 +17,18 @@ import file.log;
 import hardware.tharsis;
 
 enum Sound {
-    NOTHING,
+    none,
     DISKSAVE,    // Save a file to disk, from editor or replay
     JOIN,        // Someone joins the network
     pageTurn,    // Someone selects a map to play for the entire room
 
     PANEL,       // Choice of skill on the panel
     PANEL_EMPTY, // Trying to select a skill that's empty or nonpresent
-    ASSIGN,      // Assignment of a skill to a lix
     CLOCK,       // Once per second played when the clock is low on time
+
+    assignByClick,
+    assignByReplay,
+    assignByTweaker,
 
     LETS_GO,     // Lets-go sound played after starting a level
     HATCH_OPEN,  // Entrance hatches open
@@ -76,10 +79,8 @@ void deinitialize()
         return;
     al_stop_samples();
     foreach (ref Sample sample; samples) {
-        if (sample is null) continue;
         sample.stop();
         destroy(sample);
-        sample = null;
     }
     al_uninstall_audio();
     _isAudioInitialized = false;
@@ -92,9 +93,9 @@ void playWithCustomDBFS(in Sound id, in int dBFS) { play(id, dBFS); }
 // Call this once per main loop, after scheduling sounds with playLoud et al.
 void draw()
 {
-    foreach (sample; samples)
-        if (sample)
-            sample.draw();
+    foreach (ref sample; samples) {
+        sample.draw();
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -126,13 +127,13 @@ bool _isAudioInitialized;
 bool _weInitializedUnsuccessfullyBefore;
 Sample[Sound.MAX] samples;
 
-class Sample {
+struct Sample {
 private:
     alias ALLEGRO_SAMPLE*   AlSamp;
     alias ALLEGRO_SAMPLE_ID PlayId;
 
-    Filename _filename;
-    AlSamp _sample; // may be null if file was missing or bad file
+    MutFilename _filename;
+    AlSamp _alSamp; // may be null if file was missing or bad file
     PlayId _playID;
     int _scheduledDBFS = int.min; // if != int.min, play this loud
     int _lastPlayedDBFS = int.min;
@@ -143,9 +144,10 @@ public:
 
     ~this()
     {
-        if (_sample)
-            al_destroy_sample(_sample);
-        _sample = null;
+        if (_alSamp) {
+            al_destroy_sample(_alSamp);
+        }
+        _alSamp = null;
         _loadedFromDisk = false;
     }
 
@@ -165,10 +167,11 @@ public:
             stop();
         }
         loadFromDisk();
-        if (_sample) {
+        if (_alSamp) {
+            enum defaultPitch = 1.0f;
             assert (_isAudioInitialized);
-            al_play_sample(_sample, dbToGain(_scheduledDBFS),
-                ALLEGRO_AUDIO_PAN_NONE, 1.0f, // speed factor
+            al_play_sample(_alSamp, dbToGain(_scheduledDBFS),
+                ALLEGRO_AUDIO_PAN_NONE, defaultPitch,
                 ALLEGRO_PLAYMODE.ALLEGRO_PLAYMODE_ONCE, &_playID);
         }
         _lastPlayedDBFS = _scheduledDBFS;
@@ -190,15 +193,15 @@ private:
         if (_loadedFromDisk)
             return;
         _loadedFromDisk = true;
-        assert (! _sample);
+        assert (! _alSamp);
         assert (_isAudioInitialized);
-        _sample = al_load_sample(_filename.stringForReading.toStringz);
-        if (! _sample) {
+        _alSamp = al_load_sample(_filename.stringForReading.toStringz);
+        if (! _alSamp) {
             if (! _filename.fileExists()) {
-                logf("Missing sound file `%s'", _filename.rootless);
+                logf("Missing sound file: %s", _filename.rootless);
             }
             else {
-                logf("Unplayable sound sample `%s'.", _filename.rootless);
+                logf("Unplayable sound sample: %s", _filename.rootless);
                 logAllegroSupportsFormat();
     }   }   }
 }
@@ -206,7 +209,10 @@ private:
 
 private void play(in Sound id, in int requestedDBFS)
 {
-    if (! opt.soundEnabled.value || ! tryInitialize() || ! samples[id]) {
+    if (! opt.soundEnabled.value || ! tryInitialize()) {
+        return;
+    }
+    if (id == Sound.none) {
         return;
     }
     samples[id].scheduleWithDBFS(requestedDBFS);
@@ -241,7 +247,7 @@ void initialize()
 
     Sample loadLazily(in string str)
     {
-        return new Sample(new VfsFilename(dirDataSound.rootless ~ str));
+        return Sample(new VfsFilename(dirDataSound.rootless ~ str));
     }
 
     samples[Sound.DISKSAVE]    = loadLazily("disksave.ogg");
@@ -250,8 +256,11 @@ void initialize()
 
     samples[Sound.PANEL]       = loadLazily("panel.ogg");
     samples[Sound.PANEL_EMPTY] = loadLazily("panel_em.ogg");
-    samples[Sound.ASSIGN]      = loadLazily("assign.ogg");
     samples[Sound.CLOCK]       = loadLazily("clock.ogg");
+
+    samples[Sound.assignByClick] = loadLazily("assign.ogg");
+    samples[Sound.assignByReplay] = loadLazily("replay.ogg");
+    samples[Sound.assignByTweaker] = loadLazily("tweak.ogg");
 
     samples[Sound.LETS_GO]     = loadLazily("lets_go.ogg");
     samples[Sound.HATCH_OPEN]  = loadLazily("hatch.ogg");

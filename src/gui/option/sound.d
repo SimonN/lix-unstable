@@ -90,7 +90,8 @@ public:
     this() {
         _queue = randomShuffle([
             Sound.PANEL,
-            Sound.ASSIGN,
+            Sound.assignByClick,
+            Sound.assignByReplay,
             Sound.LETS_GO,
             Sound.HATCH_OPEN,
             Sound.OBLIVION,
