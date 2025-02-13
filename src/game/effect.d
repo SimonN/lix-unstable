@@ -214,7 +214,7 @@ public:
 
     void addPickaxe(in Phyu upd, in Passport pa, in Point foot, in int dir)
     {
-        immutable res = addSteelSound_CallerMustAddTool(upd, pa, foot, dir);
+        immutable res = addSteelSound(upd, pa);
         if (res == AddResult.alreadyThere) {
             return;
         }
@@ -223,7 +223,7 @@ public:
 
     void addDigHammer(in Phyu upd, in Passport pa, in Point foot, in int dir)
     {
-        immutable res = addSteelSound_CallerMustAddTool(upd, pa, foot, dir);
+        immutable res = addSteelSound(upd, pa);
         if (res == AddResult.alreadyThere) {
             return;
         }
@@ -297,9 +297,8 @@ private:
         successfullyAdded,
     }
 
-    private AddResult addSteelSound_CallerMustAddTool(
-        Phyu upd, in Passport pa, in Point foot, int dir
-    ) {
+    private AddResult addSteelSound(Phyu upd, in Passport pa)
+    {
         immutable e = Effect(upd, pa,
             isLocal(pa) ? Sound.STEEL : Sound.none, Loudness.loud);
         if (e in _alreadyPlayed) {
