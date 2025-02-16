@@ -17,12 +17,25 @@ import gui;
 import file.key.set;
 import physics.score;
 
-package void
-implGameCalc(Game game) { with (game)
+package void implGameCalc(Game game)
+{
+    void netSendReceive() {
+        if (game._netClient) {
+            game._netClient.calc();
+        }
+    }
+    netSendReceive();
+    game.implGameCalc2();
+    netSendReceive();
+}
+
+private:
+
+void implGameCalc2(Game game) { with (game)
 {
     if (modalWindow) {
         game.calcModalWindow;
-        game.noninputCalc();
+        game.maybeUpdatePhysics(MapClickResult.noClick);
     }
     else if (keyGameExit.wasTapped) {
         if (game.view.askBeforeExitingGame) {
@@ -38,22 +51,13 @@ implGameCalc(Game game) { with (game)
         game.calcPassive(underCursor);
         if (game.view.canAssignSkills) {
             game.calcNukeButton();
-            game.calcClicksIntoMap(underCursor.best);
         }
+        const click = game.calcClicksIntoMap(underCursor);
         game.dispatchTweaks(); // Not yet impl'ed: feed into net
-        game.noninputCalc();
+        game.maybeUpdatePhysics(click);
         game.considerToEndGame();
     }
 }}
-
-private:
-
-void noninputCalc(Game game)
-{
-    if (game._netClient)
-        game._netClient.calc();
-    game.updatePhysicsAccordingToSpeedButtons();
-}
 
 void calcModalWindow(Game game) { with (game)
 {

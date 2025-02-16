@@ -17,6 +17,13 @@ import physics.lixxie.fields;
 
 package:
 
+enum MapClickResult {
+    noClick,
+    airClick,
+    goodAssignment,
+    failedAssignment,
+}
+
 void calcNukeButton(Game game)
 in {
     assert (!game.modalWindow);
@@ -37,28 +44,31 @@ do { with (game)
     _effect.addSound(Phyu(nurse.now + 1), Passport(localStyle, 0), Sound.NUKE);
 }}
 
-void calcClicksIntoMap(Game game, Optional!Assignee potAss)
+MapClickResult calcClicksIntoMap(Game game, UnderCursor found)
 in {
     assert (!game.modalWindow);
-    assert (game.view.canAssignSkills);
 }
 do {
     if (! hardware.mouse.mouseClickLeft || ! game.isMouseOnLand) {
-        return;
+        return MapClickResult.noClick;
     }
-    else if (game.canAssignTo(potAss)) {
-        game.resolveClickThatWillAssign(potAss.front);
+    else if (! game.view.canAssignSkills) {
+        return MapClickResult.airClick;
     }
-    else if (potAss.empty) {
-        // We have clicked air.
+    else if (game.canAssignTo(found)) {
+        game.resolveClickThatWillAssign(found.best.front);
+        return MapClickResult.goodAssignment;
+    }
+    else if (found.best.empty) {
         if (game.canWeClickAirNowToCutGlobalFuture) {
             game.nurse.cutGlobalFutureFromReplay();
         }
-        // The click will also advance physics. That's handled in speed.d.
+        return MapClickResult.airClick;
     }
     else if (game.view.canAssignSkills && game.pan.chosenSkill == Ac.nothing) {
         hardware.sound.playLoud(Sound.PANEL_EMPTY);
     }
+    return MapClickResult.failedAssignment;
 }
 
 void resolveClickThatWillAssign(Game game, Assignee assignee)
@@ -92,13 +102,13 @@ void cutSingleLixFutureFromReplay(Game game, in Passport ofWhom)
 
 private:
 
-bool canAssignTo(Game game, in Optional!Assignee potAss)
+bool canAssignTo(Game game, in UnderCursor foundLix)
 {
     return game.view.canAssignSkills
         && game.pan.chosenSkill != Ac.nothing
-        && ! potAss.empty
-        && potAss.front.facingOkay
-        && potAss.front.priority >= 2
+        && ! foundLix.best.empty
+        && foundLix.best.front.facingOkay
+        && foundLix.prio.isAssignable
         && ! game.localTribe.hasNuked;
 }
 
