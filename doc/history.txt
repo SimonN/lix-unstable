@@ -11,7 +11,7 @@ Add 34 new multiplayer levels by Hyperlodge.
 NepsterLix: Fix backroute in Miner Preservation Society. Fix typos in
 Introducing Climbers, Cannonballs in the Air.
 
-Updated Allegro 5 DLLS to the hotfix version 5.2.11-nightly.20250218.
+Updated Allegro 5 DLLs to the hotfix version 5.2.11-nightly.20250218.
 This fixes the broken Alt+Tab and broken Winkey from Allegro 5.2.10
 on Windows with the Direct3D backend.
 
@@ -38,11 +38,6 @@ but show fallback text instead of the image.
 When a translation string with format specifiers (%d, %s, ...) fails to
 conform to expectations, log the bad translation only once per program run.
 Before, the same bad translation could appear several times in the log file.
-
-Refactor the int priority to struct Priority
-bb2c9c3d Add @nogc, remove @property
-95eae4ac Rename INetClient -> NetClient
-f88f6df0 Rename NetClient -> TcpNetClient
 
 
 
