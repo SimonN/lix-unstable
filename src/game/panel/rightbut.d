@@ -11,6 +11,7 @@ import opt = file.option.allopts;
 import game.core.view;
 import game.panel.nuke;
 import game.panel.taperec;
+import game.panel.textnote;
 import game.panel.tooltip;
 import game.panel.savestat;
 import graphic.internal;
@@ -132,18 +133,36 @@ private:
     mixin SaveStateMixin;
 
 public:
-    this(Geom g)
+    this(Geom g, in bool visibleTapeRecorder_ifFalseItsStillHotkeyable)
     {
         super(g);
-        makeTapeRecorder(new Geom(0, 0, xlg, skillYl, From.BOTTOM));
+        makeTapeRecorder(new Geom(
+            visibleTapeRecorder_ifFalseItsStillHotkeyable ? 0 : 13 * xlg,
+            0, xlg, skillYl, From.BOTTOM));
         Geom mkGeom(in int nr, in int widthInButtons)
         {
-            return new Geom(nr * (xlg / 4f), 0,
+            return new Geom(
+                nr * (xlg / 4f),
+                visibleTapeRecorder_ifFalseItsStillHotkeyable ? 0 : 99 * ylg,
                 widthInButtons * xlg / 4f, topRowYl);
         }
         makeSaveState(mkGeom(0, 2));
         makeTweaker(mkGeom(2, 1));
         makeSplatRuler(mkGeom(3, 1));
+    }
+}
+
+class OfflinePuzzleRightButtons : SinglePlayerRightButtons {
+public:
+    this(Geom g) { super(g, true); }
+}
+
+class LivestreamPuzzleRightButtons : SinglePlayerRightButtons {
+public:
+    this(Geom g)
+    {
+        super(g, false);
+        addChild(new TextNote(new Geom(0, 0, xlg, ylg, From.BOTTOM)));
     }
 }
 

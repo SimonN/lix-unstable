@@ -88,6 +88,8 @@ UserOption!int splatRulerSnapPixels;
 UserOption!bool paintTorusSeams;
 UserOption!bool ingameTooltips;
 UserOption!bool showFPS;
+UserOption!bool showLivestreamNote;
+UserOption!string livestreamNoteText;
 
 UserOption!int mouseSpeed;
 UserOption!int scrollSpeedEdge;
@@ -274,6 +276,8 @@ do {
     else {
         showFPS = newOpt("showFramesPerSecond", Lang.optionShowFPS, false);
     }
+    showLivestreamNote = newOpt("showLivestreamNote", Lang.optionShowLivestreamNote, false);
+    livestreamNoteText = newOpt("livestreamNoteText", Lang.optionLivestreamNoteText, "");
 
     mouseSpeed = newOpt("mouseSpeed", Lang.optionMouseSpeed, mouseStandardDivisor);
     fastMovementFreesMouse = newOpt("fastMovementFreesMouse", Lang.optionFastMovementFreesMouse, true);

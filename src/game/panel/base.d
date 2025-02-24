@@ -8,6 +8,7 @@ module game.panel.base;
 
 import std.algorithm;
 import std.range;
+import std.string;
 
 import opt = file.option.allopts;
 import game.core.view;
@@ -48,10 +49,15 @@ public:
         addChild(stats);
         {
             auto rbGeom = new Geom(0, 0, xlg - stats.xlg, ylg, From.TOP_RIGHT);
+            immutable bool isPuzzleStream = opt.showLivestreamNote.value
+                && ! opt.livestreamNoteText.value.strip.empty;
+
             _rb = (view.showTapeRecorderButtons && view.showScoreGraph)
                 ? new BattleReplayRightButtons(rbGeom)
+                : view.showTapeRecorderButtons && isPuzzleStream
+                ? new LivestreamPuzzleRightButtons(rbGeom)
                 : view.showTapeRecorderButtons
-                ? new SinglePlayerRightButtons(rbGeom)
+                ? new OfflinePuzzleRightButtons(rbGeom)
                 /*
                  * This is the branch for (yes score graph, no tape recorder).
                  * Hack: Even if neither score graph or trbs shown, still

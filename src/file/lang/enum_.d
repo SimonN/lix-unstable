@@ -325,6 +325,9 @@ enum Lang {
     optionPaintTorusSeams,
     optionIngameTooltips,
     optionShowFPS,
+    optionShowLivestreamNote,
+    optionLivestreamNoteText,
+
     optionGuiColorRed,
     optionGuiColorGreen,
     optionGuiColorBlue,
