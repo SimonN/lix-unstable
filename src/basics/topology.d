@@ -13,7 +13,6 @@ import std.algorithm;
 import std.conv;
 import std.math;
 import std.range;
-import std.string;
 
 import basics.help; // positiveMod
 public import basics.rect;
@@ -24,11 +23,10 @@ private:
     bool _tx, _ty; // torus property in either direction, making edges loop
 
 public:
-    this(this T)(
-        in int nxl, in int nyl, in bool ntx = false, in bool nty = false)
+    this(this T)(int nxl, int nyl, bool ntx = false, bool nty = false
+    ) pure nothrow @safe @nogc
     in {
-        assert (nxl > 0 && nyl > 0,
-            "Topology: (xl, yl) > 0 required, not (%d, %d)".format(nxl, nyl));
+        assert (nxl > 0 && nyl > 0, "Topology: (xl, yl) > 0 required.");
     }
     do {
         _xl = nxl;
@@ -38,7 +36,8 @@ public:
     }
 
     Topology clone() const { return new Topology(this); }
-    this(this T)(in Topology rhs)
+
+    this(this T)(in Topology rhs) pure nothrow @safe @nogc
     {
         assert (rhs);
         _xl = rhs._xl;

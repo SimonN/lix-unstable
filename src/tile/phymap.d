@@ -41,26 +41,32 @@ enum Phybit : Phybitset {
 
 final class Phymap : Topology {
 
-    this(in int xl, in int yl, in bool _tx = false, in bool _ty = false) {
+    this(in int xl, in int yl, in bool _tx = false, in bool _ty = false)
+        pure nothrow @safe
+    {
         super(xl, yl, _tx, _ty);
         lt = new Phybitset[xl * yl];
     }
 
-    this(in Topology topology)
+    this(in Topology topology) pure nothrow @safe
     {
         super(topology);
         lt = new Phybitset[topology.xl * topology.yl];
     }
 
-    override Phymap clone() const { return new Phymap(this); }
-    this(in typeof(this) rhs)
+    override Phymap clone() const pure nothrow @safe
+    {
+        return new Phymap(this);
+    }
+
+    this(in typeof(this) rhs) pure nothrow @safe
     {
         assert (rhs !is null);
         super(rhs);
         lt = rhs.lt.dup;
     }
 
-    void copyFrom(in typeof(this) rhs)
+    void copyFrom(in typeof(this) rhs) pure nothrow @safe
     {
         assert (rhs);
         assert (this.matches(rhs),
@@ -182,7 +188,7 @@ final class Phymap : Topology {
             rmAt(wrap(p), n);
     }
 
-    void add(in Point p, Phybitset n)
+    void add(in Point p, Phybitset n) pure nothrow @safe @nogc
     {
         if (inside(p))
             addAt(wrap(p), n);
@@ -267,19 +273,17 @@ private:
     // written in C++ without it and works well
     Phybitset[] lt;
 
-    Phybitset getAt(in Point p) const pure nothrow @safe @nogc
-    {
-        return lt[p.x * yl + p.y];
-    }
+    pure nothrow @safe @nogc {
+        Phybitset getAt(in Point p) const { return lt[p.x * yl + p.y]; }
+        void addAt(in Point p, Phybitset n) { lt[p.x * yl + p.y] |= n; }
+        void rmAt (in Point p, Phybitset n) { lt[p.x * yl + p.y] &= ~n; }
 
-    void addAt(in Point p, Phybitset n) { lt[p.x * yl + p.y] |= n; }
-    void rmAt (in Point p, Phybitset n) { lt[p.x * yl + p.y] &= ~n; }
-
-    bool inside(in Point p) const
-    {
-        if (! torusX && (p.x < 0 || p.x >= xl)) return false;
-        if (! torusY && (p.y < 0 || p.y >= yl)) return false;
-        return true;
+        bool inside(in Point p) const
+        {
+            if (! torusX && (p.x < 0 || p.x >= xl)) return false;
+            if (! torusY && (p.y < 0 || p.y >= yl)) return false;
+            return true;
+        }
     }
 }
 

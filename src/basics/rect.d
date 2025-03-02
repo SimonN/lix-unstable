@@ -90,7 +90,8 @@ unittest {
 struct Point {
     int x;
     int y;
-    string toString() const { return format("(%d,%d)", x, y); }
+
+    string toString() const pure @safe { return format!"(%d,%d)"(x, y); }
 
     Point opBinary(string s)(in Point rhs) const
     {
