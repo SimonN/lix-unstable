@@ -18,6 +18,7 @@ import optional;
 
 import basics.alleg5;
 import basics.globals;
+import basics.netenums;
 import file.option;
 import basics.help;
 import file.filename;
@@ -27,8 +28,6 @@ import file.option;
 import file.key.key;
 import file.key.set;
 import hardware.tharsis;
-import net.ac;
-import net.style;
 
 // These is only for iteration during option saving/loading.
 // Outside of this package, refer to options by their static variable name.

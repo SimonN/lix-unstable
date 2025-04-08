@@ -25,6 +25,7 @@ import std.format;
 
 import basics.globals; // fileLanguageEnglish
 import basics.enum2str;
+import basics.netenums;
 import file.lang.enum_;
 import file.lang.keynames;
 import file.option; // fileLanguage, which file does the user want
@@ -32,7 +33,6 @@ import file.io;
 import file.log;
 import file.filename;
 import file.key.set;
-import net.ac;
 
 nothrow @nogc @safe {
     string idName(in Lang key) { return key.toString; }
