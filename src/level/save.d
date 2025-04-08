@@ -5,6 +5,7 @@ import std.conv;
 import std.stdio;
 import std.string;
 
+import basics.netenums;
 import glo = basics.globals;
 import file.filename;
 import file.io;

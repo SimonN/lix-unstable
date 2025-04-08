@@ -1,7 +1,6 @@
 module gui.skillico;
 
-public import net.ac;
-public import net.style;
+public import basics.netenums;
 
 import graphic.internal;
 import gui.cutbitel;

@@ -3,6 +3,7 @@ module physics.gadget.hatch;
 import std.algorithm; // clamp
 import std.format;
 
+import basics.netenums;
 import basics.styleset;
 import basics.topology;
 import file.language;
@@ -10,7 +11,6 @@ import game.effect;
 import physics.gadget;
 import graphic.internal;
 import hardware.sound;
-import net.phyu;
 import physics.tribe;
 import tile.occur;
 

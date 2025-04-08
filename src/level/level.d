@@ -6,7 +6,7 @@ import std.range;
 
 import enumap;
 
-public import net.ac;
+public import basics.netenums;
 public import level.save;
 
 import basics.globals;

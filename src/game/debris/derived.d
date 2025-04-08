@@ -5,13 +5,12 @@ import std.conv;
 import std.math;
 import std.random;
 
+import basics.netenums;
 import basics.rect;
 import game.debris.base;
 import graphic.color;
 import graphic.cutbit;
 import graphic.internal;
-import net.ac;
-import net.style;
 import physics.mask; // exploder offset
 
 package:
