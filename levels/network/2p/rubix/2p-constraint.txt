@@ -1,34 +1,23 @@
-$BUILT 2014-04-18 19:00:02
+$BUILT 2025-05-09 21:03:42
 $AUTHOR Rubix
-#INTENDED_NUMBER_OF_PLAYERS 2
 $ENGLISH Constraint (2p)
 
+#INTENDED_NUMBER_OF_PLAYERS 2
 #SIZE_X 640
 #SIZE_Y 400
 #TORUS_X 1
 #TORUS_Y 1
-#BACKGROUND_RED 0
-#BACKGROUND_GREEN 0
-#BACKGROUND_BLUE 0
 
 #SECONDS 35
 #INITIAL 80
-#REQUIRED 20
 #SPAWN_INTERVAL 32
-#SPAWN_INTERVAL_FAST 4
 
 #WALKER 40
-#JUMPER 40
-#NOTHING 0
 #EXPLODER2 15
 #PLATFORMER 65
 #MINER 50
-#NOTHING 0
+#JUMPER 40
 #BATTER 30
-#NOTHING 0
-#NOTHING 0
-#NOTHING 0
-#NOTHING 0
 
 :geoo/construction/Hatch.H: 376 14 r
 :geoo/construction/Hatch.H: 344 126
@@ -98,8 +87,6 @@ $ENGLISH Constraint (2p)
 :geoo/steel/dark_48x32o.S: 120 206 fr
 :geoo/steel/dark_48x32o.S: 104 270 f
 :geoo/steel/dark_48x32o.S: 168 398 f
-:geoo/steel/dark_48x32o.S: 248 14 fr
-:geoo/steel/32x16o.S: 248 398
 :geoo/steel/32x16o.S: 280 382
 :geoo/steel/32x16o.S: 312 382
 :geoo/steel/32x16o.S: 248 382
@@ -133,3 +120,6 @@ $ENGLISH Constraint (2p)
 :geoo/steel/32x16o.S: 456 286 rrr
 :geoo/steel/32x16o.S: 344 382
 :geoo/steel/32x16o.S: 344 398
+:geoo/steel/32x16o.S: 248 46
+:geoo/sandstone/32x16: 248 30
+:geoo/construction/concrete/032: 248 398
