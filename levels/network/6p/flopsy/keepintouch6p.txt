@@ -1,9 +1,10 @@
-$BUILT 2022-05-21 18:40:30
+$BUILT 2024-01-09 22:30:38
 $AUTHOR Flopsy
 $ENGLISH Keep In Touch 6P
-$TAG fall-survival
 
 #INTENDED_NUMBER_OF_PLAYERS 6
+$TAG fall-survival
+
 #SIZE_X 640
 #SIZE_Y 624
 #TORUS_X 0
@@ -32,12 +33,12 @@ $TAG fall-survival
 :geoo/abstract/hatch.H: 480 560
 :geoo/abstract/hatch.H: 128 456 r
 
-:geoo/abstract/goal.G: 592 568
-:geoo/abstract/goal.G: 592 152
-:geoo/abstract/goal.G: 16 464
-:geoo/abstract/goal.G: 16 48
 :geoo/abstract/goal.G: 592 360
+:geoo/abstract/goal.G: 592 568
 :geoo/abstract/goal.G: 16 256
+:geoo/abstract/goal.G: 16 464
+:geoo/abstract/goal.G: 592 152
+:geoo/abstract/goal.G: 16 48
 
 :geoo/abstract/pipes/central0: 0 96
 :geoo/abstract/pipes/central0: 32 96

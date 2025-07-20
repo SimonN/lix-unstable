@@ -1,12 +1,11 @@
-$BUILT 2022-10-16 19:14:35
+$BUILT 2024-01-03 20:07:51
 $AUTHOR Flopsy
 $ENGLISH Huckerby's Field 8P
-$TAG short-play
-$TAG classic
 
 #INTENDED_NUMBER_OF_PLAYERS 8
 $TAG asymmetric
 $TAG classic
+$TAG short-play
 
 #SIZE_X 768
 #SIZE_Y 224

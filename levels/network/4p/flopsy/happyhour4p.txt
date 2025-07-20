@@ -1,9 +1,10 @@
-$BUILT 2022-01-02 02:44:01
+$BUILT 2025-07-18 22:54:43
 $AUTHOR Flopsy
-$ENGLISH Happy Hour 4P
-$TAG long-play
+$ENGLISH Happy Hour 4P (5-8P with teams)
 
 #INTENDED_NUMBER_OF_PLAYERS 4
+$TAG long-play
+
 #SIZE_X 1024
 #SIZE_Y 1024
 #TORUS_X 1

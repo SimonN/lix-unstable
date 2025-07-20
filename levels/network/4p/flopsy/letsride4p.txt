@@ -1,6 +1,6 @@
-$BUILT 2022-04-24 03:38:54
+$BUILT 2025-07-18 22:55:27
 $AUTHOR Flopsy
-$ENGLISH Let's Ride 4P
+$ENGLISH Let's Ride 4P (5-8P with teams)
 
 #INTENDED_NUMBER_OF_PLAYERS 4
 #SIZE_X 1600
@@ -173,6 +173,15 @@ $ENGLISH Let's Ride 4P
 :raymanni/lab/goo_fall.W: 616 912
 :raymanni/lab/goo_fall.W: 1416 896
 :raymanni/lab/goo_fall.W: 1416 912
+:raymanni/lab/goo_fall.W: 1248 128
+:raymanni/lab/goo_fall.W: 1248 144
+:raymanni/lab/goo_fall.W: 448 128
+:raymanni/lab/goo_fall.W: 448 144
+:raymanni/lab/goo_fall.W: 448 768
+:raymanni/lab/goo_fall.W: 448 784
+:raymanni/lab/goo_fall.W: 1248 768
+:raymanni/lab/goo_fall.W: 1248 784
+
 :geoo/construction/sawblade_medium.F: 368 1088
 :geoo/construction/sawblade_medium.F: 368 448
 :geoo/construction/sawblade_medium.F: 1168 448
@@ -189,14 +198,6 @@ $ENGLISH Let's Ride 4P
 :geoo/construction/sawblade_small.F: 960 672
 :geoo/construction/sawblade_small.F: 160 672
 :geoo/construction/sawblade_small.F: 160 32
-:raymanni/lab/goo_fall.W: 1248 128
-:raymanni/lab/goo_fall.W: 1248 144
-:raymanni/lab/goo_fall.W: 448 128
-:raymanni/lab/goo_fall.W: 448 144
-:raymanni/lab/goo_fall.W: 448 768
-:raymanni/lab/goo_fall.W: 448 784
-:raymanni/lab/goo_fall.W: 1248 768
-:raymanni/lab/goo_fall.W: 1248 784
 :geoo/construction/sawblade_medium.F: 400 528
 :geoo/construction/sawblade_medium.F: 400 1168
 :geoo/construction/sawblade_medium.F: 1200 1168

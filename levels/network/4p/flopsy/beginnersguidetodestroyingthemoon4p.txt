@@ -1,9 +1,10 @@
-$BUILT 2022-10-16 17:24:11
+$BUILT 2025-07-18 22:52:50
 $AUTHOR Flopsy
-$ENGLISH Beginner's Guide 2 destroying Moon 4P
-$TAG fall-survival
+$ENGLISH Beginner's Guide To Destroying The Moon 4P
 
 #INTENDED_NUMBER_OF_PLAYERS 4
+$TAG fall-survival
+
 #SIZE_X 560
 #SIZE_Y 288
 #TORUS_X 1

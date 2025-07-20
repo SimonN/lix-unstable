@@ -1,6 +1,6 @@
-$BUILT 2024-01-03 00:19:10
+$BUILT 2025-07-18 23:21:22
 $AUTHOR Flopsy
-$ENGLISH Rescue Plan (Balanced?) 5P
+$ENGLISH Rescue Plan 5P
 
 #INTENDED_NUMBER_OF_PLAYERS 5
 #SIZE_X 736
@@ -36,6 +36,20 @@ $ENGLISH Rescue Plan (Balanced?) 5P
 :geoo/sandstone/Hatch.H: 544 48 r
 :geoo/sandstone/Hatch.H: 96 48
 :geoo/sandstone/Hatch.H: 320 384 r
+:geoo/sandstone/Hatch.H: 544 256 r
+:geoo/sandstone/Hatch.H: 96 256
+:geoo/sandstone/Hatch.H: 544 48 r
+:geoo/sandstone/Hatch.H: 96 48
+:geoo/sandstone/Hatch.H: 320 384
+:geoo/sandstone/Hatch.H: 544 256 r
+:geoo/sandstone/Hatch.H: 96 256
+:geoo/sandstone/Hatch.H: 544 48 r
+:geoo/sandstone/Hatch.H: 96 48
+:geoo/sandstone/Hatch.H: 320 384
+:geoo/sandstone/Hatch.H: 544 256 r
+:geoo/sandstone/Hatch.H: 96 256
+:geoo/sandstone/Hatch.H: 544 48 r
+:geoo/sandstone/Hatch.H: 96 48
 
 :geoo/sandstone/Goal.G: 336 160
 :geoo/sandstone/Goal.G: 0 240

@@ -1,9 +1,10 @@
-$BUILT 2021-02-05 05:32:00
+$BUILT 2025-07-18 23:24:43
 $AUTHOR Flopsy
-$ENGLISH Just Passing Through Here! (Thick) 7P
-$TAG multiple-hatch
+$ENGLISH Just Passing Through Here! 7P
 
 #INTENDED_NUMBER_OF_PLAYERS 7
+$TAG multiple-hatch
+
 #SIZE_X 1792
 #SIZE_Y 400
 #TORUS_X 1
@@ -99,6 +100,47 @@ $TAG multiple-hatch
 :geoo/construction/Goal2.G: 1488 64
 :geoo/construction/Goal2.G: 1744 64
 
+:simon/acid.W: 0 368
+:simon/acid.W: 48 368
+:simon/acid.W: 96 368
+:simon/acid.W: 976 368
+:simon/acid.W: 928 368
+:simon/acid.W: 880 368
+:simon/acid.W: 832 368
+:simon/acid.W: 784 368
+:simon/acid.W: 736 368
+:simon/acid.W: 688 368
+:simon/acid.W: 640 368
+:simon/acid.W: 592 368
+:simon/acid.W: 544 368
+:simon/acid.W: 496 368
+:simon/acid.W: 448 368
+:simon/acid.W: 400 368
+:simon/acid.W: 352 368
+:simon/acid.W: 304 368
+:simon/acid.W: 256 368
+:simon/acid.W: 208 368
+:simon/acid.W: 160 368
+:simon/acid.W: 144 368
+:simon/acid.W: 1232 368
+:simon/acid.W: 1184 368
+:simon/acid.W: 1136 368
+:simon/acid.W: 1088 368
+:simon/acid.W: 1040 368
+:simon/acid.W: 1024 368
+:simon/acid.W: 1488 368
+:simon/acid.W: 1440 368
+:simon/acid.W: 1392 368
+:simon/acid.W: 1344 368
+:simon/acid.W: 1296 368
+:simon/acid.W: 1280 368
+:simon/acid.W: 1744 368
+:simon/acid.W: 1696 368
+:simon/acid.W: 1648 368
+:simon/acid.W: 1600 368
+:simon/acid.W: 1552 368
+:simon/acid.W: 1536 368
+
 :geoo/construction/Laser_vr_64.F: 179 256
 :geoo/construction/Laser_vr_64.F: 179 192
 :geoo/construction/Laser_vr_64.F: 179 128
@@ -123,64 +165,24 @@ $TAG multiple-hatch
 :geoo/construction/Laser_vr_64.F: 797 256
 :geoo/construction/Laser_vr_64.F: 797 192
 :geoo/construction/Laser_vr_64.F: 797 128
-:simon/acid.W: 0 368
-:simon/acid.W: 48 368
-:simon/acid.W: 96 368
-:simon/acid.W: 976 368
-:simon/acid.W: 928 368
-:simon/acid.W: 880 368
-:simon/acid.W: 832 368
-:simon/acid.W: 784 368
-:simon/acid.W: 736 368
-:simon/acid.W: 688 368
-:simon/acid.W: 640 368
-:simon/acid.W: 592 368
-:simon/acid.W: 544 368
-:simon/acid.W: 496 368
-:simon/acid.W: 448 368
-:simon/acid.W: 400 368
-:simon/acid.W: 352 368
-:simon/acid.W: 304 368
-:simon/acid.W: 256 368
-:simon/acid.W: 208 368
-:simon/acid.W: 160 368
-:simon/acid.W: 144 368
 :geoo/construction/Laser_vr_64.F: 1203 256
 :geoo/construction/Laser_vr_64.F: 1203 192
 :geoo/construction/Laser_vr_64.F: 1203 128
 :geoo/construction/Laser_vr_64.F: 1053 256
 :geoo/construction/Laser_vr_64.F: 1053 192
 :geoo/construction/Laser_vr_64.F: 1053 128
-:simon/acid.W: 1232 368
-:simon/acid.W: 1184 368
-:simon/acid.W: 1136 368
-:simon/acid.W: 1088 368
-:simon/acid.W: 1040 368
-:simon/acid.W: 1024 368
 :geoo/construction/Laser_vr_64.F: 1459 256
 :geoo/construction/Laser_vr_64.F: 1459 192
 :geoo/construction/Laser_vr_64.F: 1459 128
 :geoo/construction/Laser_vr_64.F: 1309 256
 :geoo/construction/Laser_vr_64.F: 1309 192
 :geoo/construction/Laser_vr_64.F: 1309 128
-:simon/acid.W: 1488 368
-:simon/acid.W: 1440 368
-:simon/acid.W: 1392 368
-:simon/acid.W: 1344 368
-:simon/acid.W: 1296 368
-:simon/acid.W: 1280 368
 :geoo/construction/Laser_vr_64.F: 1715 256
 :geoo/construction/Laser_vr_64.F: 1715 192
 :geoo/construction/Laser_vr_64.F: 1715 128
 :geoo/construction/Laser_vr_64.F: 1565 256
 :geoo/construction/Laser_vr_64.F: 1565 192
 :geoo/construction/Laser_vr_64.F: 1565 128
-:simon/acid.W: 1744 368
-:simon/acid.W: 1696 368
-:simon/acid.W: 1648 368
-:simon/acid.W: 1600 368
-:simon/acid.W: 1552 368
-:simon/acid.W: 1536 368
 
 :geoo/construction/platform.S: 184 64 r
 :geoo/construction/platform.S: 184 96 r

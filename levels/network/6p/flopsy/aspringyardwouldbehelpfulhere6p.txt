@@ -1,4 +1,4 @@
-$BUILT 2023-04-27 01:01:15
+$BUILT 2025-07-18 22:47:28
 $AUTHOR Flopsy
 $ENGLISH A SpringYard would be helpful here 6P
 
@@ -1478,3 +1478,9 @@ $ENGLISH A SpringYard would be helpful here 6P
 :geoo/steel/dark_16x16o.S: 1080 1712
 :geoo/construction/fence_32x32.S: 856 1280
 :geoo/construction/fence_32x32.S: 856 1584
+:geoo/construction/rod_steel/straight_diagu32.S: 490 934
+:geoo/construction/rod_steel/straight_diagu32.S: 490 1238
+:geoo/construction/rod_steel/straight_diagu32.S: 490 1542
+:geoo/construction/rod_steel/straight_diagu32.S: 490 22
+:geoo/construction/rod_steel/straight_diagu32.S: 490 326
+:geoo/construction/rod_steel/straight_diagu32.S: 490 630

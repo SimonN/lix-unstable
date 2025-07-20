@@ -1,0 +1,244 @@
+$BUILT 2025-07-18 23:07:00
+$AUTHOR Flopsy
+$ENGLISH Mr Bean is about to paint his flat! 5P
+
+#INTENDED_NUMBER_OF_PLAYERS 5
+#SIZE_X 640
+#SIZE_Y 256
+#TORUS_X 1
+#TORUS_Y 0
+
+#SECONDS 60
+#INITIAL 80
+#SPAWN_INTERVAL 18
+
+#EXPLODER2 -1
+
+:matt/carnival/Hatch.H: 608 72
+:matt/carnival/Hatch.H: 96 72
+:matt/carnival/Hatch.H: 224 72
+:matt/carnival/Hatch.H: 352 72
+:matt/carnival/Hatch.H: 480 72
+
+:raymanni/toys/goal.G: 608 -2
+:raymanni/toys/goal.G: 96 -2
+:raymanni/toys/goal.G: 224 -2
+:raymanni/toys/goal.G: 352 -2
+:raymanni/toys/goal.G: 480 -2
+
+:geoo/abstract/tbeam_up.T: 63 152
+:geoo/abstract/tbeam_up.T: 93 152
+:geoo/abstract/tbeam_up.T: 63 120
+:geoo/abstract/tbeam_up.T: 93 120
+:geoo/abstract/tbeam_up.T: 63 88
+:geoo/abstract/tbeam_up.T: 93 88
+:geoo/abstract/tbeam_up.T: 63 60
+:geoo/abstract/tbeam_up.T: 33 60
+:geoo/abstract/tbeam_left.T: 32 29
+:geoo/abstract/tbeam_right.T: 64 29
+:geoo/abstract/tbeam_up.T: 33 88
+:geoo/abstract/tbeam_up.T: 33 120
+:geoo/abstract/tbeam_up.T: 33 152
+:geoo/abstract/tbeam_up.T: 3 88
+:geoo/abstract/tbeam_up.T: 3 120
+:geoo/abstract/tbeam_up.T: 3 152
+:geoo/abstract/tbeam_up.T: 93 60
+:geoo/abstract/tbeam_right.T: 91 29
+:geoo/abstract/tbeam_left.T: 5 29
+:geoo/abstract/tbeam_up.T: 3 60
+:geoo/abstract/tbeam_up.T: 191 152
+:geoo/abstract/tbeam_up.T: 221 152
+:geoo/abstract/tbeam_up.T: 191 120
+:geoo/abstract/tbeam_up.T: 221 120
+:geoo/abstract/tbeam_up.T: 191 88
+:geoo/abstract/tbeam_up.T: 221 88
+:geoo/abstract/tbeam_up.T: 191 60
+:geoo/abstract/tbeam_up.T: 161 60
+:geoo/abstract/tbeam_left.T: 160 29
+:geoo/abstract/tbeam_right.T: 192 29
+:geoo/abstract/tbeam_up.T: 161 88
+:geoo/abstract/tbeam_up.T: 161 120
+:geoo/abstract/tbeam_up.T: 161 152
+:geoo/abstract/tbeam_up.T: 131 88
+:geoo/abstract/tbeam_up.T: 131 120
+:geoo/abstract/tbeam_up.T: 131 152
+:geoo/abstract/tbeam_up.T: 221 60
+:geoo/abstract/tbeam_right.T: 219 29
+:geoo/abstract/tbeam_left.T: 133 29
+:geoo/abstract/tbeam_up.T: 131 60
+:geoo/abstract/tbeam_up.T: 319 152
+:geoo/abstract/tbeam_up.T: 349 152
+:geoo/abstract/tbeam_up.T: 319 120
+:geoo/abstract/tbeam_up.T: 349 120
+:geoo/abstract/tbeam_up.T: 319 88
+:geoo/abstract/tbeam_up.T: 349 88
+:geoo/abstract/tbeam_up.T: 319 60
+:geoo/abstract/tbeam_up.T: 289 60
+:geoo/abstract/tbeam_left.T: 288 29
+:geoo/abstract/tbeam_right.T: 320 29
+:geoo/abstract/tbeam_up.T: 289 88
+:geoo/abstract/tbeam_up.T: 289 120
+:geoo/abstract/tbeam_up.T: 289 152
+:geoo/abstract/tbeam_up.T: 259 88
+:geoo/abstract/tbeam_up.T: 259 120
+:geoo/abstract/tbeam_up.T: 259 152
+:geoo/abstract/tbeam_up.T: 349 60
+:geoo/abstract/tbeam_right.T: 347 29
+:geoo/abstract/tbeam_left.T: 261 29
+:geoo/abstract/tbeam_up.T: 259 60
+:geoo/abstract/tbeam_up.T: 447 152
+:geoo/abstract/tbeam_up.T: 477 152
+:geoo/abstract/tbeam_up.T: 447 120
+:geoo/abstract/tbeam_up.T: 477 120
+:geoo/abstract/tbeam_up.T: 447 88
+:geoo/abstract/tbeam_up.T: 477 88
+:geoo/abstract/tbeam_up.T: 447 60
+:geoo/abstract/tbeam_up.T: 417 60
+:geoo/abstract/tbeam_left.T: 416 29
+:geoo/abstract/tbeam_right.T: 448 29
+:geoo/abstract/tbeam_up.T: 417 88
+:geoo/abstract/tbeam_up.T: 417 120
+:geoo/abstract/tbeam_up.T: 417 152
+:geoo/abstract/tbeam_up.T: 387 88
+:geoo/abstract/tbeam_up.T: 387 120
+:geoo/abstract/tbeam_up.T: 387 152
+:geoo/abstract/tbeam_up.T: 477 60
+:geoo/abstract/tbeam_right.T: 475 29
+:geoo/abstract/tbeam_left.T: 389 29
+:geoo/abstract/tbeam_up.T: 387 60
+:geoo/abstract/tbeam_up.T: 575 152
+:geoo/abstract/tbeam_up.T: 605 152
+:geoo/abstract/tbeam_up.T: 575 120
+:geoo/abstract/tbeam_up.T: 605 120
+:geoo/abstract/tbeam_up.T: 575 88
+:geoo/abstract/tbeam_up.T: 605 88
+:geoo/abstract/tbeam_up.T: 575 60
+:geoo/abstract/tbeam_up.T: 545 60
+:geoo/abstract/tbeam_left.T: 544 29
+:geoo/abstract/tbeam_right.T: 576 29
+:geoo/abstract/tbeam_up.T: 545 88
+:geoo/abstract/tbeam_up.T: 545 120
+:geoo/abstract/tbeam_up.T: 545 152
+:geoo/abstract/tbeam_up.T: 515 88
+:geoo/abstract/tbeam_up.T: 515 120
+:geoo/abstract/tbeam_up.T: 515 152
+:geoo/abstract/tbeam_up.T: 605 60
+:geoo/abstract/tbeam_right.T: 603 29
+:geoo/abstract/tbeam_left.T: 517 29
+:geoo/abstract/tbeam_up.T: 515 60
+
+:matt/marble/09: 576 200
+:matt/marble/09a: 64 200
+:matt/marble/09b: 192 200
+:matt/marble/09c: 320 200
+:matt/marble/09: 0 200
+:matt/marble/09a: 128 200
+:matt/marble/09b: 256 200
+:matt/marble/09c: 384 200
+:matt/marble/09d: 448 200
+:matt/marble/09d: 512 200
+:geoo/construction/platform.S: 2 152 r
+:geoo/construction/platform.S: 636 152 r
+:geoo/construction/platform.S: 636 120 r
+:geoo/construction/platform.S: 2 120 r
+:geoo/construction/platform.S: 124 152 r
+:geoo/construction/platform.S: 124 120 r
+:matt/marble/03: 632 88
+:matt/marble/03: 632 60
+:geoo/construction/platform.S: 130 152 r
+:geoo/construction/platform.S: 124 152 r
+:geoo/construction/platform.S: 124 120 r
+:geoo/construction/platform.S: 130 120 r
+:geoo/construction/platform.S: 252 152 r
+:geoo/construction/platform.S: 252 120 r
+:matt/marble/03: 120 88
+:matt/marble/03: 120 60
+:geoo/construction/platform.S: 258 152 r
+:geoo/construction/platform.S: 252 152 r
+:geoo/construction/platform.S: 252 120 r
+:geoo/construction/platform.S: 258 120 r
+:geoo/construction/platform.S: 380 152 r
+:geoo/construction/platform.S: 380 120 r
+:matt/marble/03: 248 88
+:matt/marble/03: 248 60
+:geoo/construction/platform.S: 386 152 r
+:geoo/construction/platform.S: 380 152 r
+:geoo/construction/platform.S: 380 120 r
+:geoo/construction/platform.S: 386 120 r
+:geoo/construction/platform.S: 508 152 r
+:geoo/construction/platform.S: 508 120 r
+:matt/marble/03: 376 88
+:matt/marble/03: 376 60
+:geoo/construction/platform.S: 514 152 r
+:geoo/construction/platform.S: 508 152 r
+:geoo/construction/platform.S: 508 120 r
+:geoo/construction/platform.S: 514 120 r
+:geoo/construction/platform.S: 636 152 r
+:geoo/construction/platform.S: 636 120 r
+:matt/marble/03: 504 88
+:matt/marble/03: 504 60
+:geoo/steel/32x16o.S: 608 200
+:geoo/steel/32x16o.S: 0 200
+:geoo/steel/32x16o.S: 32 200
+:geoo/steel/32x16o.S: 64 200
+:geoo/steel/32x16o.S: 96 200
+:geoo/steel/32x16o.S: 128 200
+:geoo/steel/32x16o.S: 160 200
+:geoo/steel/32x16o.S: 192 200
+:geoo/steel/32x16o.S: 224 200
+:geoo/steel/32x16o.S: 256 200
+:geoo/steel/32x16o.S: 288 200
+:geoo/steel/32x16o.S: 320 200
+:geoo/steel/32x16o.S: 352 200
+:geoo/steel/32x16o.S: 384 200
+:geoo/steel/32x16o.S: 416 200
+:geoo/steel/32x16o.S: 448 200
+:geoo/steel/32x16o.S: 480 200
+:geoo/steel/32x16o.S: 512 200
+:geoo/steel/32x16o.S: 544 200
+:geoo/steel/32x16o.S: 576 200
+:geoo/steel/16x16o.S: 248 60
+:geoo/steel/16x16o.S: 376 60
+:geoo/steel/16x16o.S: 504 60
+:geoo/steel/16x16o.S: 632 60
+:geoo/steel/16x16o.S: 120 60
+:matt/marble/001a: 373 104 d
+:matt/marble/001a: 373 88 d
+:matt/marble/001a: 373 60 d
+:matt/marble/001a: 373 76 d
+:matt/marble/001a: 387 60 d
+:matt/marble/001a: 387 76 d
+:matt/marble/001a: 387 92 d
+:matt/marble/001a: 387 108 d
+:matt/marble/001a: 501 104 d
+:matt/marble/001a: 501 88 d
+:matt/marble/001a: 501 60 d
+:matt/marble/001a: 501 76 d
+:matt/marble/001a: 515 60 d
+:matt/marble/001a: 515 76 d
+:matt/marble/001a: 515 92 d
+:matt/marble/001a: 515 108 d
+:matt/marble/001a: 629 104 d
+:matt/marble/001a: 629 88 d
+:matt/marble/001a: 629 60 d
+:matt/marble/001a: 629 76 d
+:matt/marble/001a: 3 60 d
+:matt/marble/001a: 3 76 d
+:matt/marble/001a: 3 92 d
+:matt/marble/001a: 3 108 d
+:matt/marble/001a: 117 104 d
+:matt/marble/001a: 117 88 d
+:matt/marble/001a: 117 60 d
+:matt/marble/001a: 117 76 d
+:matt/marble/001a: 131 60 d
+:matt/marble/001a: 131 76 d
+:matt/marble/001a: 131 92 d
+:matt/marble/001a: 131 108 d
+:matt/marble/001a: 245 104 d
+:matt/marble/001a: 245 88 d
+:matt/marble/001a: 245 60 d
+:matt/marble/001a: 245 76 d
+:matt/marble/001a: 259 60 d
+:matt/marble/001a: 259 76 d
+:matt/marble/001a: 259 92 d
+:matt/marble/001a: 259 108 d
