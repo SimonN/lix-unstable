@@ -79,9 +79,17 @@ public:
     Geom.From aligned() const pure @safe { return geom.xFrom; }
     bool shortened() const pure nothrow @safe @nogc { return _shortened; }
 
-    float textLgs() const nothrow @safe { return textLg() * gui.stretchFactor;}
-    float textLg() const nothrow @safe { return textLg(this._text); }
-    float textLg(string s) const nothrow @trusted
+    float textRenderedXls() const nothrow @safe
+    {
+        return textRenderedXlg * gui.stretchFactor;
+    }
+
+    float textRenderedXlg() const nothrow @safe
+    {
+        return textRenderedXlg(this._text);
+    }
+
+    float textRenderedXlg(string s) const nothrow @trusted
     {
         return s.empty ? 0f
             : al_get_text_width(font, s.toStringz) / gui.stretchFactor;
@@ -89,7 +97,8 @@ public:
 
     bool tooLong(string s) const nothrow @safe
     {
-        return s.len && textLg(s) > xlg - 2 * gui.thicks;
+        return s.len > 0
+            && textRenderedXlg(s) > xlg - 2 * gui.thicks;
     }
 
 protected:

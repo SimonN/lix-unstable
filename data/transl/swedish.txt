@@ -281,6 +281,8 @@ $winLooksBlue blå bakgrund
 $winConstantsTitle Konstanter
 $winConstantsAuthor Författare
 $winConstantsLevelName Titel på bana
+$winConstantsTooLongWarn För långt!
+$winConstantsTooLongDesc Nivåbläddraren kommer att förkorta det.
 $winConstantsPlayers Spelare
 $winConstantsInitial Lix vid start
 $winConstantsRequired Lix att rädda

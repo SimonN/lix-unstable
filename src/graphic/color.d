@@ -65,7 +65,6 @@ private class ColorPrivate {
         lixFileEye, // for detection of where exploder fuses are positioned
 
         white,
-        red,
 
         guiFileSha, // how it looks in an image file, these get
         guiFileD,   // recolored to guiD, guiOnD, ..., accordingly.
@@ -81,7 +80,8 @@ private class ColorPrivate {
         guiText,
         guiTextDark,
         guiTextOn,
-        guiTextHotkeyInCorner;
+        guiTextHotkeyInCorner,
+        guiTextWarning;
 
     Alcol3D
         gui,
@@ -107,7 +107,6 @@ private:
         lixFileEye = makecol(0x50, 0x50, 0x50);
 
         white = al_map_rgb_f(1, 1, 1);
-        red = al_map_rgb_f(1, 0, 0);
 
         // how it looks in an image file
         guiFileSha = makecol(0x40, 0x40, 0x40);
@@ -146,6 +145,7 @@ private:
         guiTextOn = make_sepia(1.0); // pure white
         guiTextDark = guiOn.m;
         guiTextHotkeyInCorner = make_sepia(13f / 16f);
+        guiTextWarning = al_map_rgb_f(1f, 0.5f, 0.4f);
     }
 
     // light: max is 1.0, min is 0.0

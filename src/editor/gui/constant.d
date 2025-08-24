@@ -4,13 +4,14 @@ import file.option;
 import basics.globals;
 import editor.gui.okcancel;
 import file.language;
+import graphic.color;
 import gui;
 import level.level;
 
 class ConstantsWindow : OkCancelWindow {
 private:
-    Texttype _levelName;
-    Texttype _author;
+    TextWithWarning _title;
+    TextWithWarning _author;
     NumPick _intendedNumberOfPlayers;
     NumPick _initial;
     NumPick _spawnint;
@@ -23,53 +24,53 @@ public:
     this(Level level)
     {
         enum thisXl = 450f;
-        super(new Geom(0, 0, thisXl, 230, From.CENTER),
+        super(new Geom(0, 0, thisXl, 240, From.CENTER),
             Lang.winConstantsTitle.transl);
         enum butX   = 140f;
         enum butXl  = thisXl - butX - 20f;
-        enum textXl = 120f;
 
         Label label(in float y, in Lang cap)
         {
-            Label l = new Label(new Geom(20, y, textXl, 20), cap.transl);
+            Label l = new Label(new Geom(
+                20, y, TextWithWarning.captionXl, 20), cap.transl);
             addChild(l);
             return l;
         }
-        label( 40, Lang.winConstantsLevelName);
-        label( 70, Lang.winConstantsAuthor);
-        label(100, Lang.winConstantsPlayers);
-        label(130, Lang.winConstantsInitial);
-        label(190, Lang.winConstantsSpawnint);
-        _requiredLabel = label(160, Lang.winConstantsRequired);
-        _overtimeLabel = label(160, Lang.winConstantsOvertime);
+        label(110, Lang.winConstantsPlayers);
+        label(140, Lang.winConstantsInitial);
+        label(200, Lang.winConstantsSpawnint);
+        _requiredLabel = label(180, Lang.winConstantsRequired);
+        _overtimeLabel = label(180, Lang.winConstantsOvertime);
 
-        _levelName = new Texttype(new Geom(butX, 40, butXl, 20));
-        _levelName.allowScrolling = true;
-        _levelName.text = level.md.nameEnglish;
-        _author = new Texttype(new Geom(butX, 70, butXl, 20));
-        _author.allowScrolling = true;
-        _author.text = level.author;
+        _title = new TextWithWarning(
+            new Geom(20, 25, xlg - 40, 35),
+            Lang.winConstantsLevelName,
+            level.md.nameEnglish);
+        _author = new TextWithWarning(
+            new Geom(20, 60, xlg - 40, 35),
+            Lang.winConstantsAuthor,
+            level.author);
 
         NumPickConfig cfg;
         cfg.digits = 4;
         cfg.stepMedium = 3;
         cfg.min = 1;
         cfg.max = basics.globals.teamsPerLevelMax;
-        _intendedNumberOfPlayers = new NumPick(new Geom(butX + 20, 100,
+        _intendedNumberOfPlayers = new NumPick(new Geom(butX + 20, 110,
                                                         130, 20), cfg);
         _intendedNumberOfPlayers.number = level.intendedNumberOfPlayers;
 
         cfg.sixButtons = true;
         cfg.stepMedium = 10;
         cfg.max = Level.initialMax;
-        _initial  = new NumPick(new Geom(butX, 130, 170, 20), cfg);
-        _required = new NumPick(new Geom(butX, 160, 170, 20), cfg);
+        _initial  = new NumPick(new Geom(butX, 140, 170, 20), cfg);
+        _required = new NumPick(new Geom(butX, 170, 170, 20), cfg);
         _initial .number = level.initial;
         _required.number = level.required;
 
         cfg.sixButtons = false;
         cfg.max = Level.spawnintMax;
-        _spawnint = new NumPick(new Geom(butX + 20, 190, 130, 20), cfg);
+        _spawnint = new NumPick(new Geom(butX + 20, 200, 130, 20), cfg);
         _spawnint.number = level.spawnint;
 
         cfg.sixButtons = true;
@@ -80,7 +81,7 @@ public:
         _overtime = new NumPick(new Geom(_required.geom), cfg);
         _overtime.number = level.overtimeSeconds;
 
-        addChildren(_levelName, _author, _intendedNumberOfPlayers,
+        addChildren(_title, _author, _intendedNumberOfPlayers,
                     _initial, _spawnint, _required, _overtime);
         showOrHideModalFields();
     }
@@ -88,7 +89,7 @@ public:
 protected:
     override void selfWriteChangesTo(Level level)
     {
-        level.md.nameEnglish = _levelName.text;
+        level.md.nameEnglish = _title.text;
         level.md.author = _author.text;
         level.intendedNumberOfPlayers = _intendedNumberOfPlayers.number;
         level.md.initial = _initial.number;
@@ -106,5 +107,83 @@ protected:
         _requiredLabel.shown = ! multi;
         _overtime.shown = multi;
         _overtimeLabel.shown = multi;
+    }
+}
+
+private:
+
+class TextWithWarning : Element {
+private:
+    Label _caption;
+    WarningText _warning;
+    Texttype _texttype;
+
+public:
+    enum captionXl = 120f;
+
+    this(Geom g, in Lang cap, in string typedTextAtStart)
+    {
+        super(g);
+        _caption = new Label(new Geom(
+            0, 0, captionXl, 20, From.BOTTOM_LEFT), cap.transl);
+        addChild(_caption);
+
+        immutable float warnYlg = ylg - 20f;
+        immutable float warnPad = (warnYlg - 10f) / 2;
+        _warning = new WarningText(new Geom(
+            captionXl,
+            warnPad,
+            xlg - captionXl, warnYlg - 2 * warnPad, From.TOP_LEFT));
+        _warning.hide;
+        addChild(_warning);
+
+        _texttype = new Texttype(new Geom(
+            0, 0, xlg - captionXl, 20, From.BOTTOM_RIGHT));
+        _texttype.allowScrolling = true;
+        _texttype.text = typedTextAtStart;
+        addChild(_texttype);
+    }
+
+    string text() const pure nothrow @safe @nogc
+    {
+        return _texttype.text;
+    }
+
+protected:
+    override void workSelf()
+    {
+        _warning.shown = textWouldAbbreviateInBrowser;
+    }
+
+private:
+    bool textWouldAbbreviateInBrowser() const nothrow @safe
+    {
+        immutable biggestFittingTitle = "Any Way You Want mmmmmmmki";
+        // We abuse _caption here because its font is _texttype's font.
+        return _caption.textRenderedXlg(_texttype.text)
+            >  _caption.textRenderedXlg(biggestFittingTitle);
+    }
+}
+
+class WarningText : Element {
+private:
+    Label _red;
+    Label _desc;
+
+public:
+    this(Geom g)
+    {
+        super(g);
+        _red = new Label(new Geom(0, 0, xlg, ylg),
+            Lang.winConstantsTooLongWarn.transl);
+        _red.font = djvuS;
+        _red.color = color.guiTextWarning;
+        addChild(_red);
+
+        immutable float nextXg = _red.textRenderedXlg + 4f;
+        _desc = new Label(new Geom(nextXg, 0, xlg - nextXg),
+            Lang.winConstantsTooLongDesc.transl);
+        _desc.font = djvuS;
+        addChild(_desc);
     }
 }

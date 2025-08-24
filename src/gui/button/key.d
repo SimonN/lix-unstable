@@ -65,7 +65,8 @@ public:
 
     override Alcol colorText() const
     {
-        return _warnAboutDuplicateBindings ? color.red : super.colorText();
+        return _warnAboutDuplicateBindings
+            ? color.guiTextWarning : super.colorText;
     }
 
 protected:

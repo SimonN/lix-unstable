@@ -151,7 +151,7 @@ private:
             textXl, 20, From.TOP_RIGHT), Lang.winTopologyWarnSize3.transl);
         foreach (label; _warnTooLarge) {
             addChild(label);
-            label.color = color.red; // Color is a feeble attempt at
+            label.color = color.guiTextWarning; // Color is a feeble attempt at
             // differentiating warnings from overlapped bool option text.
         }
         warnIfTooLarge();
