@@ -1,4 +1,4 @@
-﻿// See `english.txt' for instructions on how to translate the game.
+// See `english.txt' for instructions on how to translate the game.
 $mainNameOfLanguage Deutsch
 
 // English opening quote: “
@@ -270,6 +270,8 @@ $winLooksBlue Hintergrund Blau
 $winConstantsTitle Konstanten
 $winConstantsAuthor Autor
 $winConstantsLevelName Leveltitel
+$winConstantsTooLongWarn Zu lang!
+$winConstantsTooLongDesc Der Levelbrowser zeigt das nur abgekürzt.
 $winConstantsPlayers Spieler
 $winConstantsInitial Lix zu Beginn
 $winConstantsRequired Lix zu retten

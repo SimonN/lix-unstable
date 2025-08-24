@@ -281,6 +281,8 @@ $winLooksBlue Background blue
 $winConstantsTitle Constants
 $winConstantsAuthor Author
 $winConstantsLevelName Level title
+$winConstantsTooLongWarn Too long!
+$winConstantsTooLongDesc The level browser will abbreviate that.
 $winConstantsPlayers Players
 $winConstantsInitial Initial lix
 $winConstantsRequired Lix to save

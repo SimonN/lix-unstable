@@ -283,6 +283,8 @@ $winLooksBlue Fons blau
 $winConstantsTitle Constants
 $winConstantsAuthor Autor
 $winConstantsLevelName Títol del nivell
+$winConstantsTooLongWarn Massa llarg!
+$winConstantsTooLongDesc El navegador de nivells ho abreujarà.
 $winConstantsPlayers Jugadors
 $winConstantsInitial Lix inicials
 $winConstantsRequired Lix a salvar

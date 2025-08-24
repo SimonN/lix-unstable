@@ -250,6 +250,8 @@ enum Lang {
     winConstantsTitle,
     winConstantsAuthor,
     winConstantsLevelName,
+    winConstantsTooLongWarn,
+    winConstantsTooLongDesc,
     winConstantsPlayers,
     winConstantsInitial,
     winConstantsRequired,
