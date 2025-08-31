@@ -72,7 +72,7 @@ public:
             && second == rhs.second;
     }
 
-    @trusted override size_t toHash() pure nothrow
+    @trusted override size_t toHash() const pure nothrow
     {
         return second
             + 60 * minute
@@ -84,13 +84,12 @@ public:
 
     int opCmp(immutable typeof(this) rhs) immutable
     {
-        return year   < rhs.year   ? -1 : year   > rhs.year   ? 1
-            :  month  < rhs.month  ? -1 : month  > rhs.month  ? 1
-            :  day    < rhs.day    ? -1 : day    > rhs.day    ? 1
-            :  hour   < rhs.hour   ? -1 : hour   > rhs.hour   ? 1
-            :  minute < rhs.minute ? -1 : minute > rhs.minute ? 1
-            :  second < rhs.second ? -1 : second > rhs.second ? 1
-            :  0;
+        return year != rhs.year ? year - rhs.year
+            : month != rhs.month ? month - rhs.month
+            : day != rhs.day ? day - rhs.day
+            : hour != rhs.hour ? hour - rhs.hour
+            : minute != rhs.minute ? minute - rhs.minute
+            : second - rhs.second;
     }
 
 private:
@@ -114,4 +113,12 @@ unittest {
     assert (d.month == 05);
     assert (d.second == 37);
     assert (d.toString == s);
+}
+
+unittest {
+    immutable early = new Date("2025-08-31 14:27:05");
+    immutable later = new Date("2025-08-31 15:00:00");
+    assert (early < later);
+    assert (later > early);
+    assert (early >= early);
 }
