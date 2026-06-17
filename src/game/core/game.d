@@ -229,13 +229,6 @@ package:
             && isMouseOnLand;
     }
 
-    bool isInsertMode() const
-    {
-        return _tweaker.shown
-            ? opt.insertAssignmentsWhenTweakerShown.value
-            : opt.insertAssignmentsWhenTweakerHidden.value;
-    }
-
     auto cs() const pure nothrow @safe @nogc
     {
         return nurse.stateForUI;

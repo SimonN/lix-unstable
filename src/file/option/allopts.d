@@ -96,8 +96,6 @@ UserOption!bool holdToScrollInvert;
 UserOption!bool fastMovementFreesMouse;
 
 UserOption!bool replayAfterFrameBack;
-UserOption!bool insertAssignmentsWhenTweakerHidden;
-UserOption!bool insertAssignmentsWhenTweakerShown;
 
 UserOption!bool avoidBuilderQueuing;
 UserOption!bool avoidBatterToExploder;
@@ -283,10 +281,6 @@ do {
 
     replayAfterFrameBack = newOpt("replayAfterFrameBack",
         Lang.optionRewindIsBrowse, true);
-    insertAssignmentsWhenTweakerHidden = newOpt("insertAssignmentsWhenTweakerHidden",
-        Lang.optionInsertAssignments, false);
-    insertAssignmentsWhenTweakerShown = newOpt("insertAssignmentsWhenTweakerShown",
-        Lang.optionInsertAssignments, true);
 
     avoidBuilderQueuing = newOpt("avoidBuilderQueuing", Lang.optionAvoidBuilderQueuing, true);
     avoidBatterToExploder = newOpt("avoidBatterToExploder", Lang.optionAvoidBatterToExploder, false);

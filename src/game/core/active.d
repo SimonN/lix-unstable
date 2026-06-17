@@ -66,12 +66,7 @@ do {
 void resolveClickThatWillAssign(Game game, Assignee assignee)
 {
     if (game.view.canInterruptReplays) {
-        if (game.isInsertMode) {
-            game.cutSingleLixFutureFromReplay(assignee.passport);
-        }
-        else {
-            game.nurse.cutGlobalFutureFromReplay();
-        }
+        game.cutSingleLixFutureFromReplay(assignee.passport);
     }
     game.assignTo(assignee);
     if (opt.unpauseOnAssign.value) {

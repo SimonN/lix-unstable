@@ -39,7 +39,7 @@ calcPassive(
     if (! underCursor.best.empty) {
         mouseCursor.want(Shape.openSquare);
         game._effect.localStyle = underCursor.best.front.lixxie.style;
-        if (game.isInsertMode && game.canWeClickAirNowToCutGlobalFuture) {
+        if (game.canWeClickAirNowToCutGlobalFuture) {
             game._mapClickExplainer.suggestTooltip(Tooltip.ID.clickToInsert);
             mouseCursor.want(Sidekick.insert); // overwrites Sidekick.scissors
         }

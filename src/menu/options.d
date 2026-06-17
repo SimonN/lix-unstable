@@ -270,10 +270,6 @@ void populateGameControls()
         fac.factory!RadioBoolOption(replayAfterFrameBack,
             Lang.optionRewindIsBrowse, true,
             Lang.optionRewindIsUndo, false),
-        fac.factory!HeadingAndBoolOptions(Lang.optionWhenTweakerHidden,
-            insertAssignmentsWhenTweakerHidden),
-        fac.factory!HeadingAndBoolOptions(Lang.optionWhenTweakerShown,
-            insertAssignmentsWhenTweakerShown),
     ];
     fac = facRight();
     groups[OptionGroup.gameControls] ~= [
