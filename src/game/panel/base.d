@@ -18,9 +18,9 @@ import game.panel.skillbar;
 import game.panel.tooltip;
 import physics.gadget;
 import gui;
+import net.name;
 import net.phyu;
 import physics.lixxie.lixxie;
-import physics.lixxie.fields;
 import physics.tribe;
 
 class Panel : Element, TooltipSuggester {
@@ -123,9 +123,9 @@ public:
     }
 
     void describeNoLixxie() { stats.describeNoLixxie(); }
-    void describeLixxie(in Lixxie l, in Passport p, int numUnderCursor)
+    void describeLixxie(in Lixxie l, in Name na, int numUnderCursor)
     {
-        stats.describeLixxie(l, p, numUnderCursor);
+        stats.describeLixxie(l, na, numUnderCursor);
     }
 
     void describeNoGadget() { stats.describeNoGadget(); }

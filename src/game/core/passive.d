@@ -20,7 +20,7 @@ import gui;
 import hardware.keyboard;
 import hardware.mousecur;
 import hardware.sound;
-import physics.lixxie.fields;
+import net.name;
 
 package void
 calcPassive(
@@ -29,8 +29,13 @@ calcPassive(
 ) { with (MouseCursor)
 {
     game.map.calcZoomAndScrolling();
-    game.activateOrDeactivateTweaker(underCursor.best.empty
-        ? no!Passport : some(underCursor.best.front.passport));
+    if (underCursor.best.empty) {
+        game.activateOrDeactivateTweaker(no!Name);
+    }
+    else {
+        Optional!Name arg = underCursor.best.front.name;
+        game.activateOrDeactivateTweaker(arg);
+    }
 
     if (game.canWeClickAirNowToCutGlobalFuture) {
         game._mapClickExplainer.suggestTooltip(Tooltip.ID.clickToCancelReplay);
@@ -59,7 +64,7 @@ calcPassive(
 
 private:
 
-void activateOrDeactivateTweaker(Game game, in Optional!Passport toHighlight)
+void activateOrDeactivateTweaker(Game game, in Optional!Name toHighlight)
 {
     if (game.pan.tweakerIsOn) {
         game._tweaker.shown = true;

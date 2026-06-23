@@ -2,6 +2,7 @@ module physics.lixxie.fields;
 
 import optional;
 
+public import net.name;
 public import net.style;
 
 import physics;
@@ -13,22 +14,9 @@ struct OutsideWorld {
     World state;
     PhysicsDrawer physicsDrawer;
     EffectSink effect;
-    Passport passport;
+    Name name;
 
-    inout(Tribe) tribe() inout { return state.tribes[passport.style]; }
-}
-
-// Enough information to retrieve a specific lix from a given GameState.
-// Lixes are value types and can't be identified by equality comparision.
-struct Passport {
-    Style style; // GameState has at most one Tribe per Style
-    int id; // which entry entry of the tribe's vector of Lixxies
-
-    int opCmp(ref const(typeof(this)) rhs) const pure nothrow @safe @nogc
-    {
-        return style != rhs.style ? style - rhs.style
-            : id - rhs.id;
-    }
+    inout(Tribe) tribe() inout { return state.tribes[name.owner]; }
 }
 
 struct Priority {

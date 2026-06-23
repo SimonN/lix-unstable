@@ -14,15 +14,15 @@ import hardware.sound; // warn when too few lix alive to win
 import net.repdata; // Phyu
 import physics.job.builder;
 import physics.lixxie.lixxie;
-import physics.lixxie.fields;
 import physics.tribe;
+import net.name;
 
 abstract class InfoBar : Button {
 private:
     Phyu _age;
     int _numLixUnderCursor;
     ConstLix _highlitLix; // May be null.
-    Passport _highlitPassport; // Ignore whenever _highlitLix is null.
+    Name _highlitPassport; // Ignore whenever _highlitLix is null.
     string _hoveredGadget; // == "" when mouse isn't hovering over a gadget.
 
     CutbitElement _bOut, _bHatch;
@@ -42,7 +42,7 @@ public:
 
     void describeLixxie(
         in Lixxie l,
-        in Passport p,
+        in Name na,
         in int numLixUnderCursor)
     {
         if (_highlitLix is l && _numLixUnderCursor == numLixUnderCursor) {
@@ -50,7 +50,7 @@ public:
         }
         reqDraw();
         _highlitLix = l;
-        _highlitPassport = p;
+        _highlitPassport = na;
         _numLixUnderCursor = numLixUnderCursor;
     }
 
@@ -61,7 +61,7 @@ public:
         }
         reqDraw();
         _highlitLix = null;
-        _highlitPassport = Passport();
+        _highlitPassport = Name();
         _numLixUnderCursor = 0;
     }
 

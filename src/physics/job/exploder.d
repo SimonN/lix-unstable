@@ -65,7 +65,7 @@ protected:
     override void makeEffect()
     {
         lixxie.outsideWorld.effect.addImplosion(lixxie.outsideWorld.state.age,
-            lixxie.outsideWorld.passport, lixxie.foot);
+            lixxie.outsideWorld.name, lixxie.foot);
     }
 }
 
@@ -78,7 +78,7 @@ protected:
     override void makeEffect()
     {
         lixxie.outsideWorld.effect.addExplosion(lixxie.outsideWorld.state.age,
-            lixxie.outsideWorld.passport, lixxie.foot);
+            lixxie.outsideWorld.name, lixxie.foot);
     }
 
     override void flingOtherLix()

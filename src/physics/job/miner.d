@@ -90,7 +90,7 @@ private:
         if (lixxie.wouldHitSteel(masks[tc.type])) {
             lixxie.outsideWorld.effect.addPickaxe(
                 lixxie.outsideWorld.state.age,
-                lixxie.outsideWorld.passport, lixxie.foot, lixxie.dir);
+                lixxie.outsideWorld.name, lixxie.foot, lixxie.dir);
             lixxie.turn();
             lixxie.become(Ac.walker);
         }

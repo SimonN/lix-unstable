@@ -21,7 +21,7 @@ public:
         if (enoughSteel) {
             lixxie.outsideWorld.effect.addDigHammer(
                 lixxie.outsideWorld.state.age,
-                lixxie.outsideWorld.passport, lixxie.foot, lixxie.dir);
+                lixxie.outsideWorld.name, lixxie.foot, lixxie.dir);
             lixxie.become(Ac.walker);
         }
         return enoughSteel;

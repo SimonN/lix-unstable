@@ -179,7 +179,7 @@ void describeHoveredLixInPanel(Game game, in UnderCursor underCursor)
     assert (underCursor.best.front.lixxie !is null);
     game.pan.describeLixxie(
         underCursor.best.front.lixxie,
-        underCursor.best.front.passport,
+        underCursor.best.front.name,
         underCursor.numLix);
 }
 

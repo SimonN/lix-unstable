@@ -26,6 +26,7 @@ public import physics.effect;
 import basics.help;
 import basics.globals;
 import file.language;
+import net.name;
 import net.repdata;
 import net.style;
 import game.debris;
@@ -36,7 +37,7 @@ private struct Effect {
     enum Loudness : bool { loud, quiet, };
 
     Phyu phyu;
-    Passport pa; // if no Lixxie required (e.g., nuke), set pa.id = 0.
+    Name pa; // if no Lixxie required (e.g., nuke), set pa.id = 0.
     Sound sound;
     Loudness loudness;
 
@@ -136,7 +137,7 @@ public:
     do {
         // Throw away what has update (upd + 1) or more.
         // Since I can't specify (upd+1, Style.min - 1), I'll cut here:
-        const Effect e = Effect(upd, Passport(Style.max, 0));
+        const Effect e = Effect(upd, Name(Style.max, 0));
         _alreadyPlayed.remove(_alreadyPlayed.upperBound(e));
     }
 
@@ -154,10 +155,10 @@ public:
 
     void addSoundGeneral(in Phyu upd, in Sound sound)
     {
-        addSound(upd, Passport(_localStyle, 0), sound);
+        addSound(upd, Name(_localStyle, 0), sound);
     }
 
-    void addSound(in Phyu upd, in Passport pa, in Sound sound)
+    void addSound(in Phyu upd, in Name pa, in Sound sound)
     {
         if (! isLocal(pa) && ! [Sound.NUKE, Sound.SPLAT, Sound.POP,
             Sound.OBLIVION, Sound.FIRE, Sound.WATER].canFind(sound)
@@ -174,7 +175,7 @@ public:
         }
     }
 
-    void addAssignment(in Phyu upd, in Passport pa, in Point foot, in Ac ac,
+    void addAssignment(in Phyu upd, in Name pa, in Point foot, in Ac ac,
         in Sound reasonForAssignment
     ) {
         /*
@@ -196,13 +197,13 @@ public:
             hardware.sound.playLoud(reasonForAssignment);
         }
         if (reasonForAssignment != Sound.assignByClick) {
-            _debris ~= newDebris!Arrow.ctor(foot, pa.style, ac);
+            _debris ~= newDebris!Arrow.ctor(foot, pa.owner, ac);
         }
     }
 
     private alias makeTool = newDebris!FlyingTool.ctor;
 
-    void addShovel(in Phyu upd, in Passport pa, in Point foot, in int dir)
+    void addShovel(in Phyu upd, in Name pa, in Point foot, in int dir)
     {
         immutable e = Effect(upd, pa, Sound.none, loudness(pa));
         if (e in _alreadyPlayed) {
@@ -212,7 +213,7 @@ public:
         _debris ~= makeTool(foot, dir, FlyingTool.Type.shovel);
     }
 
-    void addPickaxe(in Phyu upd, in Passport pa, in Point foot, in int dir)
+    void addPickaxe(in Phyu upd, in Name pa, in Point foot, in int dir)
     {
         immutable res = addSteelSound(upd, pa);
         if (res == AddResult.alreadyThere) {
@@ -221,7 +222,7 @@ public:
         _debris ~= makeTool(foot, dir, FlyingTool.Type.pickaxe);
     }
 
-    void addDigHammer(in Phyu upd, in Passport pa, in Point foot, in int dir)
+    void addDigHammer(in Phyu upd, in Name pa, in Point foot, in int dir)
     {
         immutable res = addSteelSound(upd, pa);
         if (res == AddResult.alreadyThere) {
@@ -232,19 +233,19 @@ public:
         _debris ~= makeTool(foot, dir, FlyingTool.Type.jackhammerEngine);
     }
 
-    void addImplosion(in Phyu upd, in Passport pa, in Point foot)
+    void addImplosion(in Phyu upd, in Name pa, in Point foot)
     {
         addPlosion!false(upd, pa, foot);
     }
 
-    void addExplosion(in Phyu upd, in Passport pa, in Point foot)
+    void addExplosion(in Phyu upd, in Name pa, in Point foot)
     {
         addPlosion!true(upd, pa, foot);
     }
 
     void announceOvertime(in Phyu whenOvertimeStarted, in int overtimeInPhyus)
     {
-        Effect e = Effect(whenOvertimeStarted, Passport(_localStyle, 0),
+        Effect e = Effect(whenOvertimeStarted, Name(_localStyle, 0),
             Sound.OVERTIME, Loudness.loud);
         if (e !in _alreadyPlayed) {
             _alreadyPlayed.insert(e);
@@ -282,14 +283,14 @@ public:
 private:
     alias Loudness = Effect.Loudness;
 
-    Loudness loudness(in Passport pa) const pure nothrow @nogc
+    Loudness loudness(in Name pa) const pure nothrow @nogc
     {
         return isLocal(pa) ? Loudness.loud : Loudness.quiet;
     }
 
-    bool isLocal(in Passport pa) const pure nothrow @nogc
+    bool isLocal(in Name pa) const pure nothrow @nogc
     {
-        return pa.style == _localStyle;
+        return pa.owner == _localStyle;
     }
 
     enum AddResult : bool {
@@ -297,7 +298,7 @@ private:
         successfullyAdded,
     }
 
-    private AddResult addSteelSound(Phyu upd, in Passport pa)
+    private AddResult addSteelSound(Phyu upd, in Name pa)
     {
         immutable e = Effect(upd, pa,
             isLocal(pa) ? Sound.STEEL : Sound.none, Loudness.loud);
@@ -309,7 +310,7 @@ private:
         return AddResult.successfullyAdded;
     }
 
-    void addPlosion(bool ex)(in Phyu upd, in Passport pa, in Point foot)
+    void addPlosion(bool ex)(in Phyu upd, in Name pa, in Point foot)
     {
         immutable e = Effect(upd, pa, Sound.POP, loudness(pa));
         if (e in _alreadyPlayed) {

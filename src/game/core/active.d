@@ -12,6 +12,7 @@ import game.core.assignee;
 import game.core.game;
 import hardware.sound;
 import hardware.mouse;
+import net.name;
 import net.repdata;
 import physics.lixxie.fields;
 
@@ -34,7 +35,7 @@ do { with (game)
     data.isNuke = true;
     game.includeOurNew(data);
     assert (_effect);
-    _effect.addSound(Phyu(nurse.now + 1), Passport(localStyle, 0), Sound.NUKE);
+    _effect.addSound(Phyu(nurse.now + 1), Name(localStyle, 0), Sound.NUKE);
 }}
 
 void calcClicksIntoMap(Game game, UnderCursor found)
@@ -66,7 +67,7 @@ do {
 void resolveClickThatWillAssign(Game game, Assignee assignee)
 {
     if (game.view.canInterruptReplays) {
-        game.cutSingleLixFutureFromReplay(assignee.passport);
+        game.cutSingleLixFutureFromReplay(assignee.name);
     }
     game.assignTo(assignee);
     if (opt.unpauseOnAssign.value) {
@@ -74,7 +75,7 @@ void resolveClickThatWillAssign(Game game, Assignee assignee)
     }
 }
 
-void cutSingleLixFutureFromReplay(Game game, in Passport ofWhom)
+void cutSingleLixFutureFromReplay(Game game, in Name ofWhom)
 {
     assert (game.view == View.solveAlone,
         "We're adding PlNr(0) to the ply. This will fail View.solveTogether."
@@ -149,7 +150,7 @@ do { with (game)
 {
     Ply i = game.newPlyForNextPhyu(assignee.lixxie.style);
     i.skill = game.pan.chosenSkill;
-    i.toWhichLix = assignee.id;
+    i.toWhichLix = assignee.name.id;
     i.isDirectionallyForced
         = alwaysForceWhenAssigning(i.skill) || forcingLeft || forcingRight;
     i.lixShouldFace = assignee.lixxie.facingLeft
@@ -167,7 +168,7 @@ do { with (game)
     // React faster to the new assignment than during its evaluation next
     // update. The evaluation could be several ticks ticks later.
     assert (game._effect);
-    _effect.addAssignment(i.when, assignee.passport,
+    _effect.addAssignment(i.when, assignee.name,
         assignee.lixxie.foot, i.skill, Sound.assignByClick);
 }}
 
