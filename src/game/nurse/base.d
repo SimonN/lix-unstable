@@ -11,7 +11,6 @@ module game.nurse.base;
 import std.algorithm;
 import std.range;
 
-import net.repdata; // update
 import file.option; // update player name on cut replay
 import file.date;
 import file.filename;
@@ -118,7 +117,6 @@ protected:
             Zone zone = Zone(profiler, "PhysSeq updateOnceNoSync");
         auto dataSlice = _replay.plySliceFor(Phyu(now + 1));
         assert (dataSlice.isSorted!("a.by < b.by"));
-        _model.advance(dataSlice.map!(rd =>
-            GameModel.ColoredData(rd, _replay.plNrToStyle(rd.by))));
+        _model.advance(dataSlice);
     }
 }

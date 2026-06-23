@@ -28,7 +28,6 @@ import enumap;
 import basics.alleg5;
 import basics.cmdargs;
 import basics.help;
-import net.repdata;
 import tile.phymap;
 import graphic.color;
 import graphic.cutbit;
@@ -37,6 +36,7 @@ import graphic.internal; // must be initialized first
 import hardware.tharsis;
 import net.ac;
 import net.style;
+import net.phyu;
 import physics.job.cuber; // Cuber.cubeSize
 import physics.job.digger; // diggerTunnelWidth
 import physics.mask;

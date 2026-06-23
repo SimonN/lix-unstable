@@ -14,7 +14,6 @@ import optional;
 public import file.replay.tweakrq;
 public import net.ac;
 public import net.style;
-public import net.repdata;
 
 import basics.help; // array.len of type int
 import basics.globals;
@@ -26,6 +25,7 @@ import file.replay.io;
 import level.level;
 import net.profile;
 import net.permu;
+import net.ply;
 import net.versioning;
 
 class Replay {
@@ -317,7 +317,7 @@ unittest {
     Replay b = Replay.newNoLevelFilename(Date.now());
     Ply d;
     d.skill = Ac.digger;
-    d.toWhichLix = 50;
+    d.toWhom = Name(Style.yellow, 50);
     d.when = Phyu(20);
     a.add(d);
     b.add(d);

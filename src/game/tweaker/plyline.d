@@ -18,7 +18,6 @@ import game.tweaker.nowline; // Nuke button's text is like NowLine's text.
 import gui;
 import graphic.color;
 import graphic.internal;
-import net.repdata;
 
 class PlyLine : OneLine {
 private:
@@ -149,7 +148,7 @@ public:
         reqDraw();
         _ply = aPly;
         if (_ply.isAssignment) {
-            _lixID.text = _ply.toWhichLix.to!string;
+            _lixID.text = _ply.toWhom.id.to!string;
             _skillIcon.show();
             _skillIcon.xf = 2 * _ply.skill.acToSkillIconXf
                 + 1 * (_ply.lixShouldFace == Ply.LixShouldFace.left);

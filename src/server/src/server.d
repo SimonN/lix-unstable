@@ -18,7 +18,7 @@ import net.server.hotel;
 import net.server.outbox;
 import net.enetglob;
 import net.packetid;
-import net.plnr;
+import net.ply;
 import net.profile;
 import net.structs;
 import net.versioning;
@@ -240,7 +240,6 @@ public:
      * then forward the method call there, with identical arguments.
      */
     import net.permu;
-    import net.repdata;
     static foreach (func; __traits(allMembers, Outbox)) {
         import net.server.meta;
         mixin(format!q{

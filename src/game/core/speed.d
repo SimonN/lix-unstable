@@ -12,7 +12,7 @@ import physics.world.cache : DuringTurbo;
 import game.panel.base;
 static import hardware.mouse;
 import hardware.sound;
-import net.repdata;
+import net.phyu;
 
 package:
 

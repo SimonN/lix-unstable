@@ -85,14 +85,16 @@ inout(Ply)[] plySliceBefore(
 // See file.replay.replay for add() with touching.
 void addWithoutTouching(
     Replay rep,
-    in Ply d
+    in Ply withoutCorrectOwner
 ) {
+    immutable Ply goodPly = rep.fixOwner(withoutCorrectOwner);
+
     // Add after the latest record that's smaller than or equal to d
     // Equivalently, add before the earliest record that's greater than d.
     // plySliceBefore doesn't do exactly that, it ignores.bys.
     // I believe the C++ version had a bug in the comparison. Fixed here.
-    auto slice = rep.plySliceBefore(Phyu(d.when + 1));
-    while (slice.length && slice[$-1] > d)
+    auto slice = rep.plySliceBefore(Phyu(goodPly.when + 1));
+    while (slice.length && slice[$-1] > goodPly)
         slice = slice[0 .. $-1];
     if (slice.length < rep._plies.length) {
         rep._plies.length += 1;
@@ -100,17 +102,37 @@ void addWithoutTouching(
             &rep._plies[slice.length + 1],
             &rep._plies[slice.length],
             Ply.sizeof * (rep._plies.length - slice.length - 1));
-        rep._plies[slice.length] = d;
+        rep._plies[slice.length] = goodPly;
     }
     else {
-        rep._plies ~= d;
+        rep._plies ~= goodPly;
     }
     assert (rep._plies.isSorted);
+}
+
+void fixAllOwners(Replay rep)
+{
+    foreach (ref Ply p; rep._plies) {
+        p = rep.fixOwner(p);
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 private: //////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
+// This works around a shortcoming of the 0.10 networking protocol.
+// Incoming networking packets list only their player number, not the lix's
+// owner, i.e., not the style of the lix's tribe. The networking expects us
+// to bring the information together here. Sure, we can do that, but it would
+// be nice to send/receive the ply as-is and correctly in the first place.
+Ply fixOwner(in Replay rep, Ply aPly)
+{
+    if (const prof = aPly.by in rep._players) {
+        aPly.toWhom = Name(prof.style, aPly.toWhom.id);
+    }
+    return aPly;
+}
 
 /*
  * All these functions are called from tweakImpl, therefore (RepData what)
@@ -167,18 +189,13 @@ TweakResult cutFutureOfOneLixImpl(
     in ChangeRequest rq,
 ) pure nothrow @safe @nogc
 {
-    /*
-     * This doesn't guard against different tribes or PlNrs.
-     * This assumes we'll always cut in singleplayer, where assignable
-     * lixes can be identified already by rq.what.toWhichLix alone.
-     */
     bool toCut(in Ply p) pure nothrow @safe @nogc
     {
         if (p.when <= rq.what.when) {
             return false;
         }
         return p.isNuke
-            || p.isAssignment && p.toWhichLix == rq.what.toWhichLix;
+            || p.isAssignment && p.toWhom == rq.what.toWhom;
     }
     assert (! toCut(rq.what), "We cut after rq.what, not including rq.what.");
     if (! rep._plies.canFind!toCut) {
@@ -226,7 +243,7 @@ version (unittest) {
         ret.lixShouldFace = Ply.LixShouldFace.left;
         ret.skill = ac;
         ret.when = phyu;
-        ret.toWhichLix = 3;
+        ret.toWhom = Name(Style.garden, 3);
         return ret;
     }
 }
@@ -304,13 +321,13 @@ unittest {
         ply.lixShouldFace = x % 20 == 10
             ? Ply.LixShouldFace.left : Ply.LixShouldFace.right;
         ply.skill = x % 40 < 20 ? Ac.digger : Ac.climber;
-        ply.toWhichLix = 3;
+        ply.toWhom = Name(Style.garden, 3);
         ply.when = Phyu(x);
         a.add(ply);
     }
     assert (a.allPlies.length == 10);
     a.cutFutureOfOneLixImpl(ChangeRequest(
-        Ply(PlNr(0), Phyu(150), false, Ac.nothing, 3),
+        Ply(PlNr(0), Phyu(150), false, Ac.nothing, Name(Style.garden, 3)),
         ChangeVerb.cutFutureOfOneLix));
     assert (a.allPlies.length == 6); // 100, 110, 120, 130, 140, 150
     assert (a.allPlies[$-1].when == Phyu(150));

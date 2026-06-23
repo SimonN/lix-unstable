@@ -19,7 +19,6 @@ import graphic.cutbit;
 import graphic.color;
 import physics.gadget;
 import graphic.torbit;
-import net.repdata;
 import tile.phymap;
 import tile.occur;
 import tile.gadtile;

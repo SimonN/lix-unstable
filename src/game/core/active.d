@@ -13,7 +13,6 @@ import game.core.game;
 import hardware.sound;
 import hardware.mouse;
 import net.name;
-import net.repdata;
 import physics.lixxie.fields;
 
 package:
@@ -82,12 +81,8 @@ void resolveClickThatWillAssign(Game game, Assignee assignee)
 
 void cutSingleLixFutureFromReplay(Game game, in Name ofWhom)
 {
-    assert (game.view == View.solveAlone,
-        "We're adding PlNr(0) to the ply. This will fail View.solveTogether."
-        ~ " If we ever implement solveTogether, add more logic here and"
-        ~ " also support that in the replay's ChangeRequest.");
     game.nurse.tweakReplayRecomputePhysics(ChangeRequest(
-        Ply(PlNr(0), game.nurse.now, false, Ac.nothing, ofWhom.id),
+        Ply(PlNr(0), game.nurse.now, false, Ac.nothing, ofWhom),
         ChangeVerb.cutFutureOfOneLix));
 }
 
@@ -155,7 +150,7 @@ do { with (game)
 {
     Ply i = game.newPlyForNextPhyu(assignee.lixxie.style);
     i.skill = game.pan.chosenSkill;
-    i.toWhichLix = assignee.name.id;
+    i.toWhom = assignee.name;
     i.isDirectionallyForced
         = alwaysForceWhenAssigning(i.skill) || forcingLeft || forcingRight;
     i.lixShouldFace = assignee.lixxie.facingLeft

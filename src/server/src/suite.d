@@ -17,9 +17,8 @@ import std.range;
 
 import net.packetid;
 import net.permu;
-import net.plnr;
+import net.ply;
 import net.profile;
-import net.repdata;
 import net.structs;
 import net.server.festival;
 import net.server.outbox;
