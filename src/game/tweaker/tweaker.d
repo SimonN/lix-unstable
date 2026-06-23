@@ -17,7 +17,7 @@ import game.tweaker.nowline;
 import game.tweaker.plyline;
 import graphic.color;
 import gui;
-import physics.lixxie.fields;
+import net.name;
 
 class Tweaker : Element {
 private:
@@ -75,7 +75,7 @@ public:
     void formatButtonsAccordingTo(
         const(Ply)[] dat,
         in Phyu now,
-        in Optional!Passport lixLinesToHighlight)
+        in Optional!Name lixLinesToHighlight)
     out {
         assert (_entries.all!(e => e !is null));
     }
@@ -157,7 +157,7 @@ private:
     void formatListOfGuiEntries(
         const(Ply)[] pliesToMatch,
         in Phyu now,
-        in Optional!Passport lixToHighlight)
+        in Optional!Name lixToHighlight)
     in {
         assert (_entries.all!(e => e !is null));
     }
@@ -199,7 +199,7 @@ private:
 }
 
 // Call this after moving plyLine to where it will sit for this graphics frame.
-private bool shouldBeWhite(in PlyLine plyLine, in Optional!Passport lix)
+private bool shouldBeWhite(in PlyLine plyLine, in Optional!Name lix)
 {
     if (! plyLine.ply.isAssignment) {
         return false;

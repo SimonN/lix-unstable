@@ -13,13 +13,14 @@ import gui : SkillButton;
 import hardware.mousecur;
 import hardware.keyboard; // priority invert held
 import net.ac;
+import net.name;
 import physics.lixxie.fields;
 import physics.lixxie.lixxie;
 import physics.tribe;
 
 struct Assignee {
     ConstLix lixxie; // Should never be null. Use Optional!Assignee otherwise.
-    int id;
+    Name name;
     Priority prio;
     double distanceToCursor;
 
@@ -28,10 +29,6 @@ struct Assignee {
         return ! (lixxie.facingLeft && forcingRight)
             && ! (lixxie.facingRight && forcingLeft);
     }
-
-    Passport passport() const pure nothrow @safe @nogc
-    in { assert (lixxie !is null, "Wrap nulls in Optional!Assignee."); }
-    do { return Passport(lixxie.style, id); }
 
     // Compare lixes for, priority:
     // 1. priority number from lixxie.priorityForNewAc
@@ -47,7 +44,7 @@ struct Assignee {
             : prio < rhs.prio ?   opt.keyPriorityInvert.isHeld
             : distanceToCursor < rhs.distanceToCursor ? true
             : distanceToCursor > rhs.distanceToCursor ? false
-            : id < rhs.id;
+            : name < rhs.name;
     }
 }
 
@@ -122,8 +119,8 @@ UnderCursor findUnderCursor(
 
         // We found a lix under the cursor.
         ++ret.numLix;
-        Assignee a = generateAssignee(
-            gameMap, chosenInPanel, lixxie, id, mol, mmldD - mmldU);
+        Assignee a = generateAssignee(gameMap, chosenInPanel, lixxie,
+            Name(fromTribe.style, id), mol, mmldD - mmldU);
         if (ret.best.empty) {
             ret.best = a;
         }
@@ -146,14 +143,14 @@ Assignee generateAssignee(
     const(MapAndCamera) onMap,
     in Ac chosenInPanel,
     in ConstLix lixxie,
-    in int id,
+    in Name name,
     in Point mouseOnLand,
     in float dMinusU,
 ) {
     import basics.help;
     Assignee ret;
     ret.lixxie = lixxie;
-    ret.id = id;
+    ret.name = name;
     ret.distanceToCursor = onMap.topology.hypotSquared(
         mouseOnLand.x, mouseOnLand.y, lixxie.ex,
                                       lixxie.ey + roundInt(dMinusU/2));

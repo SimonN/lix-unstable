@@ -101,6 +101,6 @@ private:
             lixxie.style == target.style);
         assert (lixxie.outsideWorld);
         lixxie.outsideWorld.effect.addSound(lixxie.outsideWorld.state.age,
-            Passport(target.style, targetId), Sound.BATTER_HIT);
+            Name(target.style, targetId), Sound.BATTER_HIT);
     }
 }

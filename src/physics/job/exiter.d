@@ -91,7 +91,7 @@ private:
         lixxie.outsideWorld.effect.addSound(
             lixxie.outsideWorld.state.age,
             // arbitrary ID because not same tribe
-            Passport(beneficiary.style, lixxie.outsideWorld.passport.id),
+            Name(beneficiary.style, lixxie.outsideWorld.name.id),
             Sound.GOAL);
     }
 }

@@ -11,25 +11,25 @@ import std.typecons;
 
 public import basics.rect;
 public import hardware.sound;
-public import physics.lixxie.fields : Passport;
+public import net.name;
 public import net.ac;
 public import net.phyu;
 
 interface EffectSink {
 public:
-    void addSoundGeneral(in Phyu upd, in Sound sound);
-    void addSound(in Phyu upd, in Passport pa, in Sound sound);
+    void addSoundGeneral(in Phyu, in Sound sound);
+    void addSound(in Phyu, in Name pa, in Sound sound);
 
-    void addAssignment(in Phyu, in Passport, in Point foot, in Ac, in Sound);
+    void addAssignment(in Phyu, in Name, in Point foot, in Ac, in Sound);
 
-    void addShovel(in Phyu upd, in Passport pa, in Point foot, in int dir);
-    void addPickaxe(in Phyu upd, in Passport pa, in Point foot, in int dir);
-    void addDigHammer(in Phyu upd, in Passport pa, in Point foot, in int dir);
+    void addShovel(in Phyu, in Name, in Point foot, in int dir);
+    void addPickaxe(in Phyu, in Name, in Point foot, in int dir);
+    void addDigHammer(in Phyu, in Name, in Point foot, in int dir);
 
-    void addImplosion(in Phyu upd, in Passport pa, in Point foot);
-    void addExplosion(in Phyu upd, in Passport pa, in Point foot);
+    void addImplosion(in Phyu, in Name, in Point foot);
+    void addExplosion(in Phyu, in Name, in Point foot);
 
-    void announceOvertime(in Phyu upd, in int overtimeInPhyus);
+    void announceOvertime(in Phyu, in int overtimeInPhyus);
 }
 
 alias NullEffectSink = BlackHole!EffectSink;
