@@ -20,7 +20,6 @@ import std.conv;
 import std.range;
 
 import basics.help; // len
-import net.repdata;
 import hardware.tharsis;
 import file.replay;
 import physics.gadget;
@@ -44,17 +43,6 @@ private:
     EffectSink _effect; // not owned, never null. May be the NullEffectSink.
 
 public:
-    // The replay data comes with player information (PlNr).
-    // Physics only work with tribe information (Style).
-    // To preserve database normal form, we shouldn't put the Style in the
-    // replay's Ply, but still must ask the caller of advance(),
-    // which is the Nurse, to associate Ply to Style via this struct.
-    struct ColoredData {
-        Ply replayData;
-        Style style;
-        alias replayData this;
-    }
-
     // This remembers the effect manager, but not anything else.
     // We don't own the effect manager.
     this(in GameStateInitCfg cfg, EffectSink ef)
@@ -80,11 +68,10 @@ public:
         _physicsDrawer.applyChangesToLand(_cs.age);
     }
 
-    void advance(R)(R range)
-        if (isInputRange!R && is (ElementType!R : const(ColoredData)))
+    void advance(in Ply[] pliesDueDuringThisAdvance)
     {
         ++_cs.age;
-        range.each!(cd => applyPly(cd));
+        pliesDueDuringThisAdvance[].each!(cd => applyPly(cd));
 
         updateNuke(); // sets lixInHatch = 0, affecting spawnLixxiesFromHatch
         spawnLixxiesFromHatches();
@@ -112,28 +99,31 @@ private:
         return OutsideWorld(cs, _physicsDrawer, _effect, na);
     }
 
-    void applyPly(in ColoredData i)
+    void applyPly(in Ply i)
     {
         assert (i.when == _cs.age,
             "increase the state's age manually before applying replay data");
-        if (! _cs.tribes.contains(i.style))
+        if (! _cs.tribes.contains(i.toWhom.owner))
             // Ignore bogus data that can come from anywhere
             return;
-        auto tribe = _cs.tribes[i.style];
+        auto tribe = _cs.tribes[i.toWhom.owner];
+        if (tribe is null) {
+            return;
+        }
         if (tribe.hasNuked || _cs.nukeIsAssigningExploders) {
             // Game rule: After you call for the nuke, you may not assign
             // other things, nuke again, or do whatever we allow in the future.
             // During the nuke, nobody can assign or save lixes.
             return;
         }
-        immutable Name na = Name(i.style, i.toWhichLix);
         if (i.isAssignment) {
+            const int id = i.toWhom.id;
             // never assert based on the content in Ply, which may have
             // been a maleficious attack from a third party, carrying a lix ID
             // that is not valid. If bogus data comes, do nothing.
-            if (i.toWhichLix < 0 || i.toWhichLix >= tribe.lixlen)
+            if (id < 0 || id >= tribe.lixlen)
                 return;
-            Lixxie lixxie = tribe.lixvec[i.toWhichLix];
+            Lixxie lixxie = tribe.lixvec[id];
             assert (lixxie);
             if (! lixxie.priorityForNewAc(i.skill).isAssignable
                 || ! tribe.canStillUse(i.skill)
@@ -143,15 +133,15 @@ private:
             }
             // Physics
             ++(tribe.skillsUsed[i.skill]);
-            OutsideWorld ow = makeGypsyWagon(na);
+            OutsideWorld ow = makeGypsyWagon(i.toWhom);
             lixxie.assignManually(&ow, i.skill);
 
-            _effect.addAssignment(_cs.age, na, lixxie.foot, i.skill,
+            _effect.addAssignment(_cs.age, i.toWhom, lixxie.foot, i.skill,
                 Sound.assignByReplay);
         }
         else if (i.isNuke) {
             tribe.recordNukePressedAt(_cs.age);
-            _effect.addSound(_cs.age, na, Sound.NUKE);
+            _effect.addSound(_cs.age, i.toWhom, Sound.NUKE);
         }
     }
 

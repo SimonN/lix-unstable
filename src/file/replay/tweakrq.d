@@ -6,7 +6,6 @@ module file.replay.tweakrq;
  * ChangeVerb.eraseThisAndFutureOfSameLix refers to later plies, not the given.
  * The given ply is only examined for its phyu and lix ID, not for its skill.
  *
- * See also net.repdata.Ply.opCmp:
  * In the same frame, order by player number. From same player in same frame,
  * replay entries may be in any order, and that order must be preserved because
  * that order affects physics.
@@ -30,7 +29,7 @@ module file.replay.tweakrq;
  * entry.
  */
 
-public import net.repdata;
+public import net.ply;
 
 enum ChangeVerb {
     /*

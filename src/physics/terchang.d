@@ -1,7 +1,7 @@
 module physics.terchang;
 
 import basics.rect;
-import net.repdata;
+import net.phyu;
 import net.style;
 
 private mixin template TerrainChangeBase() {

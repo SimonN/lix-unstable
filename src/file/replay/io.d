@@ -24,7 +24,6 @@ import file.replay.tweakimp;
 import level.level;
 import net.permu;
 import net.profile;
-import net.repdata;
 import net.versioning;
 
 public: // public only to unittest. Should be package outside of that.
@@ -124,7 +123,7 @@ void implLoadFromFile(Replay replay, Filename fn) { with (replay)
         Ply d;
         d.when = i.nr1;
         d.by = i.nr2 & 0xFF;
-        d.toWhichLix = i.nr3;
+        d.toWhom = Name(Style.unknownButTheReplayWillFixIt, i.nr3);
         d.fromRepAc(assign == replayAssignAny  ? RepAc.ASSIGN
                  : assign == replayAssignLeft  ? RepAc.ASSIGN_LEFT
                  : assign == replayAssignRight ? RepAc.ASSIGN_RIGHT
@@ -139,6 +138,7 @@ void implLoadFromFile(Replay replay, Filename fn) { with (replay)
         break;
     }
     _players = importer.loseOwnershipOfProfileArray();
+    replay.fixAllOwners(); // Fixes plies that were added before their players.
 }}
 
 // ############################################################################
@@ -181,7 +181,7 @@ void saveToStdioFile(
         if (d.isAssignment) {
             word = word ~ "=" ~ acToString(d.skill);
         }
-        file.writeln(IoLine.Bang(d.when, d.by, word, d.toWhichLix));
+        file.writeln(IoLine.Bang(d.when, d.by, word, d.toWhom.id));
     }
 
     bool okToSave(in Level l)
@@ -239,6 +239,8 @@ unittest
         assert (r._plies.len == 5);
         assert (r._plies[0].when == 125);
         assert (r._plies[0].skill == Ac.climber);
+        assert (r._plies[0].toWhom.id == 0);
+        assert (r._plies[0].toWhom.owner == Style.yellow);
         assert (r.players.length == 1);
         assert (r.players[PlNr(0)].name == "TestName");
         assert (r.players[PlNr(0)].style == Style.yellow);

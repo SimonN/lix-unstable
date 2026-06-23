@@ -22,7 +22,7 @@ import basics.topology;
 import graphic.torbit;
 import physics.gadget;
 import hardware.tharsis;
-import net.repdata;
+import net.ply;
 import net.style;
 import physics.tribe;
 import physics.tribes;

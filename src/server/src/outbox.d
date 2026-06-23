@@ -12,9 +12,8 @@ module net.server.outbox;
  * (that will call the enet API) to which the server (as Outbox) forwards.
  */
 
-import net.repdata;
 import net.permu;
-import net.plnr;
+import net.ply;
 import net.profile;
 import net.structs;
 import net.versioning;

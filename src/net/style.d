@@ -6,7 +6,7 @@ import std.uni;
 enum Style : ubyte {
     garden, highlight, neutral,
     red, orange, yellow, green, blue, purple, grey, black,
-    max
+    unknownButTheReplayWillFixIt
 }
 
 nothrow Style stringToStyle(in string str) pure @safe

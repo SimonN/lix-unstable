@@ -163,7 +163,7 @@ version (unittest) {
         d.isNuke = false;
         d.when = phyu;
         d.skill = ac;
-        d.toWhichLix = 0;
+        d.toWhom = Name(Style.garden, 0);
         nurse.addPlyMaybeGoBack([d]);
     }
 

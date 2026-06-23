@@ -27,7 +27,6 @@ import basics.help;
 import basics.globals;
 import file.language;
 import net.name;
-import net.repdata;
 import net.style;
 import game.debris;
 import gui.console;

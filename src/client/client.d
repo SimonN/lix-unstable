@@ -2,8 +2,8 @@ module net.client.client;
 
 public import net.permu;
 public import net.plnr;
+public import net.ply;
 public import net.profile;
-public import net.repdata;
 public import net.style;
 public import net.versioning;
 
@@ -37,7 +37,7 @@ interface NetClientObserver {
     void onListOfExistingRooms(in RoomListEntry2022[]);
     void onLevelSelect(in string peerNameOfChooser, in ubyte[] data);
     void onGameStart(Permu);
-    void onPeerSendsPly(in Ply);
+    void onPeerSendsPly(in Ply); // Ply already contains a good toWhom.owner.
 
     // The server tells us how many milliseconds have passed.
     // The client adds his networking lag to that value, then calls the

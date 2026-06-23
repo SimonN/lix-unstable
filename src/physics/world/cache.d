@@ -14,7 +14,6 @@ import basics.alleg5 : OutOfVramException;
 import basics.globals : levelPixelsToWarn;
 import basics.topology;
 import file.replay;
-import net.repdata;
 import physics.world.world;
 
 enum DuringTurbo : bool { no = false, yes = true }

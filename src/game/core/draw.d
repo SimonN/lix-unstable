@@ -162,10 +162,10 @@ void drawLixHighlitByTweakerHover(Game game)
     if (! game._tweaker.hoversPly) {
         return;
     }
-    const id = game._tweaker.hoveredPly.toWhichLix;
+    const name = game._tweaker.hoveredPly.toWhom;
     // We assume that the tweaker will only ever appear in single-tribe games.
-    if (id < game.localTribe.lixvec.length) {
-        game.localTribe.lixvec[id].drawAgainHighlit();
+    if (name.id < game.localTribe.lixvec.length) {
+        game.localTribe.lixvec[name.id].drawAgainHighlit();
     }
 }
 

@@ -1,4 +1,4 @@
-module net.repdata;
+module net.ply;
 
 import std.bitmanip;
 import std.conv;
@@ -6,8 +6,10 @@ import std.exception;
 
 import net.packetid;
 import net.ac;
+public import net.name;
 public import net.phyu;
 public import net.plnr;
+public import net.style;
 
 enum RepAc : ubyte {
     NOTHING = 0,
@@ -23,7 +25,12 @@ struct Ply {
 
     bool isNuke; // Otherwise, it's an assignment.
     Ac skill; // Only meaningful if isAssignment().
-    int toWhichLix; // Only meaningful if isAssignment().
+
+    Name toWhom; // Only meaningful if isAssignment().
+    // In 0.10, we don't transmit toWhom.owner over the network.
+    // When a packet arrives, it has a 0 in that byte. Only the 3 bytes
+    // of toWhom.id are important. When the client puts the Ply
+    // into his replay, he should fill toWhom.owner.
 
     /*
      * lixShouldFace: Let's remember it, even if the assignment is unforced.
@@ -42,8 +49,10 @@ struct Ply {
         left
     }
 
+    static assert (Name.sizeof == int.sizeof, "0.10's Ply.len needs that");
+
     package enum len = by.sizeof + RepAc.sizeof + skill.sizeof
-                     + when.sizeof + toWhichLix.sizeof;
+                     + when.sizeof + toWhom.sizeof;
 
 pure nothrow @safe @nogc:
     bool isAssignment() const { return ! isNuke; }
@@ -108,7 +117,7 @@ struct PlyPacket {
         buf[2] = ply.toRepAc();
         buf[3] = ply.skill;
         buf[4 ..  8] = nativeToBigEndian!int(ply.when);
-        buf[8 .. 12] = nativeToBigEndian!int(ply.toWhichLix);
+        buf[8 .. 12] = nativeToBigEndian!int(ply.toWhom.id);
     }
 
     this(in ubyte[] buf) pure
@@ -118,7 +127,8 @@ struct PlyPacket {
             ||  buf[0] == PacketStoC.peerPly);
         ply.by = PlNr(buf[1]);
         ply.when = Phyu(bigEndianToNative!int(buf[4 .. 8]));
-        ply.toWhichLix = bigEndianToNative!int(buf[8 .. 12]);
+        ply.toWhom = Name(Style.unknownButTheReplayWillFixIt,
+                        bigEndianToNative!int(buf[8 .. 12]));
         ply.fromRepAc(buf[2]);
         try               ply.skill = buf[3].to!Ac;
         catch (Exception) ply.skill = Ac.nothing;

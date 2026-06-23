@@ -205,11 +205,5 @@ private bool shouldBeWhite(in PlyLine plyLine, in Optional!Name lix)
         return false;
     }
     return plyLine.isMouseHere
-        || (! lix.empty && lix.front.id == plyLine.ply.toWhichLix);
-    /*
-     * Style of lix needn't be equal. Reason: Passports know styles,
-     * but Plies don't know styles, they only know player numbers. The
-     * tweaker doesn't know how to get styles from player numbers, and it
-     * shouldn't have to do that in singleplayer anyway.
-     */
+        || (! lix.empty && lix.front == plyLine.ply.toWhom);
 }
