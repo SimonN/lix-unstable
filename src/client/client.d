@@ -1,7 +1,6 @@
 module net.client.client;
 
 public import net.permu;
-public import net.plnr;
 public import net.ply;
 public import net.profile;
 public import net.style;

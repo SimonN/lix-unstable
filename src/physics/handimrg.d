@@ -4,8 +4,8 @@ import std.algorithm;
 import std.range;
 
 import net.handicap;
-import net.profile;
 import net.plnr;
+import net.profile;
 import net.style;
 
 struct MergedHandicap {

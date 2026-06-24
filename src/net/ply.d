@@ -5,7 +5,7 @@ import std.conv;
 import std.exception;
 
 import net.packetid;
-import net.ac;
+public import net.ac;
 public import net.name;
 public import net.phyu;
 public import net.plnr;

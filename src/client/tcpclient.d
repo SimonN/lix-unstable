@@ -19,7 +19,6 @@ import net.handicap;
 import net.header;
 import net.packetid;
 import net.permu;
-import net.plnr;
 import net.profile;
 import net.structs;
 import net.style;
