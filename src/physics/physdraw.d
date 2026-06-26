@@ -34,7 +34,6 @@ import graphic.cutbit;
 import graphic.torbit;
 import graphic.internal; // must be initialized first
 import hardware.tharsis;
-import net.ac;
 import net.style;
 import net.phyu;
 import physics.job.cuber; // Cuber.cubeSize
@@ -155,7 +154,6 @@ class PhysicsDrawer {
 
 
 private:
-
     static Albit _mask;
 
     // this enumap is used by the terrain removers, not by the styled adders
@@ -170,8 +168,13 @@ private:
     FlaggedDeletion[] _delsForLand;
     FlaggedAddition[] _addsForLand;
 
+    enum int builderBrickXl  = 12;
+    enum int platformLongXl  = 8; // first brick
+    enum int platformShortXl = 6; // all bricks laid down while kneeling
+    enum int eitherBrickYl = 2;
+
     enum buiY  = 0;
-    enum cubeY = 3 * net.ac.brickYl;
+    enum cubeY = 3 * eitherBrickYl;
     enum remY  = cubeY + Cuber.cubeSize;
  	enum remYl = 32;
     enum ploY  = remY + remYl;
@@ -206,15 +209,14 @@ private:
         immutable build = (tc.type == TerrainAddition.Type.build);
         immutable plaLo = (tc.type == TerrainAddition.Type.platformLong);
         immutable plaSh = (tc.type == TerrainAddition.Type.platformShort);
-        immutable yl = (build || plaLo || plaSh) ? net.ac.brickYl
-                                                 : tc.cubeYl;
+        immutable yl = (build || plaLo || plaSh) ? eitherBrickYl : tc.cubeYl;
         immutable y  = build ? 0
-                     : plaLo ? 1 * net.ac.brickYl
-                     : plaSh ? 2 * net.ac.brickYl
+                     : plaLo ? 1 * eitherBrickYl
+                     : plaSh ? 2 * eitherBrickYl
                      : cubeY + Cuber.cubeSize - yl;
-        immutable xl = build ? net.ac.builderBrickXl
-                     : plaLo ? net.ac.platformLongXl
-                     : plaSh ? net.ac.platformShortXl
+        immutable xl = build ? builderBrickXl
+                     : plaLo ? platformLongXl
+                     : plaSh ? platformShortXl
                      :         Cuber.cubeSize;
         immutable x  = xl * tc.style;
     }
@@ -509,7 +511,7 @@ private:
         void drawBrick(in int x, in int y, in int xl,
             in Alcol light, in Alcol medium, in Alcol dark
         ) {
-            alias yl = brickYl;
+            alias yl = eitherBrickYl;
             rf(x,      y,      x+xl-1, y+1,  light);  // L L L L L M
             rf(x+1,    y+yl-1, x+xl,   y+yl, dark);   // M D D D D D
             rf(x,      y+yl-1, x+1,    y+yl, medium); // ^
@@ -553,11 +555,11 @@ private:
                 getCol(recol.xl - 3),
                 getCol(recol.xl - 2),
                 getCol(recol.xl - 1));
-            drawBrick(i * platformLongXl, brickYl, platformLongXl,
+            drawBrick(i * platformLongXl, eitherBrickYl, platformLongXl,
                 getCol(recol.xl - 3),
                 getCol(recol.xl - 2),
                 getCol(recol.xl - 1));
-            drawBrick(i * platformShortXl, 2 * brickYl, platformShortXl,
+            drawBrick(i * platformShortXl, 2 * eitherBrickYl, platformShortXl,
                 getCol(recol.xl - 3),
                 getCol(recol.xl - 2),
                 getCol(recol.xl - 1));

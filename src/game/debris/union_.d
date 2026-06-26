@@ -17,7 +17,6 @@ import game.debris.derived;
 import graphic.color;
 import graphic.internal;
 import graphic.torbit;
-import net.ac;
 import net.style;
 
 /*

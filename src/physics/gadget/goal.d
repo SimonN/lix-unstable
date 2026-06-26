@@ -13,7 +13,6 @@ import graphic.cutbit;
 import physics.gadget;
 import graphic.internal;
 import graphic.torbit;
-import net.ac;
 import net.phyu;
 import physics.tribe;
 import tile.occur;

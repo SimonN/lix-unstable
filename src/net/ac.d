@@ -12,11 +12,6 @@ import std.uni;
 enum int skillInfinity  = -1;
 enum int skillNumberMax = 999;
 
-enum int builderBrickXl  = 12;
-enum int platformLongXl  = 8; // first brick
-enum int platformShortXl = 6; // all bricks laid down while kneeling
-enum int brickYl         = 2;
-
 enum PhyuOrder {
     peaceful, // Least priority -- cannot affect other lix. Phyud last.
     adder,    // Worker that adds terrain. Adders may add in fresh holes.
