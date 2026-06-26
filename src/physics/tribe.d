@@ -19,7 +19,6 @@ import optional;
 import basics.globals;
 import basics.help;
 import basics.rect;
-import net.ac;
 import net.handicap;
 import net.ply;
 import physics.fracint;
