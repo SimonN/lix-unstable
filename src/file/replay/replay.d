@@ -137,6 +137,13 @@ public:
             return (_plies.length > 0) ? _plies[$-1].when : Phyu(0);
         }
 
+        int numAssignmentsOfAfter(in Name ofWhom, in Phyu newerThanThis)
+        {
+            const ignored = this.plySliceBefore(Phyu(newerThanThis + 1));
+            const tail = _plies[ignored.length .. $];
+            return tail[].count!(p => p.toWhom == ofWhom) & 0x7FFF_FFFF;
+        }
+
         bool isOfflineSingleplayer() { return _players.length == 1; }
 
         bool isOnlineSingleplayer()
@@ -184,6 +191,7 @@ public:
     void addPlayer(PlNr nr, in Profile p)
     {
         _players[nr] = p;
+        this.fixAllOwners();
     }
 
     const pure nothrow @safe @nogc {

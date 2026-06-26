@@ -132,8 +132,10 @@ $gamePriorityInvert [%s] for hindmost lix.
 $gameQueueBuilder Click again to queue.
 $gameQueuePlatformer Click again to queue.
 $gameHoldToScroll Hold [%s] and move mouse to scroll.
-$gameClickToInsert Insert Mode: Click to insert.
-$gameClickToCancelReplay Replaying. Click to play from here.
+$gamePurelyInsert Insert a skill into the replay.
+$gameReplaceFuture1 Replace 1 future skill.
+$gameReplaceFutureN Replace %d future skills.
+$gameCancelReplay Replaying. Click to play from here.
 $gameFramestepOrQuit Rewind time (◀▮) or quit with [%s].
 $gameMaxTicksReached Maximal number of ticks (%s) reached. Rewind or quit.
 $gamePause Pause.
@@ -371,12 +373,8 @@ $optionHoldToScrollSpeed Scroll speed with scroll key|Scroll speed when you move
 $optionHoldToScrollInvert Invert hold-to-scroll|Scroll against the mouse movement while you hold the scrolling key.|The standard scrolling key is the right mouse button ⟁, see above to remap.
 $optionFastMovementFreesMouse Fast movement untraps mouse|The mouse leaves the Lix window when you move quickly against the sides.|If not checked, untrap the mouse by Alt+Tab.
 
-$optionRewindIsBrowse ◀▮ keeps assignments|When you rewind an assignment (with ◀▮ on Game Keys), it stays in the replay|and will play back later. To erase assignments, cut the replay (see below).
+$optionRewindIsBrowse ◀▮ keeps assignments|When you rewind an assignment (with ◀▮ on Game Keys), it stays in the replay|and will play back later. To erase assignments, click into the air.
 $optionRewindIsUndo ◀▮ erases assignments|Rewind (◀▮ on Game Keys) is undo: Rewound assignments are|immediately erased from the replay. You won't enter replay mode.
-$optionWhenTweakerHidden When Tweaker is Hidden:|When you start a singleplayer game, the Tweaker starts hidden.|Show/hide the Tweaker with a panel button (see Game Keys).
-$optionWhenTweakerShown When Tweaker is Shown:|These controls apply while the Tweaker is shown.|Show/hide the Tweaker with a panel button (see Game Keys).
-$optionAirClicksCut Air Clicks Interrupt|Air clicks interrupt the replay, i.e., erase all future assignments for all lix.|If not checked, air clicks do nothing. Erase assignments via the Tweaker.
-$optionInsertAssignments Insert Assignments|After ◀▮, assigning skills preserves the future of other lix.|If not checked, an assignment first interrupts the replay, i.e., cuts all lix' future.
 
 $optionKeyForceLeft Force left|Hold to assign skills to lix facing left.|This is useful in a dense bunch of lix.
 $optionKeyForceRight Force right|Hold to assign skills to lix facing right.|This is useful in a dense bunch of lix.

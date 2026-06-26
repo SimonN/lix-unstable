@@ -22,8 +22,9 @@ import hardware.mousecur;
 import hardware.sound;
 import net.name;
 
-package void
-calcPassive(
+package:
+
+void calcPassive(
     Game game,
     in UnderCursor underCursor,
 ) { with (MouseCursor)
@@ -37,17 +38,12 @@ calcPassive(
         game.activateOrDeactivateTweaker(arg);
     }
 
-    if (game.canWeClickAirNowToCutGlobalFuture) {
-        game._mapClickExplainer.suggestTooltip(Tooltip.ID.clickToCancelReplay);
-        mouseCursor.want(Sidekick.scissors);
-    }
     if (! underCursor.best.empty) {
-        mouseCursor.want(Shape.openSquare);
-        game._effect.localStyle = underCursor.best.front.lixxie.style;
-        if (game.canWeClickAirNowToCutGlobalFuture) {
-            game._mapClickExplainer.suggestTooltip(Tooltip.ID.clickToInsert);
-            mouseCursor.want(Sidekick.insert); // overwrites Sidekick.scissors
-        }
+        game.chooseCursorAndTooltipFor(underCursor.best.front);
+    }
+    else if (game.canWeClickAirNowToCutGlobalFuture) {
+        game._mapClickExplainer.suggestTooltip(Tooltip.ID.cancelReplay);
+        mouseCursor.want(Sidekick.scissors);
     }
     mouseCursor.want(game.map.isHoldScrolling ? Arrows.scroll
         : forcingLeft ? Arrows.left
@@ -62,7 +58,24 @@ calcPassive(
     }
 }}
 
+///////////////////////////////////////////////////////////////////////////////
+
 private:
+
+void chooseCursorAndTooltipFor(Game game, in Assignee best)
+{
+    mouseCursor.want(MouseCursor.Shape.openSquare);
+    game._effect.localStyle = best.name.owner;
+
+    if (game.canAssignTo(best) && game.canWeClickAirNowToCutGlobalFuture) {
+        mouseCursor.want(MouseCursor.Sidekick.insert);
+        game._mapClickExplainer.suggestTooltip(Tooltip.ID.purelyInsert);
+        const n = game.nurse.numFutureAssignmentsOf(best.name);
+        if (n >= 1) {
+            game._mapClickExplainer.suggestNumFuturePliesToReplace(n);
+        }
+    }
+}
 
 void activateOrDeactivateTweaker(Game game, in Optional!Name toHighlight)
 {

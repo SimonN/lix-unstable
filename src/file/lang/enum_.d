@@ -125,8 +125,10 @@ enum Lang {
     gameQueueBuilder,
     gameQueuePlatformer,
     gameHoldToScroll,
-    gameClickToInsert,
-    gameClickToCancelReplay,
+    gamePurelyInsert,
+    gameReplaceFuture1,
+    gameReplaceFutureN,
+    gameCancelReplay,
     gameFramestepOrQuit,
     gameMaxTicksReached,
     gamePause,
@@ -347,10 +349,6 @@ enum Lang {
 
     optionRewindIsBrowse,
     optionRewindIsUndo,
-    optionWhenTweakerHidden,
-    optionWhenTweakerShown,
-    optionAirClicksCut,
-    optionInsertAssignments,
 
     optionKeyForceLeft,
     optionKeyForceRight,

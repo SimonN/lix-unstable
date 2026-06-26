@@ -155,7 +155,7 @@ public:
             parseFoundTranslation(converted.value, translFromFile);
         }
         else {
-            langlog("Unnecessary line: %s", keyFromFile);
+            langlog("Unnecessary: %s", keyFromFile);
         }
     }
 
@@ -190,7 +190,7 @@ public:
         foreach (Lang id, ref Word word; words) {
             if (word.transl.length > 0)
                 continue;
-            langlog("Missing translation: %s", id.idName);
+            langlog("Missing: %s", id.idName);
             words[id].transl = "!" ~ id.idName ~ "!";
         }
         foreach (Ac ac, ref SkillTranslation tr; skills) {

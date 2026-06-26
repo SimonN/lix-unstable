@@ -59,11 +59,6 @@ public:
 
     Phyu now() const { return _model.cs.age; }
 
-    bool hasFuturePlies() const
-    {
-        return constReplay.latestPhyu > now;
-    }
-
     final const pure nothrow @safe @nogc {
         const(Replay) constReplay() const { return _replay; }
         auto stateForUI() { return cs; }

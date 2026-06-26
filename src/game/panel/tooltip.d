@@ -50,14 +50,15 @@ struct Tooltip {
         queueBuilder = 0x8000,
         queuePlatformer = 0x1_0000,
         holdToScroll = 0x2_0000,
-        clickToInsert = 0x4_0000,
-        clickToCancelReplay = 0x8_0000,
-        framestepOrQuit = 0x20_0000,
+        purelyInsert = 0x10_0000,
+        // replaceFuture is implemented in game.core.tooltip directly.
+        cancelReplay = 0x2000_0000,
+        framestepOrQuit = 0x4000_0000,
     }
 
     static string format(IdSet manyIDs) nothrow
     {
-        for (int i = 1; i <= ID.max; i *= 2)
+        for (uint i = 1; i != 0 /* means i != 2^32 */; i *= 2)
             if (manyIDs & i) {
                 try
                     return Tooltip.format((manyIDs & i).to!ID);
@@ -114,8 +115,9 @@ Tooltip makeTooltip(Tooltip.ID id) nothrow @nogc @safe
         case ID.queueBuilder: return none(Lang.gameQueueBuilder);
         case ID.queuePlatformer: return none(Lang.gameQueuePlatformer);
         case ID.holdToScroll: return key(Lang.gameHoldToScroll, keyScroll);
-        case ID.clickToCancelReplay: return none(Lang.gameClickToCancelReplay);
-        case ID.clickToInsert: return none(Lang.gameClickToInsert);
+        case ID.purelyInsert: return none(Lang.gamePurelyInsert);
+        // gameReplaceFuture1/2 are implemented in game.core.tooltip directly.
+        case ID.cancelReplay: return none(Lang.gameCancelReplay);
 
         case ID.framestepOrQuit:
             return key(Lang.gameFramestepOrQuit, keyGameExit);

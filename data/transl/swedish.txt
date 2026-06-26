@@ -132,8 +132,10 @@ $gamePriorityInvert [%s] för lix längst bak
 $gameQueueBuilder Klicka igen för att kölägga.
 $gameQueuePlatformer Klicka igen för att kölägga.
 $gameHoldToScroll Håll [%s] och rör musen för att rulla.
-$gameClickToInsert Infogningsläge: Klicka för att infoga.
-$gameClickToCancelReplay Repris är på. Klicka i luften för att spela.
+$gamePurelyInsert Lägg till en förmåga i reprisen.
+$gameReplaceFuture1 Ersätt 1 framtida förmåga.
+$gameReplaceFutureN Ersätt %d framtida förmågor.
+$gameCancelReplay Repris är på. Klicka i luften för att spela.
 $gameFramestepOrQuit Spola tillbaka tid (◀▮) eller avsluta med [%s].
 $gameMaxTicksReached Maximalt antal ticks (%s) uppnått. Spola tillbaka eller avsluta.
 $gamePause Pausat.
@@ -371,12 +373,8 @@ $optionHoldToScrollSpeed Rullhastighet med rulltangent|Rullhastighet när du rö
 $optionHoldToScrollInvert Invertera håll-för-att-rulla|Rulla mot musrörelsen samtidigt som du håller rulltangenten.|Som standard är rulltangenten höger musknapp ⟁, se ovanför för att ändra.
 $optionFastMovementFreesMouse Snabb rörelse frigör mus|Musen lämnar Lix-fönstret då du fort rör dig mot sidorna.|Om inte förbockat kan du frigöra musen med Alt+Tab.
 
-$optionRewindIsBrowse ◀▮ behåller tilldelningen|When you rewind an assignment (with ◀▮ on Game Keys), it stays in the replay|and will play back later. To erase assignments, cut the replay (see below).
+$optionRewindIsBrowse ◀▮ behåller tilldelningen|When you rewind an assignment (with ◀▮ on Game Keys), it stays in the replay|and will play back later. To erase assignments, click into the air.
 $optionRewindIsUndo ◀▮ raderar tilldelningen|Rewind (◀▮ on Game Keys) is undo: Rewound assignments are|immediately erased from the replay. You won't enter replay mode.
-$optionWhenTweakerHidden Utan repristrimmare:|When you start a singleplayer game, the Tweaker starts hidden.|Show/hide the Tweaker with a panel button (see Game Keys).
-$optionWhenTweakerShown Med repristrimmare:|These controls apply while the Tweaker is shown.|Show/hide the Tweaker with a panel button (see Game Keys).
-$optionAirClicksCut Luftklick avbryter repris|Air clicks interrupt the replay, i.e., erase all future assignments for all lix.|If not checked, air clicks do nothing. Erase assignments via the Tweaker.
-$optionInsertAssignments Infoga ny tilldelningen|After ◀▮, assigning skills preserves the future of other lix.|If not checked, an assignment first interrupts the replay, i.e., cuts all lix' future.
 
 $optionKeyForceLeft Tvinga vänster|Håll för att tildela förmågor till vänsterriktade lix.|Detta är användbart i en tät grupp av lix.
 $optionKeyForceRight Tvinga höger|Håll för att tilldela förmågor till högerriktade lix.|Detta är användbart i en tät grupp av lix.

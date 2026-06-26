@@ -34,6 +34,7 @@ import file.replay;
 import opt = file.option.allopts;
 
 import game.argscrea;
+import game.core.assignee;
 import game.core.calc;
 import game.core.chatarea;
 import game.core.draw;
@@ -227,6 +228,15 @@ package:
         return view.canInterruptReplays
             && nurse.hasFuturePlies
             && isMouseOnLand;
+    }
+
+    bool canAssignTo(in Assignee foundLix) const
+    {
+        return view.canAssignSkills
+            && pan.chosenSkill != Ac.nothing
+            && foundLix.facingOkay
+            && foundLix.prio.isAssignable
+            && ! localTribe.hasNuked;
     }
 
     auto cs() const pure nothrow @safe @nogc
