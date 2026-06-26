@@ -24,6 +24,7 @@ private:
     struct Tips {
         Tooltip.IdSet idset = 0;
         Ac ac = Ac.nothing;
+        int numFutureCuts = 0;
     }
 
 public:
@@ -55,6 +56,15 @@ public:
     {
         _wantedByCaller.idset |= set;
         if ((set & _alreadyRendered.idset) == set) {
+            return;
+        }
+        reqDraw();
+    }
+
+    void suggestNumFuturePliesToReplace(in int n)
+    {
+        _wantedByCaller.numFutureCuts = n;
+        if (_wantedByCaller.numFutureCuts == _alreadyRendered.numFutureCuts) {
             return;
         }
         reqDraw();
@@ -99,13 +109,8 @@ private:
         }
         _labelMap.hide();
         _labelPanel.hide();
-
-        string s = Tooltip.format(_wantedByCaller.idset);
-        if (s == "" && _wantedByCaller.ac != Ac.nothing) {
-            s = skillTransl(_wantedByCaller.ac).buttonTooltip;
-        }
         bestLabelForWanted.show();
-        bestLabelForWanted.text = s;
+        bestLabelForWanted.text = formatBestTip();
         _alreadyRendered = _wantedByCaller;
         reqDraw();
     }
@@ -115,6 +120,23 @@ private:
         return Tooltip.isAboutMapClicks(_wantedByCaller.idset)
             ? _labelMap : _labelPanel;
     }
+
+    string formatBestTip() nothrow
+    {
+        const numFu = _wantedByCaller.numFutureCuts;
+        if (numFu == 1) {
+            return Lang.gameReplaceFuture1.transl;
+        }
+        else if (numFu >= 2) {
+            return Lang.gameReplaceFutureN.translf(numFu);
+        }
+        const string s = Tooltip.format(_wantedByCaller.idset);
+        if (s != "" || _wantedByCaller.ac == Ac.nothing) {
+            return s;
+        }
+        return skillTransl(_wantedByCaller.ac).buttonTooltip;
+    }
+
 
     void drawDarkenedBg(in Label la)
     {

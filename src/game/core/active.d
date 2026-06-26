@@ -90,15 +90,6 @@ void cutSingleLixFutureFromReplay(Game game, in Name ofWhom)
 
 private:
 
-bool canAssignTo(Game game, in Assignee foundLix)
-{
-    return game.view.canAssignSkills
-        && game.pan.chosenSkill != Ac.nothing
-        && foundLix.facingOkay
-        && foundLix.prio.isAssignable
-        && ! game.localTribe.hasNuked;
-}
-
 Ply newPlyForNextPhyu(Game game, in Style styleOfAssignee)
 {
     Ply ret;

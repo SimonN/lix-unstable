@@ -24,6 +24,16 @@ class InteractiveNurse : SaveStatingNurse {
         }
     }
 
+    bool hasFuturePlies() const
+    {
+        return constReplay.latestPhyu > now;
+    }
+
+    int numFutureAssignmentsOf(in Name ofWhom) const
+    {
+        return replay.numAssignmentsOfAfter(ofWhom, now);
+    }
+
     void terminateSingleplayerWithNuke()
     {
         if (everybodyOutOfLix)
