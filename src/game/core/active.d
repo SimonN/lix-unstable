@@ -48,6 +48,10 @@ do {
     ) {
         return;
     }
+    if (game._replayWasRecentlyLoadedFromDisk) {
+        game._replayWasRecentlyLoadedFromDisk = false;
+        return;
+    }
     if (found.best.empty) {
         if (game.canWeClickAirNowToCutGlobalFuture) {
             game.nurse.cutGlobalFutureFromReplay();

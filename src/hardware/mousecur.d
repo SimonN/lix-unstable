@@ -42,6 +42,8 @@ public:
         none,
         scissors,
         insert,
+        unused,
+        letterR,
     }
 
     void want(in Shape s) pure nothrow @safe @nogc { _shape = s; }

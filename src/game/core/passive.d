@@ -38,11 +38,15 @@ void calcPassive(
         game.activateOrDeactivateTweaker(arg);
     }
 
+    if (game._replayWasRecentlyLoadedFromDisk) {
+        mouseCursor.want(Sidekick.letterR);
+    }
     if (! underCursor.best.empty) {
         game.chooseCursorAndTooltipFor(underCursor.best.front);
     }
     else if (game.canWeClickAirNowToCutGlobalFuture) {
         game._mapClickExplainer.suggestTooltip(Tooltip.ID.cancelReplay);
+        // Overwrites Sidekick.letterR, which is good
         mouseCursor.want(Sidekick.scissors);
     }
     mouseCursor.want(game.map.isHoldScrolling ? Arrows.scroll

@@ -98,6 +98,7 @@ package:
     Tweaker _tweaker; // Never null, but often hidden
     ChatArea _chatArea;
     SplatRuler _splatRuler;
+    bool _replayWasRecentlyLoadedFromDisk;
     bool _gotoMainMenu;
 
 private:
@@ -116,6 +117,7 @@ public:
     }
     do {
         level = args.level;
+        _replayWasRecentlyLoadedFromDisk = ! args.loadedReplay.empty;
         if (args.loadedReplay.empty) {
             commonConstructor(generateFreshReplay(some(args.levelFilename)));
         }
@@ -133,6 +135,7 @@ public:
         level = client.level;
         _netClient = client;
         _netClient.register(this);
+        _replayWasRecentlyLoadedFromDisk = false;
         commonConstructor(generateFreshReplay(no!Filename));
     }
 
@@ -226,6 +229,7 @@ package:
     bool canWeClickAirNowToCutGlobalFuture() const
     {
         return view.canInterruptReplays
+            && ! _replayWasRecentlyLoadedFromDisk
             && nurse.hasFuturePlies
             && isMouseOnLand;
     }
