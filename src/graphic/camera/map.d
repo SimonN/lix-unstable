@@ -73,7 +73,7 @@ public:
         }
     }
 
-    const pure {
+    const pure nothrow @safe @nogc {
         bool scrollable()
         {
             const c = chosenCam();
@@ -205,6 +205,21 @@ void calcZoomAndScrolling()
     calcHoldScrolling(chosenCam);
 }
 
+private int edgeScrollSpeedForCurrentZoom() const nothrow @safe @nogc
+{
+    float scrd = opt.scrollSpeedEdge.value;
+    if (hardware.mouse.mouseHeldRight) {
+        scrd *= 4;
+    }
+    scrd *= _cams[CamSize.fullWidth].targetLen.x;
+    scrd /= 640;
+    scrd /= zoom;
+    if (scrd < 1) {
+        scrd = 1;
+    }
+    return scrd.roundInt;
+}
+
 private void calcEdgeScrolling(Camera cam)
 {
     _suggestTooltip = false;
@@ -212,19 +227,13 @@ private void calcEdgeScrolling(Camera cam)
         || opt.scrollSpeedEdge.value <= 0)
         return;
 
-    float scrd = opt.scrollSpeedEdge.value;
-    if (hardware.mouse.mouseHeldRight())
-        scrd *= 4;
-    scrd /= zoom;
-    if (scrd < 1)
-        scrd = 1;
+    immutable a = edgeScrollSpeedForCurrentZoom();
     immutable dxl = hardware.display.displayXl - 1;
     immutable dyl = hardware.display.displayYl - 1;
-    immutable int a = scrd.roundInt;
     void msg(bool b) { _suggestTooltip = _suggestTooltip || b; }
 
+    Point mov = Point(0, 0);
     with (hardware.mouse) {
-        .Point mov = .Point(0, 0);
         // Deliberately, we suggest the tooltip when we could scroll into
         // the opposite direction, not into the scrolling direction. The idea
         // is that I don't want the tooltip at the bottom edge when you can't
@@ -233,8 +242,8 @@ private void calcEdgeScrolling(Camera cam)
         if (mouseX == dxl) { mov += .Point(a, 0); msg(cam.mayScrollLeft); }
         if (mouseY == 0)   { mov -= .Point(0, a); msg(cam.mayScrollDown); }
         if (mouseY == dyl) { mov += .Point(0, a); msg(cam.mayScrollUp); }
-        cam.focus = cam.focus + mov;
     }
+    cam.focus = cam.focus + mov;
 }
 
 private void calcHoldScrolling(Camera cam)
