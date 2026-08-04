@@ -226,12 +226,23 @@ package:
         return ! pan.isMouseHere && ! _tweaker.isMouseHere;
     }
 
-    bool canWeClickAirNowToCutGlobalFuture() const
+    // An "Aircut" is the act of clicking air to cancel the replay,
+    // i.e., to remove all future assignments by clicking air.
+    bool wouldWeAircutIfOptionAllowed() const
     {
         return view.canInterruptReplays
             && ! _replayWasRecentlyLoadedFromDisk
             && nurse.hasFuturePlies
             && isMouseOnLand;
+    }
+
+    // See wouldWeAircutOptionAllows. This finally heeds the options.
+    bool willWeAircut() const
+    {
+        return wouldWeAircutIfOptionAllowed
+            && (_tweaker.shown
+                ? opt.airClicksCutWhenTweakerShown.value
+                : opt.airClicksCutWhenTweakerHidden.value);
     }
 
     bool isInsertMode() const

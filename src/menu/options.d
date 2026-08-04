@@ -271,8 +271,10 @@ void populateGameControls()
             Lang.optionRewindIsBrowse, true,
             Lang.optionRewindIsUndo, false),
         fac.factory!HeadingAndBoolOptions(Lang.optionWhenTweakerHidden,
+            airClicksCutWhenTweakerHidden,
             insertAssignmentsWhenTweakerHidden),
         fac.factory!HeadingAndBoolOptions(Lang.optionWhenTweakerShown,
+            airClicksCutWhenTweakerShown,
             insertAssignmentsWhenTweakerShown),
     ];
     fac = facRight();

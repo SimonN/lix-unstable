@@ -96,6 +96,8 @@ UserOption!bool holdToScrollInvert;
 UserOption!bool fastMovementFreesMouse;
 
 UserOption!bool replayAfterFrameBack;
+UserOption!bool airClicksCutWhenTweakerHidden;
+UserOption!bool airClicksCutWhenTweakerShown;
 UserOption!bool insertAssignmentsWhenTweakerHidden;
 UserOption!bool insertAssignmentsWhenTweakerShown;
 
@@ -283,6 +285,10 @@ do {
 
     replayAfterFrameBack = newOpt("replayAfterFrameBack",
         Lang.optionRewindIsBrowse, true);
+    airClicksCutWhenTweakerHidden = newOpt("airClicksCutWhenTweakerHidden",
+        Lang.optionAirClicksCut, true);
+    airClicksCutWhenTweakerShown = newOpt("airClicksCutWhenTweakerShown",
+        Lang.optionAirClicksCut, true);
     insertAssignmentsWhenTweakerHidden = newOpt("insertAssignmentsWhenTweakerHidden",
         Lang.optionInsertAssignments, false);
     insertAssignmentsWhenTweakerShown = newOpt("insertAssignmentsWhenTweakerShown",

@@ -53,7 +53,7 @@ do {
         return;
     }
     if (found.best.empty) {
-        if (game.canWeClickAirNowToCutGlobalFuture) {
+        if (game.willWeAircut) {
             game.nurse.cutGlobalFutureFromReplay();
         }
         return;

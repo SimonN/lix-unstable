@@ -44,7 +44,7 @@ void calcPassive(
     if (! underCursor.best.empty) {
         game.chooseCursorAndTooltipFor(underCursor.best.front);
     }
-    else if (game.canWeClickAirNowToCutGlobalFuture) {
+    else if (game.willWeAircut) {
         game._mapClickExplainer.suggestTooltip(Tooltip.ID.cancelReplay);
         // Overwrites Sidekick.letterR, which is good
         mouseCursor.want(Sidekick.scissors);
@@ -71,7 +71,7 @@ void chooseCursorAndTooltipFor(Game game, in Assignee best)
     mouseCursor.want(MouseCursor.Shape.openSquare);
     game._effect.localStyle = best.name.owner;
 
-    if (! game.canAssignTo(best) || ! game.canWeClickAirNowToCutGlobalFuture) {
+    if (! game.canAssignTo(best) || ! game.wouldWeAircutIfOptionAllowed) {
         return;
     }
     if (game.isInsertMode) {
