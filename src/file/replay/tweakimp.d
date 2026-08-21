@@ -162,6 +162,8 @@ TweakResult moveThisLaterImpl(
     ret.somethingChanged = true;
     ret.firstDifference = oldPhyu;
     ret.goodPhyuToView = newPhyu;
+    ret.wasPlyAdded = true;
+    ret.theAddedPly = rep._plies[id];
     return ret;
 }
 
@@ -181,6 +183,8 @@ TweakResult moveThisEarlierImpl(
     ret.somethingChanged = true;
     ret.firstDifference = newPhyu;
     ret.goodPhyuToView = newPhyu; // Yes, same as firstDifference
+    ret.wasPlyAdded = true;
+    ret.theAddedPly = rep._plies[id];
     return ret;
 }
 
@@ -207,6 +211,7 @@ TweakResult cutFutureOfOneLixImpl(
     ret.firstDifference = rq.what.when;
     ret.goodPhyuToView = Phyu(0); // Don't jump weirdly into the future.
     // Reason: We erased the future, we didn't put something exciting there.
+    ret.wasPlyAdded = false;
     return ret;
 }
 

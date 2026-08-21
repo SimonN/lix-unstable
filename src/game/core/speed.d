@@ -28,7 +28,8 @@ void dispatchTweaks(Game game)
      * (also responsibility of pan).
      */
     game.pan.pause(true);
-    game.nurse.tweakReplayRecomputePhysics(game._tweaker.suggestedChange);
+    game.nurse.tweakReplayRecomputePhysics(
+        game._tweaker.suggestedChange, game._effect);
     game.setLastPhyuToNow(); // Updates skill numbers in panel.
 }
 

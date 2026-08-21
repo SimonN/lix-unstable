@@ -140,6 +140,15 @@ public:
         _alreadyPlayed.remove(_alreadyPlayed.upperBound(e));
     }
 
+    void deleteAssignmentsFor(in Phyu upd, in Name pa)
+    {
+        // For the standardization on Sound.assignByClick regardless of
+        // the assignment source, see the comment in addAssignment().
+        _alreadyPlayed.removeKey(
+            Effect(upd, pa, Sound.assignByClick, Loudness.loud),
+            Effect(upd, pa, Sound.assignByClick, Loudness.quiet));
+    }
+
     void quicksave()
     {
         if (_playedWhenLastQuicksaved != _alreadyPlayed)

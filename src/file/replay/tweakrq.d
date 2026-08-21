@@ -77,4 +77,7 @@ struct TweakResult {
      * Any later phyus than goodPhyuToView are also fine to view.
      */
     Phyu goodPhyuToView;
+
+    bool wasPlyAdded; // If false, ignore theAddedPly.
+    Ply theAddedPly; // Callers may want to force it into the effect manager.
 }

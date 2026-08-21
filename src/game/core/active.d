@@ -87,7 +87,8 @@ void cutSingleLixFutureFromReplay(Game game, in Name ofWhom)
 {
     game.nurse.tweakReplayRecomputePhysics(ChangeRequest(
         Ply(PlNr(0), game.nurse.now, false, Ac.nothing, ofWhom),
-        ChangeVerb.cutFutureOfOneLix));
+        ChangeVerb.cutFutureOfOneLix),
+        game._effect);
 }
 
 // ############################################################################

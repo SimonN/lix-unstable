@@ -101,12 +101,21 @@ public:
         framestepBackTo(Phyu(vec.map!(data => data.when).reduce!min - 1));
     }
 
-    void tweakReplayRecomputePhysics(in ChangeRequest rq)
-    {
+    void tweakReplayRecomputePhysics(
+        in ChangeRequest rq,
+        EffectManager effect, // For removing old effects. Still odd design.
+    ) {
         immutable Phyu current = now;
         immutable tweakResult = replay.tweak(rq);
         if (! tweakResult.somethingChanged) {
             return;
+        }
+        if (tweakResult.wasPlyAdded) {
+            immutable ply = tweakResult.theAddedPly;
+            effect.deleteAssignmentsFor(ply.when, ply.toWhom);
+            // Otherwise, back-and-forth tweaking would only display the
+            // arrow and play the replayed assignment sound the first time
+            // we tweak it to a given physics update.
         }
         framestepBackTo(Phyu(tweakResult.firstDifference - 1));
         updateTo(max(current, tweakResult.goodPhyuToView));
