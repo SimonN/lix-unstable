@@ -49,7 +49,6 @@ struct Tooltip {
         priorityInvert = 0x4000,
         queueBuilder = 0x8000,
         queuePlatformer = 0x1_0000,
-        holdToScroll = 0x2_0000,
         purelyInsert = 0x10_0000,
         // replaceFuture is implemented in game.core.tooltip directly.
         cancelReplay = 0x2000_0000,
@@ -114,7 +113,6 @@ Tooltip makeTooltip(Tooltip.ID id) nothrow @nogc @safe
             return key(Lang.gamePriorityInvert, keyPriorityInvert);
         case ID.queueBuilder: return none(Lang.gameQueueBuilder);
         case ID.queuePlatformer: return none(Lang.gameQueuePlatformer);
-        case ID.holdToScroll: return key(Lang.gameHoldToScroll, keyScroll);
         case ID.purelyInsert: return none(Lang.gamePurelyInsert);
         // gameReplaceFuture1/2 are implemented in game.core.tooltip directly.
         case ID.cancelReplay: return none(Lang.gameCancelReplay);

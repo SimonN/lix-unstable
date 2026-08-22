@@ -30,7 +30,6 @@ class MapAndCamera {
 private:
     Point _scrollGrabbed;
     bool _isHoldScrolling;
-    bool _suggestTooltip;
 
     Enumap!(CamSize, Camera) _cams;
     CamSize _chosenCam = CamSize.fullWidth;
@@ -81,7 +80,6 @@ public:
                 || c.mayScrollLeft() || c.mayScrollRight();
         }
         bool isHoldScrolling() { return _isHoldScrolling; }
-        bool suggestHoldScrollingTooltip() { return _suggestTooltip; }
         float zoom() { return chosenCam.zoom; }
     }
 
@@ -222,7 +220,6 @@ private int edgeScrollSpeedForCurrentZoom() const nothrow @safe @nogc
 
 private void calcEdgeScrolling(Camera cam)
 {
-    _suggestTooltip = false;
     if (! scrollable || ! hardware.mouse.hardwareMouseInsideWindow
         || opt.scrollSpeedEdge.value <= 0)
         return;
@@ -230,18 +227,13 @@ private void calcEdgeScrolling(Camera cam)
     immutable a = edgeScrollSpeedForCurrentZoom();
     immutable dxl = hardware.display.displayXl - 1;
     immutable dyl = hardware.display.displayYl - 1;
-    void msg(bool b) { _suggestTooltip = _suggestTooltip || b; }
 
     Point mov = Point(0, 0);
     with (hardware.mouse) {
-        // Deliberately, we suggest the tooltip when we could scroll into
-        // the opposite direction, not into the scrolling direction. The idea
-        // is that I don't want the tooltip at the bottom edge when you can't
-        // scroll down, but tooltip should persist after scrolled all the way.
-        if (mouseX == 0)   { mov -= .Point(a, 0); msg(cam.mayScrollRight); }
-        if (mouseX == dxl) { mov += .Point(a, 0); msg(cam.mayScrollLeft); }
-        if (mouseY == 0)   { mov -= .Point(0, a); msg(cam.mayScrollDown); }
-        if (mouseY == dyl) { mov += .Point(0, a); msg(cam.mayScrollUp); }
+        if (mouseX == 0)   { mov -= .Point(a, 0); }
+        if (mouseX == dxl) { mov += .Point(a, 0); }
+        if (mouseY == 0)   { mov -= .Point(0, a); }
+        if (mouseY == dyl) { mov += .Point(0, a); }
     }
     cam.focus = cam.focus + mov;
 }

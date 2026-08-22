@@ -131,7 +131,6 @@ $gameForceRight [%s] for right-facing.
 $gamePriorityInvert [%s] for hindmost lix.
 $gameQueueBuilder Click again to queue.
 $gameQueuePlatformer Click again to queue.
-$gameHoldToScroll Hold [%s] and move mouse to scroll.
 $gamePurelyInsert Insert a skill into the replay.
 $gameReplaceFuture1 Replace 1 future skill.
 $gameReplaceFutureN Replace %d future skills.

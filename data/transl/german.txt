@@ -127,7 +127,6 @@ $gameForceRight [%s] für Rechtsläufer.
 $gamePriorityInvert [%s] für hintere Lix.
 $gameQueueBuilder Klicke zum Vormerken.
 $gameQueuePlatformer Klicke zum Vormerken.
-$gameHoldToScroll Halte [%s] und bewege Maus zum Scrollen.
 $gamePurelyInsert Füge eine Fähigkeit ins Replay ein.
 $gameReplaceFuture1 Ersetze 1 zukünftige Fähigkeit.
 $gameReplaceFutureN Ersetze %d zukünftige Fähigkeiten.

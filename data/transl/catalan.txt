@@ -131,7 +131,6 @@ $gameForceRight [%s] per encarar a la dreta.
 $gamePriorityInvert [%s] pel darrer lix.
 $gameQueueBuilder Torna a fer clic per posar a la cua.
 $gameQueuePlatformer Torna a fer clic per posar a la cua.
-$gameHoldToScroll Fes clic i manté premut [%s] i mou el ratolí per desplaçar.
 $gamePurelyInsert Inseriu una habilitat a la repetició.
 $gameReplaceFuture1 Substitueix 1 habilitat futura.
 $gameReplaceFutureN Substitueix %d habilitats futures.

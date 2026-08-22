@@ -54,9 +54,6 @@ void calcPassive(
         : forcingRight ? Arrows.right
         : Arrows.none);
 
-    if (game.map.suggestHoldScrollingTooltip) {
-        game._panelExplainer.suggestTooltip(Tooltip.ID.holdToScroll);
-    }
     if (game.pan.highlightGoalsExecute) {
         game._altickHighlightGoalsUntil = timerTicks + ticksPerSecond * 3 / 2;
     }

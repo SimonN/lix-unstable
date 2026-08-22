@@ -124,7 +124,6 @@ enum Lang {
     gamePriorityInvert,
     gameQueueBuilder,
     gameQueuePlatformer,
-    gameHoldToScroll,
     gamePurelyInsert,
     gameReplaceFuture1,
     gameReplaceFutureN,

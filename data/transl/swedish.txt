@@ -131,7 +131,6 @@ $gameForceRight [%s] för att vända till höger.
 $gamePriorityInvert [%s] för lix längst bak
 $gameQueueBuilder Klicka igen för att kölägga.
 $gameQueuePlatformer Klicka igen för att kölägga.
-$gameHoldToScroll Håll [%s] och rör musen för att rulla.
 $gamePurelyInsert Lägg till en förmåga i reprisen.
 $gameReplaceFuture1 Ersätt 1 framtida förmåga.
 $gameReplaceFutureN Ersätt %d framtida förmågor.
