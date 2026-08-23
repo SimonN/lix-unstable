@@ -87,7 +87,6 @@ UserOption!int splatRulerDesign;
 UserOption!int splatRulerSnapPixels;
 UserOption!bool paintTorusSeams;
 UserOption!bool ingameTooltips;
-UserOption!bool showFPS;
 
 UserOption!int mouseSpeed;
 UserOption!int scrollSpeedEdge;
@@ -270,12 +269,6 @@ do {
     splatRulerSnapPixels = newOpt("splatRulerSnapPixels", Lang.optionSplatRulerSnapPixels, 126);
     paintTorusSeams = newOpt("paintTorusSeams", Lang.optionPaintTorusSeams, false);
     ingameTooltips = newOpt("ingameTooltips", Lang.optionIngameTooltips, true);
-    version (assert) {
-        showFPS = newOpt("showFramesPerSecond", Lang.optionShowFPS, true);
-    }
-    else {
-        showFPS = newOpt("showFramesPerSecond", Lang.optionShowFPS, false);
-    }
 
     mouseSpeed = newOpt("mouseSpeed", Lang.optionMouseSpeed, mouseStandardDivisor);
     fastMovementFreesMouse = newOpt("fastMovementFreesMouse", Lang.optionFastMovementFreesMouse, true);

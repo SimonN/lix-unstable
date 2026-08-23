@@ -327,7 +327,6 @@ enum Lang {
     optionAllowBlurryZoom,
     optionPaintTorusSeams,
     optionIngameTooltips,
-    optionShowFPS,
     optionGuiColorRed,
     optionGuiColorGreen,
     optionGuiColorBlue,

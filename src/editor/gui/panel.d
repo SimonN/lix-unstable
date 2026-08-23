@@ -6,13 +6,11 @@ import std.range;
 import std.string;
 
 import editor.gui.custgrid;
-import file.option : showFPS;
 import file.filename; // currentFilenameOrNull
 import file.key.set;
 import file.language;
 import graphic.internal;
 import gui;
-import hardware.display; // FPS
 import hardware.keyboard;
 
 class EditorPanel : Element {
@@ -20,7 +18,6 @@ private:
     TextButton     _info;
     BitmapButton[] _buttons;
     TextButton[]   _textButtons;
-    Label          _fps;
     MutFilename    _currentFilenameOrNull; // null if unsaved new level
 
 public:
@@ -127,9 +124,7 @@ private:
     {
         _info = new TextButton(new Geom(0, 0, infoXl(), 20));
         _info.alignLeft = true;
-        _fps  = new Label(new Geom(4 + xlg - _info.xlg,
-                                   0, 100, 20, From.TOP_RIGHT));
-        addChildren(_info, _fps);
+        addChildren(_info);
     }
 
     int langToButtonXf(Lang l) const
@@ -202,13 +197,6 @@ private:
         assert (_info);
         _info.down = false;
         _info.text = "";
-        if (showFPS.value) {
-            _fps.text = "FPS: %d".format(displayFps);
-            // Prevent the text to smear over old text
-            _info.reqDraw();
-            // Stop the text from flickering, because it's not a child of _info
-            _fps.reqDraw();
-        }
     }
 
     void writeButtonTooltips()

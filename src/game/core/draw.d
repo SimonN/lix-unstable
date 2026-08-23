@@ -9,7 +9,6 @@ import std.typecons;
 
 import basics.alleg5;
 import basics.globals : ticksPerSecond;
-import file.option : showFPS;
 import game.core.assignee;
 import game.core.game;
 import game.panel.tooltip;

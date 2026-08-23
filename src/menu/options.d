@@ -222,7 +222,6 @@ void populateGraphics()
     fac.y = bottomHalfY;
     grp ~= [
         fac.factory!BoolOption(paintTorusSeams),
-        fac.factory!BoolOption(showFPS),
     ];
     fac = facRight();
     grp ~= [

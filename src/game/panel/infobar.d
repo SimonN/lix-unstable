@@ -9,7 +9,6 @@ import graphic.color;
 import physics.gadget;
 import graphic.internal;
 import gui;
-import hardware.display; // show fps
 import hardware.sound; // warn when too few lix alive to win
 import physics.job.builder;
 import physics.lixxie.lixxie;
@@ -26,7 +25,7 @@ private:
     string _hoveredGadget; // == "" when mouse isn't hovering over a gadget.
 
     CutbitElement _bOut, _bHatch;
-    Label _lOut, _lHatch, _targetDesc, _fps;
+    Label _lOut, _lHatch, _targetDesc;
 
 public:
     this(Geom g)
@@ -35,9 +34,7 @@ public:
         makeElements(_bHatch, _lHatch,   4, 60, 4);
         makeElements(_bOut,   _lOut,    60, 60, 3);
         _targetDesc = new Label(new Geom(190, 0, this.xlg - 190, this.ylg));
-        _fps = new Label(new Geom(
-            TextButton.textXFromLeft, 0, this.xlg, this.ylg, From.RIGHT));
-        addChildren(_targetDesc, _fps);
+        addChildren(_targetDesc);
     }
 
     void describeLixxie(
@@ -105,7 +102,6 @@ protected:
     override void drawOntoButton()
     {
         _targetDesc.text = formatTargetDesc();
-        _fps.text = formatFPS();
     }
 
     // Helper function to make children.
@@ -173,15 +169,6 @@ private:
         }
         s ~= ".";
         return s;
-    }
-
-    string formatFPS()
-    {
-        if (! opt.showFPS.value) {
-            return "";
-        }
-        return "%s %d   FPS: %d".format(
-            Lang.tweakerHeaderTick.transl, _age, displayFps);
     }
 }
 
