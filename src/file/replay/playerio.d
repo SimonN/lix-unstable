@@ -116,7 +116,8 @@ private:
     SingleProfileExporter _single;
 
 public:
-    this(const(Profile[PlNr]) src) pure nothrow @safe @nogc
+    // Declared @trusted due to https://github.com/dlang/dmd/issues/23676
+    this(const(Profile[PlNr]) src) pure nothrow @trusted @nogc
     {
         _source = src;
         if (_source.length == 0) {

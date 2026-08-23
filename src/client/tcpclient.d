@@ -105,12 +105,14 @@ public:
         chat.enetSendTo(_serverPeer);
     }
 
-    bool connected() const
+    // Declared @trusted due to https://github.com/dlang/dmd/issues/23676
+    bool connected() const @trusted
     {
         return _ourClient && _serverPeer && _ourPlNr in _profilesInOurRoom;
     }
 
-    bool connecting() const
+    // Declared @trusted due to https://github.com/dlang/dmd/issues/23676
+    bool connecting() const @trusted
     {
         return _ourClient && _serverPeer && ! (_ourPlNr in _profilesInOurRoom);
     }
@@ -132,7 +134,8 @@ public:
         return _ourRoom;
     }
 
-    const(Profile2022) ourProfile() const pure nothrow @safe @nogc
+    // Declared @trusted due to https://github.com/dlang/dmd/issues/23676
+    const(Profile2022) ourProfile() const pure nothrow @trusted @nogc
     in { assert (connected, "call this function only when you're connected"); }
     do {
         /*

@@ -34,7 +34,8 @@ struct MergedHandicap {
     }
 }
 
-MergedHandicap[Style] mergeHandicaps(in Profile[PlNr] unmerged) pure nothrow @safe
+// Declared @trusted due to https://github.com/dlang/dmd/issues/23676
+MergedHandicap[Style] mergeHandicaps(in Profile[PlNr] unmerged) pure nothrow @trusted
 {
     MergedHandicap[Style] ret;
     foreach (styleToAdd; unmerged.byValue.map!(prof => prof.style)) {

@@ -93,12 +93,14 @@ public:
         return _room;
     }
 
-    bool contains(in PlNr who) const pure nothrow @safe @nogc
+    // Declared @trusted due to https://github.com/dlang/dmd/issues/23676
+    bool contains(in PlNr who) const pure nothrow @trusted @nogc
     {
         return (who in _players) !is null;
     }
 
-    Profile2022 owner() const pure nothrow @safe @nogc
+    // Declared @trusted due to https://github.com/dlang/dmd/issues/23676
+    Profile2022 owner() const pure nothrow @trusted @nogc
     in { assert (! empty); }
     do {
         const Profile2022* ret = _fe.owner in _players;
@@ -106,7 +108,8 @@ public:
         return *ret;
     }
 
-    Profile2022 profileOf(in PlNr who) const pure nothrow @safe @nogc
+    // Declared @trusted due to https://github.com/dlang/dmd/issues/23676
+    Profile2022 profileOf(in PlNr who) const pure nothrow @trusted @nogc
     in { assert (contains(who)); }
     do { return *(who in _players); }
 
@@ -301,7 +304,8 @@ public:
         return Room(0);
     }
 
-    bool contains(in PlNr who) const pure nothrow @safe @nogc
+    // Declared @trusted due to https://github.com/dlang/dmd/issues/23676
+    bool contains(in PlNr who) const pure nothrow @trusted @nogc
     {
         return (who in _lobbyists) !is null;
     }
@@ -312,7 +316,8 @@ public:
         return Profile2022(); // shouldn't be called. Questionable OO.
     }
 
-    Profile2022 profileOf(in PlNr who) const pure nothrow @safe @nogc
+    // Declared @trusted due to https://github.com/dlang/dmd/issues/23676
+    Profile2022 profileOf(in PlNr who) const pure nothrow @trusted @nogc
     in { assert (contains(who)); }
     do { return *(who in _lobbyists); }
 
