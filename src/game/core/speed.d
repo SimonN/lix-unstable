@@ -6,6 +6,7 @@ import core.time;
 import basics.alleg5;
 static import basics.globals;
 import file.option; // replayAfterFrameBack
+import file.replay.tweakrq; // For tweaking from the panel, not the tweaker
 import game.core.assignee;
 import game.core.game;
 import physics.world.cache : DuringTurbo;
@@ -18,32 +19,17 @@ package:
 
 void dispatchTweaks(Game game)
 {
-    if (! game._tweaker.suggestsChange) {
-        return;
-    }
-    /*
-     * We pause here from Game code. Reason: _tweaker is not related to
-     * pan. Comapre: We don't pause manually here e.g. when framestepping
-     * because framestepping is triggered from pan itself, which pauses
-     * (also responsibility of pan).
-     */
-    game.pan.pause(true);
-    game.nurse.tweakReplayRecomputePhysics(
-        game._tweaker.suggestedChange, game._effect);
-    game.setLastPhyuToNow(); // Updates skill numbers in panel.
+    game.dispatchTweaksFromTweaker;
+    game.dispatchTweaksFromPanel;
 }
 
 void maybeUpdatePhysics(Game game) { with (game)
 {
-    if (pan.rewindPrevPly) {
-        game.nurse.framestepBackBy(game.numPhyusToBackstepToPrevPly);
-        game.finishFramestepping(AndThen.pauseUnlessAtBeginning);
-    }
-    else if (pan.rewindOneSecond) {
+    if (pan.rewindOneSecond) {
         game.nurse.framestepBackBy(Game.updatesBackMany);
         game.finishFramestepping(AndThen.pause);
     }
-    if (pan.rewindOneTick) {
+    else if (pan.rewindOneTick) {
         game.nurse.framestepBackBy(1);
         game.finishFramestepping(AndThen.pause);
     }
@@ -167,12 +153,31 @@ private void upd(Game game, in int howmany, in DuringTurbo duringTurbo)
     game.setLastPhyuToNow();
 }
 
-int numPhyusToBackstepToPrevPly(Game game)
+void dispatchTweaksFromTweaker(Game game)
 {
+    if (! game._tweaker.suggestsChange) {
+        return;
+    }
+    game.nurse.tweakReplayRecomputePhysics(
+        game._tweaker.suggestedChange, game._effect);
+    game.finishFramestepping(AndThen.pause); // Updates skill numbers in panel.
+}
+
+void dispatchTweaksFromPanel(Game game)
+{
+    if (! game.pan.tweakPrevPly) {
+        return;
+    }
     immutable Phyu now = game.nurse.now;
-    immutable Phyu target = game.replay.allPlies
-        .filter!(ply => ply.when <= now)
-        .map!(ply => ply.when)
-        .fold!max(Phyu(now - game.nurse.updatesSinceZero));
-    return now - target + 1; // The +1 goes back to the phyu before that ply.
+    auto candidates = game.replay.allPlies;
+    while (candidates.length > 0 && candidates[$-1].when > now) {
+        candidates = candidates[0 .. $-1];
+    }
+    if (candidates.length == 0) {
+        return;
+    }
+    game.nurse.tweakReplayRecomputePhysics(
+        ChangeRequest(candidates[$-1], ChangeVerb.moveThisEarlier),
+        game._effect);
+    game.finishFramestepping(AndThen.pause);
 }

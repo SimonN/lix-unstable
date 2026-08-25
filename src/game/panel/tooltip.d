@@ -87,6 +87,9 @@ struct Tooltip {
 
     string format()
     {
+        if (lang == Lang.gameRewindPrevPly) {
+            return "Pull an assignment earlier by 1 physics update.";
+        }
         return formatWithButtons // see hardware.keynames for these
             ? lang.translf("\u27BF" /+ lmb +/, "\u27C1" /+ rmb +/)
             : keyToHold

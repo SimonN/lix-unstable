@@ -36,7 +36,7 @@ public:
         bool restart() { return false; }
         bool saveState() { return false; }
         bool loadState() { return false; }
-        bool rewindPrevPly() { return false; }
+        bool tweakPrevPly() { return false; }
         bool rewindOneTick() { return false; }
         bool rewindOneSecond() { return false; }
         bool skipOneTick() { return false; }
@@ -206,7 +206,7 @@ mixin template TapeRecorderMixin() {
         bool speedIsFast()        { return _trbs.speedIsFast; }
         bool speedIsTurbo()       { return _trbs.speedIsTurbo; }
         bool restart()            { return _trbs.restart; }
-        bool rewindPrevPly() { return _trbs.rewindPrevPly; }
+        bool tweakPrevPly() { return _trbs.tweakPrevPly; }
         bool rewindOneTick() { return _trbs.rewindOneTick; }
         bool rewindOneSecond() { return _trbs.rewindOneSecond; }
         bool skipOneTick()  { return _trbs.skipOneTick; }

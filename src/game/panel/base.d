@@ -67,7 +67,7 @@ public:
     // Copy-pasted function names from RightButtons.
     static foreach (field; ["paused", "speedIsNormal", "speedIsFast",
         "speedIsTurbo", "restart", "saveState", "loadState",
-        "rewindPrevPly", "rewindOneSecond", "rewindOneTick",
+        "tweakPrevPly", "rewindOneSecond", "rewindOneTick",
         "skipOneTick", "skipTenSeconds",
         "splatRulerIsOn", "tweakerIsOn",
         "highlightGoalsExecute", "nukeDoubleclicked"]

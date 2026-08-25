@@ -33,7 +33,8 @@ private:
     enum frameTurbo = 5;
 
     // All the buttons are non-null, always
-    BitmapButton _pause, _restart, _rewindPrevPly;
+    BitmapButton _pause, _restart;
+    TextButton _rewindPrevPly;
     NukeButton _nuke;
     TwoTasksButton _rewind, _skip, _speedFast;
 
@@ -54,8 +55,19 @@ public:
                 b.hotkeyRight = keyRight ? keyRight.value : KeySet();
             addChild(b);
         }
-        newBut(_rewindPrevPly, 0, 0, InternalImage.rewindPrevPly, 0,
-            opt.keyRewindPrevPly);
+        void newButText(ref TextButton b, int x, int y,
+            in UserOption!KeySet keyLeft = null,
+            in UserOption!KeySet keyRight = null)
+        {
+            b = new TextButton(
+                new Geom(x * xlg/4f, y * ylg/2f, xlg/4f, ylg/2f),
+                "⬚ −1");
+            b.hotkey = keyLeft ? keyLeft.value : KeySet();
+            static if (is (TextButton : TwoTasksButton))
+                b.hotkeyRight = keyRight ? keyRight.value : KeySet();
+            addChild(b);
+        }
+        newButText(_rewindPrevPly, 0, 0, opt.keyRewindPrevPly);
         newBut(_restart, 1, 0, InternalImage.gamePanel, 8, opt.keyRestart);
         newBut(_rewind, 0, 1, InternalImage.gamePanel, 10,
             opt.keyRewindOneTick, opt.keyRewindOneSecond);
@@ -82,10 +94,10 @@ public:
                                                && _speedFast.xf == frameFast; }
         bool speedIsTurbo()  { return ! paused && _speedFast.on
                                                && _speedFast.xf == frameTurbo;}
-        bool restart()            { return _restart.execute; }
+        bool restart() { return _restart.execute; }
         bool rewindOneTick() { return _rewind.executeLeft; }
         bool rewindOneSecond() { return _rewind.executeRight; }
-        bool rewindPrevPly() { return _rewindPrevPly.execute; }
+        bool tweakPrevPly() { return _rewindPrevPly.execute; }
         bool skipOneTick()  { return _skip.executeLeft; }
         bool skipTenSeconds() { return _skip.executeRight; }
         bool nukeDoubleclicked()  { return _nuke.doubleclicked; }
