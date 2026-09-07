@@ -100,10 +100,11 @@ UserOption!bool airClicksCutWhenTweakerHidden;
 UserOption!bool airClicksCutWhenTweakerShown;
 UserOption!bool insertAssignmentsWhenTweakerHidden;
 UserOption!bool insertAssignmentsWhenTweakerShown;
+UserOption!int rewindToAssignmentPlusTicks; // -1, and kaywhyn wants -2
 
+UserOption!bool unpauseOnAssign;
 UserOption!bool avoidBuilderQueuing;
 UserOption!bool avoidBatterToExploder;
-UserOption!bool unpauseOnAssign;
 
 UserOption!int networkLastStyle;
 UserOption!int networkConnectionMethod;
@@ -293,10 +294,11 @@ do {
         Lang.optionInsertAssignments, false);
     insertAssignmentsWhenTweakerShown = newOpt("insertAssignmentsWhenTweakerShown",
         Lang.optionInsertAssignments, true);
+    rewindToAssignmentPlusTicks = newOpt("rewindToAssignmentPlusTicks", Lang.optionRewindToAssignmentPlusTicks, -1);
 
+    unpauseOnAssign = newOpt("unpauseOnAssign", Lang.optionUnpauseOnAssign, false);
     avoidBuilderQueuing = newOpt("avoidBuilderQueuing", Lang.optionAvoidBuilderQueuing, true);
     avoidBatterToExploder = newOpt("avoidBatterToExploder", Lang.optionAvoidBatterToExploder, false);
-    unpauseOnAssign = newOpt("unpauseOnAssign", Lang.optionUnpauseOnAssign, false);
 
     networkLastStyle = newOpt("networkLastStyle", Style.red.to!int);
     networkConnectionMethod = newOpt("networkConnectionMethod", Lang.winLobbyStartCustom, 0);

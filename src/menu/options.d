@@ -277,27 +277,41 @@ void populateGameControls()
             airClicksCutWhenTweakerShown,
             insertAssignmentsWhenTweakerShown),
     ];
+    fac.y += 30;
+    groups[OptionGroup.gameControls] ~=
+        fac.factory!BoolOption(ingameTooltips);
+
     fac = facRight();
     groups[OptionGroup.gameControls] ~= [
         fac.factory!BoolOption(unpauseOnAssign),
         fac.factory!BoolOption(avoidBuilderQueuing),
         fac.factory!BoolOption(avoidBatterToExploder),
-        fac.factory!BoolOption(ingameTooltips),
     ];
-    fac.y += 20 + fac.spaceBelow;
-    auto cfg = NumPickConfig();
-    cfg.digits = 3;
-    cfg.min = 0;
-    cfg.max = 300;
-    cfg.stepSmall = 2;
-    cfg.stepMedium = 20;
-    groups[OptionGroup.gameControls] ~= [
+    {
+        auto cfg = NumPickConfig();
+        cfg.min = -8;
+        cfg.max = 8;
+        cfg.signAlways = true;
+        groups[OptionGroup.gameControls] ~=
+            fac.factory!NumPickOption(cfg, rewindToAssignmentPlusTicks);
+    }
+
+    fac.y += 30;
+    groups[OptionGroup.gameControls] ~=
         fac.factory!RadioIntOption(splatRulerDesign,
             Lang.optionSplatRulerDesign2Bars,
             Lang.optionSplatRulerDesign094,
-            Lang.optionSplatRulerDesign3Bars),
-        fac.factory!NumPickOption(cfg, splatRulerSnapPixels),
-    ];
+            Lang.optionSplatRulerDesign3Bars);
+    {
+        auto cfg = NumPickConfig();
+        cfg.digits = 3;
+        cfg.min = 0;
+        cfg.max = 300;
+        cfg.stepSmall = 2;
+        cfg.stepMedium = 20;
+        groups[OptionGroup.gameControls] ~=
+            fac.factory!NumPickOption(cfg, splatRulerSnapPixels);
+    }
 }
 
 void populateGameKeys()

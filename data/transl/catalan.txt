@@ -380,6 +380,7 @@ $optionWhenTweakerHidden Sense Ajustador:|When you start a singleplayer game, th
 $optionWhenTweakerShown Amb Ajustador:|These controls apply while the Tweaker is shown.|Show/hide the Tweaker with a panel button (see Game Keys).
 $optionAirClicksCut Clics aeris interrompen|Air clicks interrupt the replay, i.e., erase all future assignments for all lix.|If not checked, air clicks do nothing. Erase assignments via the Tweaker.
 $optionInsertAssignments Insertar habilitats|After ◀▮, assigning skills preserves the future of other lix.|If not checked, an assignment first interrupts the replay, i.e., cuts all lix' future.
+$optionRewindToAssignmentPlusTicks ⬚◀◀ rebobina fins al tick proper|Rewind to which tick near the previous assignment with ⬚◀◀ (see Game Keys)?|0: Skill is already visible. −1: When you'd click to assign. −2: Before you'd click.
 
 $optionKeyForceLeft Forçar l'esquerra|Mantenir per assignar habilitats als lix encarats a l'esquerra.|És útil en un manat dens de lix.
 $optionKeyForceRight Forçar la dreta|Mantenir per assignar habilitats als lix encarats a la dreta.|És útil en un manat dens de lix.

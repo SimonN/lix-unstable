@@ -370,6 +370,7 @@ $optionWhenTweakerHidden Ohne Justierer:|Wenn du ein Einzelspielerspiel beginnst
 $optionWhenTweakerShown Mit Justierer:|Diese Steuerungen gelten, während der Replay-Justierer sichtbar ist.|Öffne/schließe den Justierer mit einem Button, siehe Spieltasten.
 $optionAirClicksCut Luftklick unterbricht Replay|Klicke in die Luft, um alle zukünftigen Zuweisungen aus dem Replay zu löschen.|Ohne Haken: Luftklicks haben keine Wirkung. Lösche Zuweisungen im Justierer.
 $optionInsertAssignments Zuweisungen einfügen|Nach ◀▮ belassen neue Zuweisungen die Zukunft anderer Lix.|Ohne Haken: Neue Zuweisungen löschen die Zukunft aus dem Replay.
+$optionRewindToAssignmentPlusTicks ⬚◀◀ spult zu Tick daneben|Zu welchem Tick neben der vorherigen Zuweisung spult ⬚◀◀ (siehe Spieltasten)?|0: Fähigkeit ist schon aktiv. −1: Wenn du klicken würdest. −2: Bevor du klicken würdest.
 
 $optionKeyForceLeft Nur links|Halte gedrückt, um Fähigkeiten an Linksläufer zuzuweisen.|Das ist nützlich in dichten Ansammlungen von Lix.
 $optionKeyForceRight Nur rechts|Halte gedrückt, um Fähigkeiten an Rechtsläufer zuzuweisen.|Das ist nützlich in dichten Ansammlungen von Lix.

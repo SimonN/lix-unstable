@@ -378,6 +378,7 @@ $optionWhenTweakerHidden Utan repristrimmare:|When you start a singleplayer game
 $optionWhenTweakerShown Med repristrimmare:|These controls apply while the Tweaker is shown.|Show/hide the Tweaker with a panel button (see Game Keys).
 $optionAirClicksCut Luftklick avbryter repris|Air clicks interrupt the replay, i.e., erase all future assignments for all lix.|If not checked, air clicks do nothing. Erase assignments via the Tweaker.
 $optionInsertAssignments Infoga ny tilldelningen|After ◀▮, assigning skills preserves the future of other lix.|If not checked, an assignment first interrupts the replay, i.e., cuts all lix' future.
+$optionRewindToAssignmentPlusTicks ⬚◀◀ spolar till närliggande tick|Spola tillbaka till vilken tick nära den föregående tilldelningen med ⬚◀◀ (se Spelkontroller)?|0: Förmågan är redan synlig. −1: När du skulle klicka för att tilldela. −2: Innan du skulle klicka.
 
 $optionKeyForceLeft Tvinga vänster|Håll för att tildela förmågor till vänsterriktade lix.|Detta är användbart i en tät grupp av lix.
 $optionKeyForceRight Tvinga höger|Håll för att tilldela förmågor till högerriktade lix.|Detta är användbart i en tät grupp av lix.

@@ -352,6 +352,7 @@ enum Lang {
     optionWhenTweakerShown,
     optionAirClicksCut,
     optionInsertAssignments,
+    optionRewindToAssignmentPlusTicks,
 
     optionKeyForceLeft,
     optionKeyForceRight,

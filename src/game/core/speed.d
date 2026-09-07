@@ -5,7 +5,7 @@ import core.time;
 
 import basics.alleg5;
 static import basics.globals;
-import file.option; // replayAfterFrameBack
+import opt = file.option.allopts;
 import game.core.assignee;
 import game.core.game;
 import physics.world.cache : DuringTurbo;
@@ -169,10 +169,18 @@ private void upd(Game game, in int howmany, in DuringTurbo duringTurbo)
 
 int numPhyusToBackstepToPrevPly(Game game)
 {
+    // Default is plusTicks == -1: Rewind to the tick before the assignment.
+    // During that tick (assignment - 1), if you click, you'll re-assign
+    // the skill in exactly the same way as it was in the replay.
+    // kaywhyn likes plusTicks == -2, clicking tweaks the assignment by -1.
+    immutable int plusTicks = opt.rewindToAssignmentPlusTicks.value;
+
     immutable Phyu now = game.nurse.now;
-    immutable Phyu target = game.replay.allPlies
-        .filter!(ply => ply.when <= now)
-        .map!(ply => ply.when)
-        .fold!max(Phyu(now - game.nurse.updatesSinceZero));
-    return now - target + 1; // The +1 goes back to the phyu before that ply.
+    auto earlier = game.replay.allPlies
+        .filter!(ply => ply.when + plusTicks < now)
+        .map!(ply => ply.when);
+    if (earlier.empty) {
+        return game.nurse.updatesSinceZero;
+    }
+    return now - (earlier.fold!max + plusTicks);
 }

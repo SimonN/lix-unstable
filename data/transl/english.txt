@@ -378,6 +378,7 @@ $optionWhenTweakerHidden When Tweaker is Hidden:|When you start a singleplayer g
 $optionWhenTweakerShown When Tweaker is Shown:|These controls apply while the Tweaker is shown.|Show/hide the Tweaker with a panel button (see Game Keys).
 $optionAirClicksCut Air Clicks Interrupt|Air clicks interrupt the replay, i.e., erase all future assignments for all lix.|If not checked, air clicks do nothing. Erase assignments via the Tweaker.
 $optionInsertAssignments Insert Assignments|After ◀▮, assigning skills preserves the future of other lix.|If not checked, an assignment first interrupts the replay, i.e., cuts all lix' future.
+$optionRewindToAssignmentPlusTicks ⬚◀◀ rewinds to nearby tick|Rewind to which tick near the previous assignment with ⬚◀◀ (see Game Keys)?|0: Skill is already visible. −1: When you'd click to assign. −2: Before you'd click.
 
 $optionKeyForceLeft Force left|Hold to assign skills to lix facing left.|This is useful in a dense bunch of lix.
 $optionKeyForceRight Force right|Hold to assign skills to lix facing right.|This is useful in a dense bunch of lix.
