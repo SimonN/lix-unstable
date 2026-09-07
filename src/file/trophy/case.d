@@ -9,12 +9,12 @@ import std.file;
 import std.string;
 
 import optional;
-import sdlang;
 
 import basics.globals;
 import file.date;
 import file.backup;
 import file.log;
+import file.sdlang;
 import file.trophy.trophy;
 import hardware.tharsis;
 
@@ -69,7 +69,9 @@ void loadTrophies()
 {
     _trophies = null;
     try {
-        loadTrophiesSdlang();
+        version (tharsisprofiling)
+            auto zone = Zone(profiler, "load trophies as SDLang");
+        parseSdlFrom(fileTrophies, &addSdlTrophy);
     }
     catch (FileException e) {
         log("Can't open trophy file: " ~ fileTrophies.rootless);
@@ -87,20 +89,28 @@ void saveTrophies()
 {
     version (tharsisprofiling)
         auto zone = Zone(profiler, "save trophies as SDLang");
-    auto root = new Tag();
+
+    auto f = fileTrophies.openForWriting;
+    auto outputRangeToTrophyFile = f.lockingTextWriter;
+    auto node = SDLNode(tagName, [], [
+        SDLAttribute(attrFileNoExt, SDLValue("")),
+        SDLAttribute(attrTitle, SDLValue("")),
+        SDLAttribute(attrAuthor, SDLValue("")),
+        SDLAttribute(attrLixSaved, SDLValue(0)),
+        SDLAttribute(attrSkillsUsed, SDLValue(0)),
+        SDLAttribute(attrBuilt, SDLValue("")),
+        SDLAttribute(attrLastDir, SDLValue("")) ]);
     foreach (key, tro; _trophies) {
         assert (tro.built !is null, "null built for " ~ key.fileNoExt);
-        root.add(new Tag(null, tagName, [], [
-            new Attribute("", attrFileNoExt, Value(key.fileNoExt)),
-            new Attribute("", attrTitle, Value(key.title)),
-            new Attribute("", attrAuthor, Value(key.author)),
-            new Attribute("", attrLixSaved, Value(tro.lixSaved)),
-            new Attribute("", attrSkillsUsed, Value(tro.skillsUsed)),
-            new Attribute("", attrBuilt, Value(tro.built.toString)),
-            new Attribute("", attrLastDir, Value(tro.lastDirWithinLevels))]));
+        node.attributes[0].value = key.fileNoExt;
+        node.attributes[1].value = key.title;
+        node.attributes[2].value = key.author;
+        node.attributes[3].value = tro.lixSaved;
+        node.attributes[4].value = tro.skillsUsed;
+        node.attributes[5].value = tro.built.toString;
+        node.attributes[6].value = tro.lastDirWithinLevels;
+        generateSDLang(outputRangeToTrophyFile, node);
     }
-    auto f = fileTrophies.openForWriting;
-    f.write(root.toSDLDocument);
     f.close();
 }
 
@@ -144,27 +154,24 @@ string fixOutdatedAuthor(in string oldAuthor) pure nothrow @safe @nogc
     return oldAuthor == "Michael S. Repton" ? "Proxima" : oldAuthor;
 }
 
-void loadTrophiesSdlang()
-{
-    version (tharsisprofiling)
-        auto zone = Zone(profiler, "load trophies as SDLang");
-
-    auto root = sdlang.parseFile(fileTrophies.stringForReading);
-    foreach (tag; root.tags.filter!(ta => ta.name == "trophy")) {
-        TrophyKey key;
-        key.fileNoExt = tag.getAttribute(attrFileNoExt, "");
-        key.title = tag.getAttribute(attrTitle, "");
-        key.author = tag.getAttribute(attrAuthor, "").fixOutdatedAuthor;
-        if (key.fileNoExt == "")
-            continue;
-
-        Trophy tro = Trophy(
-            new Date(tag.getAttribute(attrBuilt, "0000-00-00")),
-            tag.getAttribute(attrLastDir, ""));
-        tro.lixSaved = tag.getAttribute(attrLixSaved, 0);
-        tro.skillsUsed = tag.getAttribute(attrSkillsUsed, 0);
-        if (tro.lixSaved <= 0)
-            continue;
-        addDuringLoad(key, tro);
+void addSdlTrophy(in ref SDLNode node) {
+    if (node.qualifiedName != tagName) {
+        return;
     }
+    TrophyKey key;
+    key.fileNoExt = node.spullString(attrFileNoExt);
+    key.title = node.spullString(attrTitle);
+    key.author = node.spullString(attrAuthor).fixOutdatedAuthor;
+    if (key.fileNoExt == "")
+        return;
+
+    Trophy tro = Trophy(
+        new Date(node.spullString(attrBuilt)), // = Date("0000-00-00") if n/a
+        node.spullString(attrLastDir));
+    tro.lixSaved = node.spullInt(attrLixSaved);
+    tro.skillsUsed = node.spullInt(attrSkillsUsed);
+    if (tro.lixSaved <= 0)
+        return;
+
+    addDuringLoad(key, tro);
 }

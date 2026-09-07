@@ -16,12 +16,11 @@ import std.array;
 import std.conv;
 import std.string;
 
-import sdlang;
-
 import file.filename;
 import file.language;
 import file.key.key;
 import file.key.set;
+import file.sdlang;
 import hardware.keyboard; // Convenience: Call wasTapped directly on the option
 
 abstract class AbstractUserOption {
@@ -38,7 +37,7 @@ public:
 
     final Lang lang() const pure nothrow @safe @nogc { return _lang; }
 
-    final void set(Tag tag)
+    final void set(in SDLNode tag)
     {
         assert (tag.name == _userFileKey,
             "this.name == '" ~ _userFileKey
@@ -46,21 +45,21 @@ public:
         setImpl(tag);
     }
 
-    final Tag createTag() const
+    final SDLNode createTag() const
     {
-        Tag tag = new Tag(null, _userFileKey);
-        this.addValueTo(tag);
-        return tag;
+        auto ret = SDLNode(_userFileKey);
+        this.addValueTo(ret);
+        return ret;
     }
 
 protected:
-    abstract void setImpl(Tag tag);
+    abstract void setImpl(in SDLNode);
     abstract void revertToDefault();
 
     // To be called from the base class's createTag().
     // The child class should add their values to the tag, but keep the
     // tag's name as-is.
-    abstract void addValueTo(Tag) const;
+    abstract void addValueTo(ref SDLNode) const;
 }
 
 
@@ -89,14 +88,14 @@ public:
     }
 
 protected:
-    override void setImpl(Tag tag)
+    override void setImpl(in SDLNode tag)
     {
-        _value = MutFilename(new VfsFilename(tag.getValue!string));
+        _value = MutFilename(new VfsFilename(tag.spullString));
     }
 
-    override void addValueTo(Tag tag) const
+    override void addValueTo(ref SDLNode tag) const
     {
-        tag.add(Value(_value.rootless));
+        tag.values ~= SDLValue(_value.rootless);
     }
 
     override void revertToDefault() { _value = _defaultValue; }
@@ -134,32 +133,37 @@ public:
     }
 
 protected:
-    override void setImpl(Tag tag)
+    override void setImpl(in SDLNode tag)
     {
         static if (is (T == KeySet)) {
             _value = KeySet();
-            foreach (value; tag.values.filter!(v => v.convertsTo!int)) {
-                const Key k = old2024IntToKey(value.get!int);
+            foreach (ref value; tag.spullAllInts) {
+                const Key k = old2024IntToKey(spullInt(value));
                 _value = KeySet(_value, KeySet(k));
             }
-            foreach (attr; tag.attributes) {
-                const Key k = attributeToKey(attr);
+            foreach (ref attr; tag.attributes) {
+                const Key k = attributeToKey(attr); // Key.init
                 _value = KeySet(_value, KeySet(k));
             }
+            return;
         }
-        else {
-            /*
-             * Set _value to the first (and, with hope, only) tag. If the
-             * tag's value doesn't exist or type-mismatches, _value = _value.
-             */
-            _value = tag.getValue!T(_value);
+        /*
+         * Set _value to the first (and, with hope, only) tag.
+         * If the tag's value type-mismatches, _value = 0 or = "".
+         */
+        if (tag.values.length == 0) {
+            return;
         }
+        static      if (is (T == int)) { _value = tag.spullInt; }
+        else static if (is (T == bool)) { _value = tag.spullBool; }
+        else static if (is (T == string)) { _value = tag.spullString; }
+        else static assert (is (T == KeySet), "All other T need impl here.");
     }
 
-    override void addValueTo(Tag tag) const
+    override void addValueTo(ref SDLNode tag) const
     {
         static if (is (T == int) || is (T == bool) || is (T == string)) {
-            tag.add(Value(value));
+            tag.values ~= SDLValue(value);
         }
         else static if (is (T == KeySet)) {
             foreach (Key keyToExport; _value[]) {
@@ -198,36 +202,37 @@ Key old2024IntToKey(in int from2024) pure nothrow @safe @nogc
     // KeySet is responsible for discarding invalid Keys that we produce here.
 }
 
-Key attributeToKey(Attribute attr)
+Key attributeToKey(in SDLAttribute attr)
 {
-    if (attr.name == kwMButton && attr.value.convertsTo!int) {
-        immutable k = Key.byMouseButtonId(attr.value.get!int);
+    if (attr.name == kwMButton && attr.value.canSpullInt) {
+        immutable k = Key.byMouseButtonId(attr.value.spullInt);
         // Don't allow LMB, it's not mappable in the options menu either.
         return k != Key.lmb ? k : Key.init;
     }
-    if (attr.name == kwWheel && attr.value.convertsTo!string) {
-        return attr.value.get!string == kwWhUp ? Key.wheelUp : Key.wheelDown;
+    if (attr.name == kwWheel && attr.value.canSpullString) {
+        return attr.value.spullString == kwWhUp ? Key.wheelUp : Key.wheelDown;
     }
     return Key.init;
 }
 
-void add2025(ref Tag target, in Key keyToExport)
+void add2025(ref SDLNode target, in Key keyToExport)
 {
     final switch (keyToExport.type) {
     case Key.Type.keyboardKey:
-        target.add(Value(keyToExport.keyboardKey));
+        target.values ~= SDLValue(keyToExport.keyboardKey);
         return;
     case Key.Type.mouseButton:
-        target.add(new Attribute(kwMButton, Value(keyToExport.mouseButton)));
+        target.attributes ~= SDLAttribute(kwMButton,
+            SDLValue(keyToExport.mouseButton));
         return;
     case Key.Type.mouseWheelDirection:
-        target.add(new Attribute(kwWheel,
-            Value(keyToExport == Key.wheelUp ? kwWhUp : kwWhDown)));
+        target.attributes ~= SDLAttribute(kwWheel,
+            SDLValue(keyToExport == Key.wheelUp ? kwWhUp : kwWhDown));
         return;
     }
 }
 
-void maybeAdd2024BackCompat(ref Tag target, in Key keyToExport)
+void maybeAdd2024BackCompat(ref SDLNode target, in Key keyToExport)
 {
     int backCompat
         = keyToExport == Key.mmb ? old2024AllegroKeyMax
@@ -238,7 +243,7 @@ void maybeAdd2024BackCompat(ref Tag target, in Key keyToExport)
     if (backCompat == 0) {
         return;
     }
-    target.add(Value(backCompat));
+    target.values ~= SDLValue(backCompat);
 }
 
 unittest
@@ -246,22 +251,24 @@ unittest
     UserOption!int a = new UserOption!int("myUnittestKey", Lang.commonOk, 4);
     a = 5;
     assert (a.createTag().name == "myUnittestKey");
-    assert (a.createTag().values.front == 5);
+    assert (a.createTag().values[0].spullInt == 5);
 }
 
 unittest {
     UserOption!KeySet mykey = new UserOption!KeySet("myHotkeyKey",
         Lang.optionKeyMenuOkay, KeySet(Key.byA5KeyId(45)));
     assert (mykey.createTag().name == "myHotkeyKey");
-    assert (mykey.createTag().values.front == 45);
-    {
-        Tag root = parseSource("myHotkeyKey 2 1 4 3 2 2 2\n");
-        mykey.set(root.tags.front);
-        assert (mykey.createTag().values.equal([1, 2, 3, 4]));
-    }
+    assert (mykey.createTag().values[0].spullInt == 45);
+
+    sdlite.parseSDLDocument!(node => mykey.set(node))(
+        "myHotkeyKey 2 1 4 3 2 2 2\n",
+        "unittest1");
+    assert (mykey.createTag().values.equal([
+        SDLValue(1), SDLValue(2), SDLValue(3), SDLValue(4)]));
+
     mykey = KeySet();
     assert (mykey.createTag().values.empty);
-    mykey.set(new Tag("", "myHotkeyKey"));
+    mykey.set(SDLNode("myHotkeyKey", []));
     assert (mykey.createTag().values.empty);
 }
 
@@ -273,13 +280,11 @@ unittest {
     {
         auto attr = ourOpt.createTag().attributes.front;
         assert (attr.name == "mouseButton");
-        assert (attr.value == 7);
+        assert (attr.value.spullInt == 7);
     }
-    {
-        Tag root = parseSource(
-            "myMouseButtonOption mouseButton=10 mouseButton=9\n");
-        ourOpt.set(root.tags.front);
-    }
+    sdlite.parseSDLDocument!(node => ourOpt.set(node))(
+        "myMouseButtonOption mouseButton=10 mouseButton=9\n",
+        "unittest2");
     assert (ourOpt.value == KeySet(
         KeySet(Key.byMouseButtonId(9)), KeySet(Key.byMouseButtonId(10))));
 }
@@ -294,7 +299,7 @@ unittest {
     auto attrs = ourOpt.createTag().attributes;
     assert (attrs.length == 1);
     assert (attrs[0].name == kwMButton);
-    assert (attrs[0].value.get!int == 2);
+    assert (attrs[0].value.spullInt == 2);
 }
 
 unittest {
@@ -307,5 +312,5 @@ unittest {
     auto attrs = ourOpt.createTag().attributes;
     assert (attrs.length == 1);
     assert (attrs[0].name == kwWheel);
-    assert (attrs[0].value.get!string == kwWhDown);
+    assert (attrs[0].value.spullString == kwWhDown);
 }

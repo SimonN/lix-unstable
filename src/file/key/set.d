@@ -81,6 +81,11 @@ nothrow:
 }
 
 unittest {
+    assert (KeySet(KeySet(
+        KeySet(Key.init), KeySet(Key.init)), KeySet(Key.init)).empty);
+}
+
+unittest {
     Key f(in int i) { return Key.byA5KeyId(i); }
 
     KeySet a = KeySet(f(4));
