@@ -103,7 +103,9 @@ private:
             new Geom(20, 20, xlg - 120, 20, From.BOT_LEF),
             Lang.repForLevFoundWhat.transl);
         _labelWhere.value = dirReplays.stringForWriting;
-        _labelWhat.value = _levelFn.fileNoExtNoPre;
+
+        // ReplayFinder.searchCriterion explains this pattern. Keep it synched.
+        _labelWhat.value = _levelFn.fileNoExtNoPre ~ "-";
         addChildren(_labelWhere, _labelWhat);
     }
 }
@@ -118,6 +120,7 @@ public:
 protected:
     final override bool searchCriterion(Filename fn) const
     {
+        // _labelWhat explains this pattern. Keep it synched.
         return fn.fileNoExtNoPre.length > _levelFn.fileNoExtNoPre.length
             && fn.fileNoExtNoPre[_levelFn.fileNoExtNoPre.length] == '-'
             && fn.fileNoExtNoPre.startsWith(_levelFn.fileNoExtNoPre);
