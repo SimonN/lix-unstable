@@ -26,22 +26,6 @@ and then add more lines of at most 72 characters each.
 
 
 
-Text encoding
--------------
-
-Everything -- source, levels, gadget definitions, documentation -- is UTF-8.
-Never use byte-order marks. Rationale: https://utf8everywhere.org/
-
-Source code shall have LF terminators.
-
-Level and replay files can have LF, CRLF, or CR endings.
-
-Documentation that is system-independent (most files in ./doc/) and
-translations (all ./data/transl/* files) shall have CRLF endings.
-They shall be accessible in Windows Notepad.
-
-
-
 Non-null class references and Optional
 --------------------------------------
 
@@ -111,7 +95,7 @@ Source code style is, in order of influence from lots to little, a mixture
 of The D Style, personal taste, Linux kernel style, and vibe.d style.
 
 Indentation is 4 spaces. Rationale: The D Style (https://dlang.org/dstyle.html)
-says that each indentation will be 4 spaces, and I have said for 10 years that
+says that each indentation will be 4 spaces, and I have said for 20 years that
 each indentation will be 4 spaces. Therefore, indentation will be 4 spaces.
 
 Tab characters are bugs.
@@ -164,7 +148,7 @@ blank lines in succession.
 
 Function declarations get the opening brace on a standalone line:
 
-    nothrow void myFunction() const @nogc
+    void myFunction() const pure nothrow @safe @nogc
     {
         int localFunction(int a)
         {
@@ -173,21 +157,14 @@ Function declarations get the opening brace on a standalone line:
     }
 
 When you can fit an entire function definition into a single line, do that
-instead of following the above rule. This happens often with class properties.
+instead of following the above rule.
 
-    @property int someValue()      { return _someValue;     }
-    @property int someValue(int i) { return _someValue = i; }
+    int someValue() const { return _someValue; }
+    int someValue(int i) { return _someValue = i; }
 
 The D style (https://dlang.org/dstyle.html) recommends properties over
 get/set_some_value(). The private variable should be prefixed with an
 underscore, because it needs a name different from the property functions.
-
-Digression: The D style also recommends to choose type names LikeThis,
-which I do myself, and other identifier names likeThis. I'm in the middle
-of a conversion of the D codebase to this convention. My old convention was
-to name non-type symbols like_this, as you would do in C. Guideline:
-Use one underscore at the beginning of a private field, and no underscores
-anywhere else, even if some of my old symbols still violate this guideline.
 
 When a line, conditional expression or parameter list gets very long and
 has to be broken into separate lines, you can do this:
